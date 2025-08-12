@@ -34,6 +34,16 @@ const LandingPage: React.FC = () => {
     document.documentElement.style.scrollBehavior =
       LANDING_PAGE_CONSTANTS.ANIMATION.SCROLL_BEHAVIOR.BEHAVIOR;
 
+    const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
+    const observerOptions: IntersectionObserverInit = {
+      threshold: isMobileViewport
+        ? Math.min(0.05, LANDING_PAGE_CONSTANTS.ANIMATION.SCROLL_OBSERVER.THRESHOLD)
+        : LANDING_PAGE_CONSTANTS.ANIMATION.SCROLL_OBSERVER.THRESHOLD,
+      rootMargin: isMobileViewport
+        ? '0px 0px 20% 0px' // expand bottom to trigger earlier on mobile
+        : LANDING_PAGE_CONSTANTS.ANIMATION.SCROLL_OBSERVER.ROOT_MARGIN,
+    };
+
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -59,11 +69,7 @@ const LandingPage: React.FC = () => {
           // Persistent elements keep their animate-in state even when out of view
         });
       },
-      {
-        threshold: LANDING_PAGE_CONSTANTS.ANIMATION.SCROLL_OBSERVER.THRESHOLD,
-        rootMargin:
-          LANDING_PAGE_CONSTANTS.ANIMATION.SCROLL_OBSERVER.ROOT_MARGIN,
-      }
+      observerOptions
     );
 
     const animatedElements = document.querySelectorAll(

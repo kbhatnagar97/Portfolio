@@ -657,6 +657,22 @@ body {
   }
 }
 
+// Mobile: trigger quicker and animate faster to avoid late appearances
+@media (max-width: 768px) {
+  .scroll-animate {
+    transition-duration: 0.5s;
+  }
+
+  .scroll-animate.slide-in-left,
+  .scroll-animate.slide-in-right,
+  .scroll-animate.fade-in-up,
+  .scroll-animate.fade-in-right,
+  .scroll-animate.fade-in-left,
+  .scroll-animate.fade-in-down {
+    transition-duration: 0.5s;
+  }
+}
+
 // Enhanced Animation Classes for Education and Professional Sections
 .scroll-animate {
   &.zoom-in {
