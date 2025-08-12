@@ -9,8 +9,8 @@ import {
   Tooltip as ChartTooltip,
   Legend,
   Filler,
-  ChartOptions,
 } from 'chart.js';
+import type { ChartOptions } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import * as vega from 'vega-statistics';
@@ -131,63 +131,63 @@ const GaussianVisualizerPage: React.FC = () => {
     };
   }, [mean, stdev, lsl, usl]);
 
-  const chartOptions: ChartOptions<'line'> = useMemo(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 250 },
-      scales: {
-        y: { display: false },
-        x: {
-          type: 'linear',
-          min: axisMin,
-          max: axisMax,
-          grid: { color: '#eae6e1' },
-          ticks: { color: '#a39189', maxTicksLimit: 10 },
+  const chartOptions = useMemo(
+    () =>
+      ({
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 250 },
+        scales: {
+          y: { display: false },
+          x: {
+            type: 'linear',
+            min: axisMin,
+            max: axisMax,
+            grid: { color: '#eae6e1' },
+            ticks: { color: '#a39189', maxTicksLimit: 10 },
+          },
         },
-      },
-      plugins: {
-        legend: { display: false },
-        title: { display: false },
-        annotation: {
-          animations: false,
-          annotations: {
-            meanLine: {
-              type: 'line',
-              xMin: mean,
-              xMax: mean,
-              borderColor: '#442b22',
-              borderWidth: 2,
-            },
-            lslLine: {
-              type: 'line',
-              xMin: lsl,
-              xMax: lsl,
-              borderColor: '#a39189',
-              borderWidth: 2,
-              borderDash: [6, 6],
-            },
-            uslLine: {
-              type: 'line',
-              xMin: usl,
-              xMax: usl,
-              borderColor: '#a39189',
-              borderWidth: 2,
-              borderDash: [6, 6],
+        plugins: {
+          legend: { display: false },
+          title: { display: false },
+          annotation: {
+            annotations: {
+              meanLine: {
+                type: 'line',
+                xMin: mean,
+                xMax: mean,
+                borderColor: '#442b22',
+                borderWidth: 2,
+              },
+              lslLine: {
+                type: 'line',
+                xMin: lsl,
+                xMax: lsl,
+                borderColor: '#a39189',
+                borderWidth: 2,
+                borderDash: [6, 6],
+              },
+              uslLine: {
+                type: 'line',
+                xMin: usl,
+                xMax: usl,
+                borderColor: '#a39189',
+                borderWidth: 2,
+                borderDash: [6, 6],
+              },
             },
           },
         },
-      },
-      elements: {
-        point: { radius: 0 },
-        line: {
-          borderColor: '#442b22',
-          borderWidth: 2,
-          fill: { target: 'origin', above: 'rgba(68, 43, 34, 0.2)' },
-          tension: 0.4,
+        elements: {
+          point: { radius: 0 },
+          line: {
+            borderColor: '#442b22',
+            borderWidth: 2,
+            fill: { target: 'origin', above: 'rgba(68, 43, 34, 0.2)' },
+            tension: 0.4,
+          },
         },
-      },
-    }) as ChartOptions<'line'>,
+      } satisfies ChartOptions<'line'>),
     [mean, lsl, usl, axisMin, axisMax]
   );
 
@@ -294,11 +294,7 @@ const GaussianVisualizerPage: React.FC = () => {
       <div className='gaussian-page-padding'>
         <div className='gaussian-visualizer-feature'>
           <div className='gv-chart-container'>
-            <Line
-              ref={chartRef}
-              options={chartOptions}
-              data={chartData}
-            />
+            <Line ref={chartRef} options={chartOptions} data={chartData} />
           </div>
           <div className='gv-panels-container'>
             <div className='gv-panel gv-panel--bordered gv-panel--initial-settings'>
