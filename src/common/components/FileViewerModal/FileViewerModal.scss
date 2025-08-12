@@ -1,0 +1,188 @@
+/* ==============================
+   FILE VIEWER MODAL COMPONENT
+   ============================== */
+.file-viewer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: modalFadeIn 0.3s ease-out;
+  overscroll-behavior: contain;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
+  &__backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 0;
+  }
+
+  &__content {
+    position: relative;
+    background: var(--bg-cream);
+    border-radius: 20px;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modalSlideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    overscroll-behavior: contain;
+    z-index: 1;
+
+    @media (max-width: 768px) {
+      max-width: 95vw;
+      max-height: 95vh;
+    }
+  }
+
+  // Remove default focus outline that can appear as a black border on desktop
+  &__content:focus {
+    outline: none;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(234, 230, 225, 0.7);
+    background: rgba(255, 255, 255, 0.8);
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark-brown);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+
+    @media (max-width: 768px) {
+      font-size: 1.25rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: var(--accent-gold-darker);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-mid-brown);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+
+    &:hover {
+      background: rgba(91, 62, 45, 0.1);
+      color: var(--text-dark-brown);
+    }
+
+    @media (max-width: 768px) {
+      align-self: flex-end;
+    }
+  }
+
+  &__image-container {
+    display: flex;
+    align-items: flex-start; // ensure top of image is visible initially
+    justify-content: center; // center horizontally
+    padding: 2rem;
+    background: white;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+    }
+  }
+
+  &__image {
+    max-width: 100%;
+    height: auto; // allow tall images to exceed container height and scroll
+    width: auto;
+    display: block;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(91, 62, 45, 0.2);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid rgba(234, 230, 225, 0.7);
+    background: rgba(255, 255, 255, 0.8);
+    justify-content: center;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+}
+
+// Modal animations
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

@@ -1,0 +1,92 @@
+// Refined Color Palette
+$tooltip-bg: rgba(40, 40, 40, 0.95);
+$tooltip-text: #f0f0f0;
+$tooltip-arrow-size: 6px;
+$text-muted: #a39189;
+$text-primary: #442b22;
+
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tooltip-icon {
+  font-size: 1.25rem;
+  color: $text-muted;
+  transition: color 0.2s ease;
+  display: block;
+
+  .tooltip-container:hover & {
+    color: $text-primary;
+  }
+}
+
+.tooltip-box {
+  // FIX: Use position: fixed because it's in the body, so it won't scroll with the page.
+  // Top and Left are now set via inline styles from JavaScript.
+  position: fixed;
+  
+  background-color: $tooltip-bg;
+  color: $tooltip-text;
+
+  backdrop-filter: blur(5px); 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  width: max-content;
+  max-width: 280px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: left;
+  
+  // High z-index is still needed to appear above other elements like the sidebar.
+  z-index: 10001;
+  
+  // We no longer need the complex overflow classes or default positioning.
+  // The is-visible class now just controls the visual transition.
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  
+  &.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    
+    // FIX: Arrow position is now controlled by a CSS variable set from JS.
+    // This guarantees it always points at the icon.
+    // The `translateX(-50%)` centers the arrow on the calculated point.
+    left: var(--arrow-left, 50%);
+    transform: translateX(-50%);
+
+    border-width: $tooltip-arrow-size;
+    border-style: solid;
+    border-color: $tooltip-bg transparent transparent transparent;
+  }
+}
+
+.tooltip-box code {
+    background-color: rgba(0,0,0,0.2);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.tooltip-box .significance {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    font-style: italic;
+    opacity: 0.9;
+}

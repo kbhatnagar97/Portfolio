@@ -1,0 +1,91 @@
+$text-primary: #442b22;
+$text-muted: #a39189;
+
+.galaxy-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &__core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: $text-primary;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease-in-out;
+  }
+
+  &__orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 2px solid;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease-in-out;
+    animation: rotate 4s linear infinite;
+  }
+
+  &__orbit--1 {
+    width: 25px;
+    height: 25px;
+    border-color: $text-muted transparent;
+    animation-duration: 4s;
+  }
+
+  &__orbit--2 {
+    width: 38px;
+    height: 38px;
+    border-color: transparent $text-primary;
+    animation-duration: 2.5s;
+    animation-direction: reverse;
+  }
+  
+  &__orbit--3 {
+    width: 16px;
+    height: 16px;
+    border-color: $text-muted;
+    animation-duration: 6s;
+  }
+
+  &.is-open {
+    .galaxy-toggle__core {
+      width: 24px;
+      height: 3px;
+      background-color: $text-primary;
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .galaxy-toggle__orbit {
+      animation-play-state: paused;
+      opacity: 0;
+      border-width: 0;
+    }
+    
+    .galaxy-toggle__orbit--1 {
+      opacity: 1;
+      width: 24px;
+      height: 3px;
+      background-color: $text-primary;
+      border-radius: 2px;
+      border: none;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
