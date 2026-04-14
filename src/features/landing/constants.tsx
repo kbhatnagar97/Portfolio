@@ -82,13 +82,14 @@ export const LANDING_PAGE_CONSTANTS = {
     ACHIEVEMENTS: [
       {
         ICON: '🏆',
-        TITLE: '3× Spot Awards',
+        TITLE: '4× Spot Awards',
         SUBTITLE: 'HashedIn by Deloitte',
         DESCRIPTION: 'Exceptional collaboration and impact',
         IMAGES: [
           '/images/Linkedin/Work/Spot-Award-02-08-23.jpeg',
           '/images/Linkedin/Work/Spot-Award-11-09-23.jpeg',
-          '/images/Linkedin/Work/Spot-Award-04-09-24.jpeg'
+          '/images/Linkedin/Work/Spot-Award-04-09-24.jpeg',
+          '/images/Linkedin/Work/Spot-Award-04-08-26.png'
         ]
       },
       {
