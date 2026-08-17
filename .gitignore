@@ -38,3 +38,4 @@ next-env.d.ts
 
 # Agent project brain (private local memory, never commit)
 .agent/
+.env*

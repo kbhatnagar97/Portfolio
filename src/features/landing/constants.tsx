@@ -79,6 +79,23 @@ export const LANDING_PAGE_CONSTANTS = {
           'Code Quality Tools'
         ],
         HIGHLIGHT: 'Quality-driven development'
+      },
+      {
+        TITLE: 'AI & Vibe Engineering',
+        ICON: '',
+        DESCRIPTION:
+          'Directing AI agents to design, build and ship products end-to-end',
+        TECHNOLOGIES: [
+          'Vibe Engineering',
+          'Agentic Workflows',
+          'Prompt Engineering',
+          'RAG & Embeddings',
+          'Local LLMs (Ollama)',
+          'MCP & Tool-Calling',
+          'Autonomous AI Agents',
+          'AI-Native Product Design'
+        ],
+        HIGHLIGHT: 'Idea to shipped, AI-directed'
       }
     ],
 

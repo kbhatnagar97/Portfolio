@@ -280,7 +280,9 @@ const LandingPage: React.FC = () => {
                         ? 'frontend'
                         : index === 1
                         ? 'backend'
-                        : 'devops'
+                        : index === 2
+                        ? 'devops'
+                        : 'ai'
                     }`}
                   >
                     {tech}

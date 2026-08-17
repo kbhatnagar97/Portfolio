@@ -10,6 +10,7 @@
   --text-mid-brown: #b9b3a6;
   --accent-gold: #e6b450;
   --accent-gold-darker: #caa03f;
+  --accent-gold-light: #f2ce7d;
   --shadow-color: rgba(0, 0, 0, 0.55);
   --surface: rgba(255, 255, 255, 0.05);
   --surface-2: rgba(255, 255, 255, 0.08);
@@ -21,6 +22,14 @@
     radial-gradient(900px 520px at 88% 18%, rgba(124, 77, 255, 0.08), transparent 60%),
     radial-gradient(1000px 600px at 8% 60%, rgba(23, 182, 201, 0.06), transparent 62%),
     #0a0a0f;
+}
+
+// Failsafe: the legacy scroll-reveal animation relies on an IntersectionObserver
+// and can leave whole sections stuck invisible/offset if it misses. Force every
+// reveal element to its final visible state so content always renders.
+.landing-page .scroll-animate {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 // #region Header
@@ -125,6 +134,9 @@
 .landing-page .tech-badge--devops {
   border-color: rgba(230, 180, 80, 0.4);
 }
+.landing-page .tech-badge--ai {
+  border-color: rgba(236, 72, 153, 0.5);
+}
 // #endregion
 
 // #region Text emphasis
@@ -157,6 +169,12 @@
 }
 .landing-page .certificate-overlay__icon {
   display: none;
+}
+.landing-page .certificate-container,
+.landing-page .certificate-thumbnail {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-soft);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 .landing-page .file-viewer-modal__backdrop {
   background: rgba(4, 4, 8, 0.8);
