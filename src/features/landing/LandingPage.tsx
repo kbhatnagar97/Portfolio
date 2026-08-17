@@ -142,6 +142,11 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className='landing-page'>
+      <div className='glows' aria-hidden='true'>
+        <span className='glow glow--1' />
+        <span className='glow glow--2' />
+        <span className='glow glow--3' />
+      </div>
       <div className='grain' aria-hidden='true' />
       <div className='scroll-progress'>
         <div className='scroll-progress__bar' ref={progressRef} />

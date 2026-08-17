@@ -17,14 +17,7 @@
   --border-soft: rgba(255, 255, 255, 0.1);
 
   color: var(--text-mid-brown);
-  background:
-    radial-gradient(
-      72% 56% at 50% 30%,
-      rgba(226, 160, 68, 0.34),
-      rgba(198, 126, 48, 0.12) 46%,
-      transparent 72%
-    ),
-    #0a0806;
+  background: #0a0806;
 }
 
 // Failsafe: the legacy scroll-reveal animation relies on an IntersectionObserver
@@ -70,6 +63,92 @@
   opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
+}
+
+// Everchanging warm glows behind the content — slow, soft, non-distracting.
+.glows {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+.glow--1 {
+  width: 52vw;
+  height: 52vw;
+  left: 24%;
+  top: -8%;
+  background: radial-gradient(circle, rgba(228, 150, 58, 0.5), transparent 68%);
+  animation: glow-1 26s ease-in-out infinite;
+}
+.glow--2 {
+  width: 46vw;
+  height: 46vw;
+  left: 40%;
+  top: 4%;
+  background: radial-gradient(circle, rgba(214, 168, 74, 0.42), transparent 68%);
+  animation: glow-2 34s ease-in-out infinite;
+}
+.glow--3 {
+  width: 44vw;
+  height: 44vw;
+  left: 14%;
+  top: 10%;
+  background: radial-gradient(circle, rgba(200, 96, 40, 0.4), transparent 66%);
+  animation: glow-3 40s ease-in-out infinite;
+}
+@keyframes glow-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  33% {
+    transform: translate(7vw, 5vh) scale(1.15);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(-5vw, 2vh) scale(0.92);
+    opacity: 0.4;
+  }
+}
+@keyframes glow-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translate(-8vw, 6vh) scale(1.12);
+    opacity: 0.6;
+  }
+  70% {
+    transform: translate(6vw, -2vh) scale(0.95);
+    opacity: 0.35;
+  }
+}
+@keyframes glow-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.38;
+  }
+  50% {
+    transform: translate(9vw, 4vh) scale(1.2);
+    opacity: 0.55;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow {
+    animation: none !important;
+  }
 }
 
 // College projects — meta as a clean top row, no opaque badges.
