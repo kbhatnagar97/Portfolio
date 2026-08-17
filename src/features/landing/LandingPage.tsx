@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaArrowRight, FaBars, FaTimes } from 'react-icons/fa';
 import { LANDING_PAGE_CONSTANTS } from './constants';
 import { FileViewerModal } from '../../common/components';
@@ -6,8 +6,6 @@ import ProjectsShowcase from './projects/ProjectsShowcase';
 import TechMarquee from './marquee/TechMarquee';
 import './LandingPage.scss';
 import './theme-dark.scss';
-
-const Hero3D = lazy(() => import('./hero3d/Hero3D'));
 
 const LandingPage: React.FC = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -144,6 +142,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className='landing-page'>
+      <div className='grain' aria-hidden='true' />
       <div className='scroll-progress'>
         <div className='scroll-progress__bar' ref={progressRef} />
       </div>
@@ -207,9 +206,6 @@ const LandingPage: React.FC = () => {
       </header>
 
       <section id='home' className='hero'>
-        <Suspense fallback={null}>
-          <Hero3D />
-        </Suspense>
         <div className='hero__content'>
           <div className='hero__profile-image scroll-animate fade-in-up persist-on-scroll'>
             <img
