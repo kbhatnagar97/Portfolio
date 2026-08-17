@@ -2270,7 +2270,7 @@ body {
         gap: 0.5rem;
 
         &::before {
-          content: '📜';
+          content: none;
         }
       }
 
@@ -2584,7 +2584,7 @@ body {
           gap: 0.5rem;
 
           &::before {
-            content: '⚡';
+            content: none;
           }
         }
 
@@ -2627,7 +2627,7 @@ body {
           gap: 0.5rem;
 
           &::before {
-            content: '✨';
+            content: none;
           }
         }
 
@@ -3094,7 +3094,7 @@ body {
         font-size: 1.1rem;
 
         &::before {
-          content: '✨ ';
+          content: none;
           margin-right: 0.5rem;
         }
       }

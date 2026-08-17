@@ -1,0 +1,58 @@
+{
+  "ROLES": [
+    {
+      "POSITION": "Software Engineer II",
+      "COMPANY": "HashedIn by Deloitte",
+      "DURATION": "2022 - Present",
+      "TYPE": "Technical Leadership & Innovation",
+      "ICON": "🚀",
+      "ACHIEVEMENTS": [
+        "Leading React.js development for enterprise applications",
+        "40% improved data visualization accuracy",
+        "Built reusable component library (-40% dev time)",
+        "Architected Microfrontend POC migration",
+        "Mentoring 5+ junior engineers"
+      ]
+    },
+    {
+      "POSITION": "Software Engineer I",
+      "COMPANY": "HashedIn by Deloitte",
+      "DURATION": "2020 - 2022",
+      "TYPE": "Foundation Building & Core Development",
+      "ICON": "🛠️",
+      "ACHIEVEMENTS": [
+        "Multi-factor authentication (OKTA) implementation",
+        "Secure PDF export & text editors (DraftJS)",
+        "85%+ unit test coverage maintenance",
+        "30-40% page load performance boost"
+      ]
+    },
+    {
+      "POSITION": "Intern",
+      "COMPANY": "HashedIn by Deloitte",
+      "DURATION": "Feb 2020 - Oct 2020",
+      "TYPE": "Rapid Skill Acquisition",
+      "ICON": "🎯",
+      "ACHIEVEMENTS": [
+        "HTML/CSS → ReactJS transition",
+        "Mastered React lifecycle, Redux, Context API",
+        "Built responsive PWAs"
+      ]
+    }
+  ],
+  "EARLY_EXPERIENCE": [
+    {
+      "COMPANY": "Ericsson India",
+      "ROLE": "Summer Intern",
+      "DURATION": "May 2019 - Jun 2019",
+      "FOCUS": "5G wireless research"
+    },
+    {
+      "COMPANY": "Government of India",
+      "ROLE": "Summer Intern",
+      "DURATION": "May 2018 - Jul 2018",
+      "FOCUS": "Power plant efficiency studies",
+      "CERTIFICATE": "/images/Linkedin/Work/GOV-Summer-Intern-Certificate.jpeg"
+    }
+  ]
+}

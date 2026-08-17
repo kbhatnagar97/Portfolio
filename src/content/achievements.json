@@ -1,0 +1,45 @@
+[
+  {
+    "ICON": "🏆",
+    "TITLE": "4× Spot Awards",
+    "SUBTITLE": "HashedIn by Deloitte",
+    "DESCRIPTION": "Exceptional collaboration and impact",
+    "IMAGES": [
+      "/images/Linkedin/Work/Spot-Award-02-08-23.jpeg",
+      "/images/Linkedin/Work/Spot-Award-11-09-23.jpeg",
+      "/images/Linkedin/Work/Spot-Award-04-09-24.jpeg",
+      "/images/Linkedin/Work/Spot-Award-04-08-26.png"
+    ]
+  },
+  {
+    "ICON": "🌟",
+    "TITLE": "Excellence Award",
+    "SUBTITLE": "HashedIn by Deloitte",
+    "DESCRIPTION": "Leadership and technical excellence",
+    "IMAGES": ["/images/Linkedin/Work/Excellence-Award-12-06-22.jpeg"]
+  },
+  {
+    "ICON": "📜",
+    "TITLE": "Lean Six Sigma Green Belt",
+    "SUBTITLE": "Process Optimization",
+    "DESCRIPTION": "PSLSSGB67545 certification",
+    "IMAGES": [
+      "/images/Linkedin/Certifications/LeanSixSigma-GreenBeltCertificate.jpeg",
+      "/images/Linkedin/Certifications/LeanSixSigma-LetterOfAknowledgment.jpeg"
+    ]
+  },
+  {
+    "ICON": "🧠",
+    "TITLE": "Neural Networks & Deep Learning",
+    "SUBTITLE": "DeepLearning.AI",
+    "DESCRIPTION": "Advanced AI/ML knowledge",
+    "IMAGES": ["/images/Linkedin/Certifications/Neural-Networks-and-Deep-learning-Certificate.jpeg"]
+  },
+  {
+    "ICON": "📋",
+    "TITLE": "Loyalty Certificate",
+    "SUBTITLE": "HashedIn by Deloitte",
+    "DESCRIPTION": "Consistent dedication and commitment",
+    "IMAGES": ["/images/Linkedin/Work/LoyaltyCertificate.jpeg"]
+  }
+]

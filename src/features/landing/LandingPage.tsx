@@ -1,12 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaGithub, FaArrowRight, FaBars, FaTimes } from 'react-icons/fa';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { FaArrowRight, FaBars, FaTimes } from 'react-icons/fa';
 import { LANDING_PAGE_CONSTANTS } from './constants';
 import { FileViewerModal } from '../../common/components';
+import ProjectsShowcase from './projects/ProjectsShowcase';
+import TechMarquee from './marquee/TechMarquee';
 import './LandingPage.scss';
+import './theme-dark.scss';
+
+const Hero3D = lazy(() => import('./hero3d/Hero3D'));
 
 const LandingPage: React.FC = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [modalData, setModalData] = useState<{
     src: string;
@@ -123,8 +128,25 @@ const LandingPage: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const updateProgress = () => {
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const p = max > 0 ? window.scrollY / max : 0;
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${p})`;
+      }
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+    return () => window.removeEventListener('scroll', updateProgress);
+  }, []);
+
   return (
     <div className='landing-page'>
+      <div className='scroll-progress'>
+        <div className='scroll-progress__bar' ref={progressRef} />
+      </div>
       <div className='background-animations'>
         <div className='shape shape-1'></div>
         <div className='shape shape-2'></div>
@@ -185,6 +207,9 @@ const LandingPage: React.FC = () => {
       </header>
 
       <section id='home' className='hero'>
+        <Suspense fallback={null}>
+          <Hero3D />
+        </Suspense>
         <div className='hero__content'>
           <div className='hero__profile-image scroll-animate fade-in-up persist-on-scroll'>
             <img
@@ -213,159 +238,10 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Projects Section with Enhanced Layout */}
-      <section id='projects' className='projects-section'>
-        <div className='section-header scroll-animate fade-in-up persist-on-scroll'>
-          <h2 className='section-title'>
-            {LANDING_PAGE_CONSTANTS.PROJECTS.SECTION_TITLE}
-          </h2>
-          <p className='section-subtitle'>
-            {LANDING_PAGE_CONSTANTS.PROJECTS.SECTION_SUBTITLE}
-          </p>
-        </div>
+      <TechMarquee />
 
-        <div className='projects-container'>
-          {/* Habit Tracker Project */}
-          <div className='project-card scroll-animate fade-in-up'>
-            <div className='project-card__image'>
-              <img
-                src={LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.IMAGE.SRC}
-                alt={LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.IMAGE.ALT}
-                loading='lazy'
-              />
-            </div>
-            <div className='project-card__content'>
-              <h3 className='project-card__title'>
-                {LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.TITLE}
-              </h3>
-              <div className='project-card__tech-tags'>
-                {LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.TECH_TAGS.map(
-                  (tag, index) => (
-                    <span key={index} className='tech-tag'>
-                      {tag}
-                    </span>
-                  )
-                )}
-              </div>
-              <p className='project-card__description'>
-                {
-                  LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.DESCRIPTION
-                    .PARAGRAPH_1
-                }
-              </p>
-              <p className='project-card__description'>
-                {
-                  LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.DESCRIPTION
-                    .PARAGRAPH_2
-                }
-              </p>
-              <div className='project-card__actions'>
-                <a
-                  href={
-                    LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.ACTIONS
-                      .PRIMARY.HREF
-                  }
-                  className='btn btn--primary'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  {
-                    LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.ACTIONS
-                      .PRIMARY.TEXT
-                  }
-                  <FaArrowRight />
-                </a>
-                <a
-                  href={
-                    LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.ACTIONS
-                      .SECONDARY.HREF
-                  }
-                  className='btn btn--secondary'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <FaGithub />
-                  {
-                    LANDING_PAGE_CONSTANTS.PROJECTS.HABIT_TRACKER.ACTIONS
-                      .SECONDARY.TEXT
-                  }
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Gaussian Visualizer Project */}
-          <div className='project-card scroll-animate fade-in-up'>
-            <div className='project-card__image'>
-              <img
-                src={
-                  LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.IMAGE.SRC
-                }
-                alt={
-                  LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.IMAGE.ALT
-                }
-                loading='lazy'
-              />
-            </div>
-            <div className='project-card__content'>
-              <h3 className='project-card__title'>
-                {LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.TITLE}
-              </h3>
-              <div className='project-card__tech-tags'>
-                {LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.TECH_TAGS.map(
-                  (tag, index) => (
-                    <span key={index} className='tech-tag'>
-                      {tag}
-                    </span>
-                  )
-                )}
-              </div>
-              <p className='project-card__description'>
-                {
-                  LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER
-                    .DESCRIPTION.PARAGRAPH_1
-                }
-              </p>
-              <p className='project-card__description'>
-                {
-                  LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER
-                    .DESCRIPTION.PARAGRAPH_2
-                }
-              </p>
-              <div className='project-card__actions'>
-                <Link
-                  to={
-                    LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.ACTIONS
-                      .PRIMARY.HREF
-                  }
-                  className='btn btn--primary'
-                >
-                  {
-                    LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.ACTIONS
-                      .PRIMARY.TEXT
-                  }
-                  <FaArrowRight />
-                </Link>
-                <a
-                  href={
-                    LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.ACTIONS
-                      .SECONDARY.HREF
-                  }
-                  className='btn btn--secondary'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <FaGithub />
-                  {
-                    LANDING_PAGE_CONSTANTS.PROJECTS.GAUSSIAN_VISUALIZER.ACTIONS
-                      .SECONDARY.TEXT
-                  }
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Projects — premium showcase: filter tabs (incl. the "Claude" story) + problem-first modals */}
+      <ProjectsShowcase />
 
       {/* Skills Section */}
       <section id='skills' className='skills-section'>
@@ -387,7 +263,6 @@ const LandingPage: React.FC = () => {
               style={{ animationDelay: `${0.1 + index * 0.1}s` }}
             >
               <div className='skill-category__header'>
-                <div className='skill-category__icon'>{category.ICON}</div>
                 <h3 className='skill-category__title'>{category.TITLE}</h3>
                 <p className='skill-category__subtitle'>
                   {category.DESCRIPTION}
@@ -430,12 +305,6 @@ const LandingPage: React.FC = () => {
                   style={{ animationDelay: `${0.2 + index * 0.15}s` }}
                 >
                   <div className='achievement-card__header'>
-                    <div
-                      className='achievement-card__icon scroll-animate bounce-in'
-                      style={{ animationDelay: `${0.3 + index * 0.15}s` }}
-                    >
-                      {achievement.ICON}
-                    </div>
                     <div className='achievement-card__info'>
                       <h4
                         className='achievement-card__title scroll-animate fade-in-right'
@@ -468,7 +337,7 @@ const LandingPage: React.FC = () => {
                       >
                         <div className='certificates-header'>
                           <span className='certificates-label'>
-                            📜 Certificates ({achievement.IMAGES.length})
+                            Certificates ({achievement.IMAGES.length})
                           </span>
                           <span className='certificates-hint'>
                             Click to view full size
@@ -564,12 +433,6 @@ const LandingPage: React.FC = () => {
                   className='timeline-item scroll-animate slide-in-up staggered-item'
                   style={{ animationDelay: `${0.3 + index * 0.15}s` }}
                 >
-                  <div
-                    className='timeline-item__icon scroll-animate'
-                    style={{ animationDelay: `${0.5 + index * 0.15}s` }}
-                  >
-                    {institution.ICON}
-                  </div>
                   <div className='timeline-item__content'>
                     <h4
                       className='timeline-item__title scroll-animate fade-in-right'
@@ -703,12 +566,6 @@ const LandingPage: React.FC = () => {
                     style={{ animationDelay: `${1.4 + index * 0.1}s` }}
                   >
                     <div className='enhanced-project-card__header'>
-                      <div
-                        className='project-icon-wrapper scroll-animate rotate-in'
-                        style={{ animationDelay: `${1.5 + index * 0.1}s` }}
-                      >
-                        <span className='project-icon'>{project.ICON}</span>
-                      </div>
                       <div className='project-meta'>
                         <span
                           className='project-year scroll-animate slide-in-right'
@@ -795,7 +652,6 @@ const LandingPage: React.FC = () => {
                         style={{ animationDelay: `${1.85 + index * 0.1}s` }}
                       >
                         <div className='team-info'>
-                          <span className='team-icon'>👥</span>
                           <span className='team-size'>{project.TEAM_SIZE}</span>
                         </div>
                       </div>
@@ -828,12 +684,6 @@ const LandingPage: React.FC = () => {
                     className='role-header scroll-animate fade-in-left'
                     style={{ animationDelay: `${0.4 + index * 0.2}s` }}
                   >
-                    <div
-                      className='role-icon scroll-animate pulse-grow'
-                      style={{ animationDelay: `${0.5 + index * 0.2}s` }}
-                    >
-                      {role.ICON}
-                    </div>
                     <div className='role-info'>
                       <h4
                         className='role-title scroll-animate slide-in-right'
@@ -969,7 +819,6 @@ const LandingPage: React.FC = () => {
                 } scroll-animate slide-in-up`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className='contact-method__icon'>{method.ICON}</div>
                 <h4 className='contact-method__type'>{method.TYPE}</h4>
                 <p className='contact-method__value'>{method.VALUE}</p>
               </a>

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "add:achievement": "node scripts/add-achievement.mjs",
+    "import:linkedin": "node scripts/import-linkedin-export.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.6.1",

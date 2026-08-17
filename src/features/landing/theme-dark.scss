@@ -1,0 +1,262 @@
+// Dark-luxury theme layer — imported LAST in LandingPage.tsx so it re-maps the
+// cream palette to ink + gold. Scoped under .landing-page so the Gaussian route
+// (which has no .landing-page wrapper) keeps its own styling.
+
+.landing-page {
+  // palette flip (these cascade to every descendant that uses the vars)
+  --bg-cream: #0c0c12;
+  --bg-cream-darker: #08080d;
+  --text-dark-brown: #f4f1ea;
+  --text-mid-brown: #b9b3a6;
+  --accent-gold: #e6b450;
+  --accent-gold-darker: #caa03f;
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.1);
+
+  color: var(--text-mid-brown);
+  background:
+    radial-gradient(1100px 560px at 50% -8%, rgba(230, 180, 80, 0.12), transparent 62%),
+    radial-gradient(900px 520px at 88% 18%, rgba(124, 77, 255, 0.08), transparent 60%),
+    radial-gradient(1000px 600px at 8% 60%, rgba(23, 182, 201, 0.06), transparent 62%),
+    #0a0a0f;
+}
+
+// #region Header
+.landing-page .landing-header {
+  background: rgba(10, 10, 15, 0.72);
+  border-bottom: 1px solid var(--border-soft);
+}
+.landing-page .landing-header__mobile-menu {
+  background: rgba(10, 10, 15, 0.96);
+  border-bottom: 1px solid var(--border-soft);
+}
+.landing-page .landing-header__nav-link:hover {
+  background: rgba(230, 180, 80, 0.14);
+}
+// #endregion
+
+// #region Sections become transparent so the ink gradient shows through
+.landing-page .hero,
+.landing-page .skills-section,
+.landing-page .journey-section,
+.landing-page .contact-section {
+  background: transparent;
+}
+.landing-page .background-animations .shape {
+  opacity: 0.22;
+  mix-blend-mode: screen;
+  filter: blur(38px);
+}
+// #endregion
+
+// #region Card + panel surfaces
+.landing-page .skill-category,
+.landing-page .achievements-section,
+.landing-page .achievement-card,
+.landing-page .timeline-item__content,
+.landing-page .enhanced-project-card,
+.landing-page .professional-role,
+.landing-page .early-exp-card,
+.landing-page .contact-method,
+.landing-page .college-projects,
+.landing-page .leadership-section,
+.landing-page .certificate-wrapper,
+.landing-page .certificate-thumbnail {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.landing-page .skill-category:hover,
+.landing-page .achievement-card:hover,
+.landing-page .enhanced-project-card:hover,
+.landing-page .professional-role:hover,
+.landing-page .contact-method:hover {
+  border-color: rgba(230, 180, 80, 0.4);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+}
+// #endregion
+
+// #region Icon tiles get a gold-tinted glow
+.landing-page .skill-category__icon,
+.landing-page .achievement-card__icon,
+.landing-page .timeline-item__icon,
+.landing-page .role-icon,
+.landing-page .project-icon-wrapper,
+.landing-page .contact-method__icon {
+  background: rgba(230, 180, 80, 0.14);
+  border: 1px solid rgba(230, 180, 80, 0.28);
+  color: var(--accent-gold);
+}
+// #endregion
+
+// #region Chips / badges / meta pills
+.landing-page .leadership-badge,
+.landing-page .tech-tag,
+.landing-page .tech-stack-title,
+.landing-page .project-year,
+.landing-page .project-complexity,
+.landing-page .certificates-label,
+.landing-page .certificates-hint,
+.landing-page .certificate-number,
+.landing-page .more-indicator,
+.landing-page .timeline-item__duration,
+.landing-page .timeline-item__cgpa {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-soft);
+  color: var(--text-mid-brown);
+}
+
+// tech-badge families keep a subtle tinted glass
+.landing-page .tech-badge {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-soft);
+  color: #e9e4d6;
+}
+.landing-page .tech-badge--frontend {
+  border-color: rgba(124, 77, 255, 0.4);
+}
+.landing-page .tech-badge--backend {
+  border-color: rgba(23, 182, 201, 0.4);
+}
+.landing-page .tech-badge--devops {
+  border-color: rgba(230, 180, 80, 0.4);
+}
+// #endregion
+
+// #region Text emphasis
+.landing-page .section-title,
+.landing-page .journey-block__title,
+.landing-page .achievements-title,
+.landing-page .hero__title,
+.landing-page .role-title,
+.landing-page .timeline-item__title,
+.landing-page .early-exp-card__company,
+.landing-page .project-title,
+.landing-page .contact-method__type {
+  color: var(--text-dark-brown);
+}
+.landing-page .role-company,
+.landing-page .timeline-item__institution,
+.landing-page .achievement-card__subtitle {
+  color: var(--accent-gold);
+}
+// #endregion
+
+// #region Certificate overlay + file viewer (cert lightbox)
+.landing-page .certificate-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(8, 8, 13, 0.92),
+    rgba(8, 8, 13, 0.2)
+  );
+  color: #f4f1ea;
+}
+.landing-page .certificate-overlay__icon {
+  display: none;
+}
+.landing-page .file-viewer-modal__backdrop {
+  background: rgba(4, 4, 8, 0.8);
+}
+.landing-page .file-viewer-modal__content {
+  background: #12121a;
+  border: 1px solid var(--border-soft);
+}
+.landing-page .file-viewer-modal__title {
+  color: #fff;
+}
+.landing-page .file-viewer-modal__close {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e7e7ee;
+}
+// #endregion
+
+// #region Buttons
+.landing-page .btn--secondary,
+.landing-page .contact-method:not(.contact-method--primary) {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-soft);
+  color: var(--text-dark-brown);
+}
+// #endregion
+
+// #region Gamified scroll-progress bar
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 200;
+  background: transparent;
+  pointer-events: none;
+}
+.scroll-progress__bar {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #e6b450, #f4d38a 55%, #7c4dff);
+  box-shadow: 0 0 14px rgba(230, 180, 80, 0.6);
+  transition: transform 0.08s linear;
+}
+// #endregion
+
+// #region Hero 3D canvas
+.hero {
+  position: relative;
+}
+.hero3d {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.92;
+}
+.hero3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    closest-side at 50% 46%,
+    rgba(9, 9, 14, 0.5),
+    transparent 72%
+  );
+  pointer-events: none;
+}
+.hero3d--static {
+  background: radial-gradient(
+    closest-side,
+    rgba(230, 180, 80, 0.35),
+    rgba(230, 180, 80, 0.08) 60%,
+    transparent 72%
+  );
+  filter: blur(6px);
+}
+.hero__content {
+  position: relative;
+  z-index: 2;
+}
+.landing-page .hero__title {
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.55);
+}
+.hero__scroll-indicator {
+  position: relative;
+  z-index: 2;
+}
+// the profile image reads better as a gold-ringed medallion on dark
+.landing-page .hero__profile-image .profile-image {
+  border: 2px solid rgba(230, 180, 80, 0.55);
+  box-shadow: 0 0 0 6px rgba(230, 180, 80, 0.08),
+    0 18px 50px rgba(0, 0, 0, 0.55);
+}
+// #endregion
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress__bar {
+    transition: none;
+  }
+}

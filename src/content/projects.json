@@ -1,0 +1,394 @@
+[
+  {
+    "id": "hapnin",
+    "name": "Hapnin",
+    "emoji": "🧭",
+    "tagline": "A belonging engine for people new to a city",
+    "category": "Web Apps",
+    "status": "Live",
+    "live": true,
+    "url": "https://hapnin.city",
+    "repo": "",
+    "year": "2026",
+    "accent": "#e8794a",
+    "stack": ["Next.js", "React", "Tailwind", "Cloud Run", "Postgres", "Firebase"],
+    "summary": "Curated events and activities discovery that helps newcomers feel at home — warmer and less cluttered than the big ticketing apps.",
+    "spark": "When I moved cities and joined a 1,000-person newcomers' WhatsApp group, every genuine event drowned under housing, jobs and marketplace noise. I kept missing things I would have loved to attend.",
+    "build": "So I built a curated, community-first discovery app: verified organisers, structured listings and a deliberately calm interface — an installable, SEO-first PWA on a Postgres backend, live behind Cloudflare on hapnin.city.",
+    "architecture": [
+      "Curated + verified supply chosen over open chaos",
+      "SEO-first SSG pages with per-event schema.org data",
+      "PWA · Cloud Run · Cloud SQL Postgres · Firebase auth"
+    ],
+    "highlights": [
+      "Curated, verified event listings",
+      "RSVP + discovery, free to use",
+      "Installable PWA, SEO-first",
+      "Delhi-NCR first, metros next"
+    ]
+  },
+  {
+    "id": "moneymap",
+    "name": "MoneyMap",
+    "emoji": "📈",
+    "tagline": "Watch $1,000 grow across every market — honestly",
+    "category": "Data & Finance",
+    "status": "Live",
+    "live": true,
+    "url": "https://moneymap-eta.vercel.app",
+    "repo": "",
+    "year": "2026",
+    "accent": "#22c55e",
+    "stack": ["Next.js", "React", "TypeScript", "Cloud Run", "Cloud Scheduler", "GCS"],
+    "summary": "An honest, gamified multi-asset money manager on real market data, real fees and real Indian taxes — it shows losses as clearly as gains.",
+    "spark": "Every 'get rich' tool I saw quietly hid fees, taxes and the boring truth that most active trading loses to simply holding an index. I wanted to see the honest version with my own eyes.",
+    "build": "I built a gamified money manager that runs $1,000 of paper money across stocks, crypto, bonds and ETFs with real fees and Indian taxes modelled on every trade, benchmarked against buy-and-hold — ticking 24/7 on Cloud Run.",
+    "architecture": [
+      "Honest by design — real fees, real tax, real benchmark",
+      "Swappable Broker + DataSource seams (paper now, real later)",
+      "Stateful ticker on Cloud Run + Scheduler + GCS ledger"
+    ],
+    "highlights": [
+      "Real live data (Binance + Yahoo)",
+      "Models fees + Indian crypto/equity tax",
+      "24/7 paper trader on Google Cloud",
+      "Never fakes returns — honest by design"
+    ]
+  },
+  {
+    "id": "jetstream",
+    "name": "Jetstream",
+    "emoji": "✈️",
+    "tagline": "A cinematic companion for the whole journey",
+    "category": "Web Apps",
+    "status": "Live",
+    "live": true,
+    "url": "https://jetstream-rust.vercel.app",
+    "repo": "",
+    "year": "2026",
+    "accent": "#38bdf8",
+    "stack": ["Next.js", "React", "TypeScript", "d3-geo", "TopoJSON"],
+    "summary": "One app for the whole flight journey — book, then track on an immersive orthographic globe with live status, delay predictions and a lifetime travel passport.",
+    "spark": "I loved one app for tracking flights and a different one for booking them, and hated bouncing between the two. No single product owned the whole journey end to end.",
+    "build": "So I built one companion for the entire trip — search and book, then track on an immersive globe with live status and delay predictions, then keep a lifetime travel passport — all rendered as tile-free SVG with no API keys.",
+    "architecture": [
+      "Single swappable DataSource adapter (mock → real)",
+      "Self-contained SVG globe, no map tiles or keys",
+      "IP-clean, original design system"
+    ],
+    "highlights": [
+      "Orthographic globe with live great-circle arcs",
+      "Real FAA + NOAA + airport data",
+      "Lifetime travel passport",
+      "Calm 'book' world flows into cinematic 'track' world"
+    ]
+  },
+  {
+    "id": "habit-tracker",
+    "name": "Habit Tracker",
+    "emoji": "✅",
+    "tagline": "The system for self-improvement",
+    "category": "Web Apps",
+    "status": "Live",
+    "live": true,
+    "url": "https://habittracker.in",
+    "repo": "https://github.com/kbhatnagar97/Habit-Tracker",
+    "year": "2025",
+    "accent": "#8b5cf6",
+    "stack": ["React", "TypeScript", "Chart.js", "Firebase", "Vercel"],
+    "summary": "A habit tracker that turns daily routines into actionable insight with streaks, analytics and beautiful visualisations.",
+    "spark": "I would start habits on motivation alone and lose them within weeks, because I could not actually see my progress or spot where I slipped.",
+    "build": "I built a habit tracker that turns routines into data — streaks, analytics and clear visualisations with drag-and-drop planning — so consistency becomes something you can watch and defend.",
+    "architecture": [
+      "React + Chart.js insight layer",
+      "Firebase sync, cross-device PWA",
+      "Deployed behind Cloudflare on habittracker.in"
+    ],
+    "highlights": [
+      "Streaks + analytics",
+      "Beautiful data visualisations",
+      "Drag-and-drop planning",
+      "Cross-device PWA"
+    ]
+  },
+  {
+    "id": "context-bridge",
+    "name": "ContextBridge",
+    "emoji": "🔗",
+    "tagline": "Shared memory between AI chats",
+    "category": "Tools & Automation",
+    "status": "Live",
+    "live": true,
+    "url": "https://context-bridge-ashen.vercel.app",
+    "repo": "",
+    "year": "2026",
+    "accent": "#f59e0b",
+    "stack": ["Next.js", "TypeScript", "markdown-it"],
+    "summary": "Paste a ChatGPT share link and get a clean, portable page plus exports so you can move conversation context between ChatGPT, Claude, Gemini and agents.",
+    "spark": "A work network blocked a ChatGPT share link I needed, and more generally my context was trapped inside one assistant — I could not cleanly carry a conversation into Claude or an agent.",
+    "build": "I built a bridge that turns any ChatGPT share into a clean page plus Markdown, JSON and 'copy-for-agent' exports, so conversation context becomes portable shared memory between AI tools.",
+    "architecture": [
+      "Stateless — the share link is the store",
+      "Translate-proxy fallback for blocked networks",
+      "CORS-open exports for agents"
+    ],
+    "highlights": [
+      "ChatGPT share → clean page",
+      "Markdown / JSON / agent exports",
+      "Move context across AI tools",
+      "No database, fully stateless"
+    ]
+  },
+  {
+    "id": "knowledge-graph",
+    "name": "My Life",
+    "emoji": "🌍",
+    "tagline": "A gen-AI trained on my own life",
+    "category": "AI & Agents",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#06b6d4",
+    "stack": ["Next.js", "three.js", "d3-geo", "Ollama", "RAG"],
+    "summary": "A private, local-first memory of my life — a spinnable 3D globe of everywhere I've been, built from wearable transcripts and photo metadata, with a chat that answers anything about my past.",
+    "spark": "I realised my memory of where I had been and what I had felt was scattered across photos and a wearable, and quietly slipping away. I wanted to actually see and question my own life.",
+    "build": "I built a private, local-first life graph: a spinnable 3D globe of every place I've been from photo GPS and wearable transcripts, plus a local RAG chat — 'a gen-AI of my life' — that answers questions about my past with real memories and photos.",
+    "architecture": [
+      "Local-first RAG on Ollama, zero cloud cost",
+      "DataSource seam for wearable + photo metadata",
+      "Photo metadata only (GPS/time) — pixels never leave the Mac"
+    ],
+    "highlights": [
+      "3D globe of every place I've been",
+      "Local RAG over 550+ memories",
+      "Apple Photos + wearable data",
+      "100% local, private, single-user"
+    ]
+  },
+  {
+    "id": "jarvis",
+    "name": "Jarvis",
+    "emoji": "🤖",
+    "tagline": "A self-hosted personal AI COO",
+    "category": "AI & Agents",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#e11d48",
+    "stack": ["Node", "TypeScript", "Ollama", "Piper TTS", "MCP"],
+    "summary": "A phone-first, self-hosted AI assistant with a custom particle-brain face, human voice, sandboxed file and network hands, and the ability to delegate hard tasks to a frontier model.",
+    "spark": "I was doing the same operational glue-work over and over, and wanted a private assistant that could actually act on my behalf — not another chatbot that only talks.",
+    "build": "I built a self-hosted AI COO with a bespoke particle-brain face, wake-word voice and neural TTS, and sandboxed 'hands' for files and my network — a mediator that delegates the hard jobs to a frontier model, always behind human-approval gates.",
+    "architecture": [
+      "Mediator pattern — local brain delegates to Claude",
+      "Sandboxed, path-guarded tools",
+      "Human-in-the-loop on anything irreversible"
+    ],
+    "highlights": [
+      "Custom particle-brain voice face",
+      "Local neural TTS + wake word",
+      "Sandboxed file & network tools",
+      "Safety gates on money & irreversible actions"
+    ]
+  },
+  {
+    "id": "off-the-bench",
+    "name": "Off the Bench",
+    "emoji": "🎾",
+    "tagline": "A premium tennis community, Delhi NCR",
+    "category": "Web Apps",
+    "status": "In progress",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#84cc16",
+    "stack": ["Next.js", "React", "three.js", "Tailwind"],
+    "summary": "A classy marketing site for a Delhi-NCR tennis community, with a scroll-driven 3D racket that strikes a ball toward you as the story unfolds.",
+    "spark": "Local tennis communities were all advertised with the same tired 'premium community' filler and clip-art. Nothing on screen actually felt like the sport.",
+    "build": "I built a standalone, understated marketing site whose hero is a scroll-told story — a live 3D ball and a procedural graphite racket that swings and strikes toward the viewer, with a synthesised 'pock' — concrete copy, zero filler.",
+    "architecture": [
+      "Scroll-driven vanilla three.js hero",
+      "Web-Audio strike synthesis, gesture-gated",
+      "Its own standalone project and brand"
+    ],
+    "highlights": [
+      "Scroll-driven 3D racket + ball",
+      "Web-Audio 'pock' on strike",
+      "Classy, concrete copy",
+      "Mobile-first premium design"
+    ]
+  },
+  {
+    "id": "therapy-site",
+    "name": "Therapy Practice",
+    "emoji": "🌿",
+    "tagline": "A warm home for a CBT practice",
+    "category": "Web Apps",
+    "status": "Live",
+    "live": true,
+    "url": "https://therapy-site-ten.vercel.app",
+    "repo": "",
+    "year": "2026",
+    "accent": "#10b981",
+    "stack": ["HTML", "CSS", "JavaScript", "Calendly"],
+    "summary": "A calm, editorial one-page site for a CBT therapist, where clients learn about her approach and book a session — signature 'thought record' hero included.",
+    "spark": "My sister was starting her CBT practice, and every template site felt cold and clinical, or buried the one thing clients actually need — a way to book.",
+    "build": "I built a warm, editorial one-pager with a signature CBT 'thought record' hero and inline booking, so clients understand her approach and book in a couple of taps.",
+    "architecture": [
+      "Zero-build static site, deploys free",
+      "Accessible + SEO / OpenGraph ready",
+      "Booking auto-detects Calendly / Cal.com"
+    ],
+    "highlights": [
+      "Editorial warm-clinical design",
+      "Inline booking widget",
+      "Accessible + SEO-ready",
+      "Signature thought-record hero"
+    ]
+  },
+  {
+    "id": "youtube-growth-bot",
+    "name": "YouTube Studio Bot",
+    "emoji": "🎬",
+    "tagline": "An autonomous faceless Shorts studio",
+    "category": "AI & Agents",
+    "status": "In progress",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#ef4444",
+    "stack": ["Python", "Ollama", "ffmpeg", "TTS"],
+    "summary": "A zero-cost pipeline that researches, scripts, narrates and renders faceless personal-finance YouTube Shorts, driven end to end by local AI.",
+    "spark": "I wanted to test whether a faceless content channel could be run end to end by AI at zero cost, instead of paying for a stack of SaaS tools to do each step.",
+    "build": "I built a fully local pipeline that researches, scripts, narrates and renders real 1080×1920 personal-finance Shorts with local LLMs and ffmpeg — designed to eventually run autonomously under Jarvis.",
+    "architecture": [
+      "Local, zero-cost render pipeline",
+      "Research → script → voice → video stages",
+      "Posting + spend gated behind approval"
+    ],
+    "highlights": [
+      "Local, zero-cost render pipeline",
+      "Research → script → voice → video",
+      "Personal-finance niche (high CPM)",
+      "Built to run under Jarvis"
+    ]
+  },
+  {
+    "id": "hinge-copilot",
+    "name": "Voice Copilot",
+    "emoji": "💬",
+    "tagline": "Drafts messages in your own voice",
+    "category": "AI & Agents",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#a855f7",
+    "stack": ["Node", "TypeScript", "Ollama", "Apple Vision OCR"],
+    "summary": "A private assistant that learns my texting voice from my own chat exports and drafts openers and replies — with screenshot OCR input so I never retype.",
+    "spark": "I text nothing like the generic, try-hard openers messaging apps seem to encourage, and retyping context from screenshots to get help was tedious.",
+    "build": "I built a private assistant that learns my texting voice from my own chat exports and drafts messages that sound like me, with Apple Vision OCR so I can paste a screenshot instead of retyping. It is strictly draft-only — I always send myself.",
+    "architecture": [
+      "Local model of my own voice",
+      "Apple Vision OCR input, no retyping",
+      "Draft-only — no scraping or auto-send"
+    ],
+    "highlights": [
+      "Learns your texting voice",
+      "Screenshot OCR input",
+      "Draft-only, you always send",
+      "Fully local & private"
+    ]
+  },
+  {
+    "id": "farsight",
+    "name": "FARsight",
+    "emoji": "🏛️",
+    "tagline": "A zoning-compliance copilot for architects",
+    "category": "AI & Agents",
+    "status": "Research",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#f97316",
+    "stack": ["Next.js", "FastAPI", "IfcOpenShell", "PostGIS"],
+    "summary": "A pre-submission FAR/zoning compliance checker: drop a pin, auto-detect the zone, upload an IFC design, and get a pass/fail report with fixes to comply.",
+    "spark": "Architects I know waste days manually cross-checking designs against dense, non-machine-readable zoning PDFs — and still risk a rejection at submission.",
+    "build": "I'm building a pre-submission compliance copilot: pin a location, auto-detect the zone, pull that place's rules, upload an IFC model, and get a pass/fail report with fixes — a trustworthy pre-check between government rules and architects.",
+    "architecture": [
+      "Geospatial zone detection in PostGIS",
+      "IFC (ISO 16739) parsing via IfcOpenShell",
+      "Hand-curated, cited, versioned rule pack"
+    ],
+    "highlights": [
+      "Pin → zone → rules → IFC check",
+      "Pass/fail with fixes to comply",
+      "Delhi-first, cited rule pack",
+      "A pre-check, not a legal authority"
+    ]
+  },
+  {
+    "id": "devto-growth",
+    "name": "DevTo Growth",
+    "emoji": "✍️",
+    "tagline": "An engine for technical-writing reach",
+    "category": "Tools & Automation",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#64748b",
+    "stack": ["Python", "dev.to API"],
+    "summary": "A toolkit that drafts, illustrates and publishes developer articles to dev.to, tracking what's live and what's still a draft.",
+    "spark": "I wanted my technical writing to actually compound reach, but publishing, illustrating and tracking articles by hand was slow and easy to drop.",
+    "build": "I built a Python toolkit that drafts, renders cover images and diagrams, and publishes to dev.to through the API while tracking exactly what's live versus still a draft.",
+    "architecture": [
+      "dev.to API publish pipeline",
+      "Programmatic cover / diagram rendering",
+      "Live-vs-draft state tracking"
+    ],
+    "highlights": [
+      "Draft → illustrate → publish",
+      "dev.to API integration",
+      "Tracks live vs draft",
+      "Repeatable content workflow"
+    ]
+  },
+  {
+    "id": "gaussian-visualizer",
+    "name": "Gaussian Visualizer",
+    "emoji": "📊",
+    "tagline": "See statistics change in real time",
+    "category": "Data & Finance",
+    "status": "Live",
+    "live": true,
+    "url": "/gaussian-visualizer",
+    "repo": "https://github.com/kbhatnagar97/Portfolio",
+    "year": "2025",
+    "accent": "#d79f2b",
+    "stack": ["React", "TypeScript", "Chart.js"],
+    "summary": "An interactive tool that makes normal distributions and process-capability metrics tangible — adjust the mean, spread and limits and watch Pp, Ppk and PPM update instantly.",
+    "spark": "Understanding process capability from static textbook curves never clicked for me — you could not feel how the numbers actually move as the process shifts.",
+    "build": "I built an interactive visualiser where adjusting the mean, spread and spec limits instantly updates the curve and the Pp/Ppk/PPM metrics, making the statistics tangible. It lives right here on this site.",
+    "architecture": [
+      "Real-time Chart.js distribution",
+      "Lightweight statistics under the hood",
+      "Embedded route inside this portfolio"
+    ],
+    "highlights": [
+      "Live distribution chart",
+      "Instant Pp / Ppk / PPM",
+      "Educational tooltips",
+      "Runs right here on this site"
+    ]
+  }
+]

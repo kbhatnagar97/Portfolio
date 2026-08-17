@@ -4,7 +4,7 @@
 
 ## 🚀 Live Demo
 
-Check out the live application: [Portfolio](https://your-portfolio-url.com)
+Check out the live application: [kshitijbhatnagar.com](https://kshitijbhatnagar.com)
 
 ## 📊 Featured Project: Gaussian Visualizer
 

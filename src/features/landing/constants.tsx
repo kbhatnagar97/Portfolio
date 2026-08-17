@@ -1,4 +1,7 @@
 // Landing Page Constants
+import achievements from '../../content/achievements.json';
+import professional from '../../content/professional.json';
+
 export const LANDING_PAGE_CONSTANTS = {
   // Navigation
   NAVIGATION: {
@@ -79,51 +82,7 @@ export const LANDING_PAGE_CONSTANTS = {
       }
     ],
 
-    ACHIEVEMENTS: [
-      {
-        ICON: '🏆',
-        TITLE: '4× Spot Awards',
-        SUBTITLE: 'HashedIn by Deloitte',
-        DESCRIPTION: 'Exceptional collaboration and impact',
-        IMAGES: [
-          '/images/Linkedin/Work/Spot-Award-02-08-23.jpeg',
-          '/images/Linkedin/Work/Spot-Award-11-09-23.jpeg',
-          '/images/Linkedin/Work/Spot-Award-04-09-24.jpeg',
-          '/images/Linkedin/Work/Spot-Award-04-08-26.png'
-        ]
-      },
-      {
-        ICON: '🌟',
-        TITLE: 'Excellence Award',
-        SUBTITLE: 'HashedIn by Deloitte', 
-        DESCRIPTION: 'Leadership and technical excellence',
-        IMAGES: ['/images/Linkedin/Work/Excellence-Award-12-06-22.jpeg']
-      },
-      {
-        ICON: '📜',
-        TITLE: 'Lean Six Sigma Green Belt',
-        SUBTITLE: 'Process Optimization',
-        DESCRIPTION: 'PSLSSGB67545 certification',
-        IMAGES: [
-          '/images/Linkedin/Certifications/LeanSixSigma-GreenBeltCertificate.jpeg',
-          '/images/Linkedin/Certifications/LeanSixSigma-LetterOfAknowledgment.jpeg'
-        ]
-      },
-      {
-        ICON: '🧠',
-        TITLE: 'Neural Networks & Deep Learning',
-        SUBTITLE: 'DeepLearning.AI',
-        DESCRIPTION: 'Advanced AI/ML knowledge',
-        IMAGES: ['/images/Linkedin/Certifications/Neural-Networks-and-Deep-learning-Certificate.jpeg']
-      },
-      {
-        ICON: '📋',
-        TITLE: 'Loyalty Certificate',
-        SUBTITLE: 'HashedIn by Deloitte',
-        DESCRIPTION: 'Consistent dedication and commitment',
-        IMAGES: ['/images/Linkedin/Work/LoyaltyCertificate.jpeg']
-      }
-    ]
+    ACHIEVEMENTS: achievements,
   },
 
   // Projects Section
@@ -297,63 +256,9 @@ export const LANDING_PAGE_CONSTANTS = {
 
     PROFESSIONAL: {
       TITLE: 'Professional Evolution',
-      ROLES: [
-        {
-          POSITION: 'Software Engineer II',
-          COMPANY: 'HashedIn by Deloitte',
-          DURATION: '2022 - Present',
-          TYPE: 'Technical Leadership & Innovation',
-          ICON: '🚀',
-          ACHIEVEMENTS: [
-            'Leading React.js development for enterprise applications',
-            '40% improved data visualization accuracy',
-            'Built reusable component library (-40% dev time)',
-            'Architected Microfrontend POC migration',
-            'Mentoring 5+ junior engineers'
-          ]
-        },
-        {
-          POSITION: 'Software Engineer I',
-          COMPANY: 'HashedIn by Deloitte', 
-          DURATION: '2020 - 2022',
-          TYPE: 'Foundation Building & Core Development',
-          ICON: '🛠️',
-          ACHIEVEMENTS: [
-            'Multi-factor authentication (OKTA) implementation',
-            'Secure PDF export & text editors (DraftJS)',
-            '85%+ unit test coverage maintenance',
-            '30-40% page load performance boost'
-          ]
-        },
-        {
-          POSITION: 'Intern',
-          COMPANY: 'HashedIn by Deloitte',
-          DURATION: 'Feb 2020 - Oct 2020', 
-          TYPE: 'Rapid Skill Acquisition',
-          ICON: '🎯',
-          ACHIEVEMENTS: [
-            'HTML/CSS → ReactJS transition',
-            'Mastered React lifecycle, Redux, Context API',
-            'Built responsive PWAs'
-          ]
-        }
-      ],
+      ROLES: professional.ROLES,
 
-      EARLY_EXPERIENCE: [
-        {
-          COMPANY: 'Ericsson India',
-          ROLE: 'Summer Intern',
-          DURATION: 'May 2019 - Jun 2019',
-          FOCUS: '5G wireless research'
-        },
-        {
-          COMPANY: 'Government of India',
-          ROLE: 'Summer Intern', 
-          DURATION: 'May 2018 - Jul 2018',
-          FOCUS: 'Power plant efficiency studies',
-          CERTIFICATE: '/images/Linkedin/Work/GOV-Summer-Intern-Certificate.jpeg'
-        }
-      ]
+      EARLY_EXPERIENCE: professional.EARLY_EXPERIENCE
     }
   },
 
