@@ -160,6 +160,12 @@
   align-items: center;
   gap: 0.5rem;
 }
+.landing-page .enhanced-project-card .project-year,
+.landing-page .enhanced-project-card .project-complexity {
+  border-radius: 8px;
+  padding: 0.34rem 0.8rem;
+  font-size: 0.78rem;
+}
 .landing-page .enhanced-project-card .project-year {
   background: rgba(230, 180, 80, 0.14);
   color: var(--accent-gold);
@@ -170,17 +176,29 @@
   color: var(--accent-gold);
   border: 1px solid var(--border-soft);
 }
-.landing-page .enhanced-project-card .tech-tag {
+.landing-page .enhanced-project-card .project-tech-stack .tech-tags {
+  gap: 0.55rem;
+}
+.landing-page .enhanced-project-card .project-tech-stack .tech-tags .tech-tag {
   background: rgba(255, 255, 255, 0.06);
-  color: var(--text-mid-brown);
+  color: #dcd6c8;
   border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 0.36rem 0.75rem;
+  font-weight: 500;
 }
 
-// Leadership badges — refined gold-tinted chips, not a saturated gold gradient.
+// Leadership badges — consistent radius, breathing room, refined gold-tinted chips.
+.landing-page .leadership-grid {
+  gap: 1.1rem;
+}
 .landing-page .leadership-grid .leadership-badge {
   background: rgba(230, 180, 80, 0.1);
   border: 1px solid rgba(230, 180, 80, 0.28);
   color: #f0e4cc;
+  border-radius: 14px;
+  padding: 1rem 1.4rem;
+  text-align: left;
 }
 // #endregion
 
@@ -195,7 +213,6 @@
 .landing-page .contact-method,
 .landing-page .college-projects,
 .landing-page .leadership-section,
-.landing-page .certificate-wrapper,
 .landing-page .certificate-thumbnail {
   background: var(--surface);
   border: 1px solid var(--border-soft);
@@ -297,11 +314,24 @@
 .landing-page .certificate-overlay__icon {
   display: none;
 }
-.landing-page .certificate-container,
 .landing-page .certificate-thumbnail {
   background: rgba(255, 255, 255, 0.04);
   border-color: var(--border-soft);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+// Achievement certificates: just the document, cleanly framed and directly clickable (like education).
+.landing-page .certificate-container {
+  background: transparent !important;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.42);
+}
+.landing-page .certificate-container .certificate-wrapper {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.landing-page .certificate-container .certificate-number {
+  display: none !important;
 }
 .landing-page .file-viewer-modal__backdrop {
   background: rgba(4, 4, 8, 0.8);
@@ -325,6 +355,64 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-soft);
   color: var(--text-dark-brown);
+}
+// #endregion
+
+// #region Contact — clean horizontal link cards with brand icon + arrow affordance
+.landing-page .contact-methods {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 0;
+}
+.landing-page .contact-method {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.35rem;
+  text-align: left;
+  border-radius: 16px;
+}
+.landing-page .contact-method__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: 0;
+  border-radius: 12px;
+  font-size: 1.3rem;
+}
+.landing-page .contact-method__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.landing-page .contact-method__type {
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin: 0;
+}
+.landing-page .contact-method__value {
+  font-size: 0.9rem;
+  color: var(--text-mid-brown);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.landing-page .contact-method__arrow {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.landing-page .contact-method:hover .contact-method__arrow {
+  opacity: 1;
+  transform: translateX(0);
 }
 // #endregion
 

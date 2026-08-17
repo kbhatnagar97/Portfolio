@@ -1,11 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FaArrowRight, FaBars, FaTimes } from 'react-icons/fa';
+import type { IconType } from 'react-icons';
+import {
+  FaArrowRight,
+  FaBars,
+  FaTimes,
+  FaEnvelope,
+  FaLinkedin,
+  FaGithub,
+  FaStackOverflow,
+  FaInstagram,
+  FaDev,
+} from 'react-icons/fa';
 import { LANDING_PAGE_CONSTANTS } from './constants';
 import { FileViewerModal } from '../../common/components';
 import ProjectsShowcase from './projects/ProjectsShowcase';
 import TechMarquee from './marquee/TechMarquee';
 import './LandingPage.scss';
 import './theme-dark.scss';
+
+const CONTACT_ICONS: Record<string, IconType> = {
+  Email: FaEnvelope,
+  LinkedIn: FaLinkedin,
+  GitHub: FaGithub,
+  'Stack Overflow': FaStackOverflow,
+  Instagram: FaInstagram,
+  DEV: FaDev,
+};
 
 const LandingPage: React.FC = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -811,21 +831,32 @@ const LandingPage: React.FC = () => {
 
         <div className='contact-content scroll-animate fade-in-up'>
           <div className='contact-methods'>
-            {LANDING_PAGE_CONSTANTS.CONTACT.METHODS.map((method, index) => (
-              <a
-                key={index}
-                href={method.HREF}
-                target='_blank'
-                rel='noopener noreferrer'
-                className={`contact-method ${
-                  method.PRIMARY ? 'contact-method--primary' : ''
-                } scroll-animate slide-in-up`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <h4 className='contact-method__type'>{method.TYPE}</h4>
-                <p className='contact-method__value'>{method.VALUE}</p>
-              </a>
-            ))}
+            {LANDING_PAGE_CONSTANTS.CONTACT.METHODS.map((method, index) => {
+              const Icon = CONTACT_ICONS[method.TYPE];
+              return (
+                <a
+                  key={index}
+                  href={method.HREF}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className={`contact-method ${
+                    method.PRIMARY ? 'contact-method--primary' : ''
+                  } scroll-animate slide-in-up`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {Icon && (
+                    <span className='contact-method__icon' aria-hidden='true'>
+                      <Icon />
+                    </span>
+                  )}
+                  <span className='contact-method__body'>
+                    <span className='contact-method__type'>{method.TYPE}</span>
+                    <span className='contact-method__value'>{method.VALUE}</span>
+                  </span>
+                  <FaArrowRight className='contact-method__arrow' aria-hidden='true' />
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>

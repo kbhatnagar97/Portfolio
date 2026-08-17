@@ -8,51 +8,5 @@
     { "value": "5", "label": "local-AI apps" },
     { "value": "100%", "label": "human-in-the-loop" }
   ],
-  "sections": [
-    {
-      "id": "vibe",
-      "emoji": "",
-      "title": "Vibe engineering, end to end",
-      "body": "I work with AI as a builder, not a chatbot. I describe a real problem I'm living with, then direct the agent to explore the codebase, write the code, run the tests and deploy — while I keep the judgment: the architecture calls, the trade-offs, and an explicit human yes on anything that spends money or ships to users.",
-      "points": [
-        "Problem in, working software out — I direct, review and decide",
-        "Architecture, data modelling and API design stay my calls",
-        "Every spend, publish or push passes an explicit human approval"
-      ]
-    },
-    {
-      "id": "skills",
-      "emoji": "",
-      "title": "Reusable skills I've built",
-      "body": "To make the workflow repeatable, I've packaged my process into reusable agent skills — so the same house-quality bar and launch baseline apply automatically on every project, not from memory.",
-      "points": [
-        "Ticket-to-PR automation: implement, self-review against my conventions, prep the PR",
-        "A one-command 'solve' that drives implement → test → review end to end",
-        "PR review, comment-resolution and summary skills in a consistent house style",
-        "Ship-hands-free: use standing credentials to do the work and hand back only the human steps"
-      ]
-    },
-    {
-      "id": "craft",
-      "emoji": "",
-      "title": "The craft is still mine",
-      "body": "The AI moves fast; the taste and engineering judgment are mine. I bring senior frontend craft to every build so the result feels considered, not generated — from component architecture to the motion and 3D that make it memorable.",
-      "points": [
-        "React + TypeScript component architecture and reusable design systems",
-        "Motion & 3D (Framer Motion, Three.js) used with restraint, for meaning not noise",
-        "Accessibility, responsive mobile-first layouts and Core-Web-Vitals performance"
-      ]
-    },
-    {
-      "id": "standards",
-      "emoji": "",
-      "title": "Standards I never skip",
-      "body": "Speed is worthless if it ships something fragile or dishonest. Every project inherits the same non-negotiables from commit one, enforced by my skills rather than left to chance.",
-      "points": [
-        "SEO-first: metadata, Open Graph, sitemap, robots, JSON-LD and clean semantic HTML",
-        "Cloudflare-secured deploys with SSL and sensible security defaults",
-        "Honest by design — I show the real numbers, including when they're unflattering"
-      ]
-    }
-  ]
+  "summary": "I work with AI as a builder, not a chatbot: I describe a real problem, then direct the agent to explore the code, build, test and deploy — while the architecture, the trade-offs and an explicit human yes stay mine. To make it repeatable I've packaged my process into reusable skills, so the same quality bar and launch baseline — SEO, Cloudflare security, honest numbers — apply automatically on every project instead of from memory. It's an approach I've sharpened on Anthropic's own agentic-engineering practices, and it's the system that lets me ship real products genuinely faster, and makes my own work measurably easier, without ever dropping the bar."
 }

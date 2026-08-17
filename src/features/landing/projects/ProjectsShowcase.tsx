@@ -174,29 +174,15 @@ const ClaudeStoryPanel: React.FC = () => (
     </div>
 
     <div className='claude-panel__grid'>
-      {STORY.sections.map((section, i) => (
-        <motion.div
-          key={section.id}
-          className='claude-card'
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.4, delay: i * 0.08 }}
-        >
-          <div className='claude-card__head'>
-            <span className='claude-card__num' aria-hidden='true'>
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <h4 className='claude-card__title'>{section.title}</h4>
-          </div>
-          <p className='claude-card__body'>{section.body}</p>
-          <ul className='claude-card__points'>
-            {section.points.map((point, p) => (
-              <li key={p}>{point}</li>
-            ))}
-          </ul>
-        </motion.div>
-      ))}
+      <motion.p
+        className='claude-panel__summary'
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.45 }}
+      >
+        {STORY.summary}
+      </motion.p>
     </div>
   </motion.div>
 );

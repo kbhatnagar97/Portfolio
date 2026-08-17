@@ -20,20 +20,12 @@ export interface IProject {
   highlights: string[];
 }
 
-export interface IClaudeStorySection {
-  id: string;
-  emoji: string;
-  title: string;
-  body: string;
-  points: string[];
-}
-
 export interface IClaudeStory {
   eyebrow: string;
   title: string;
   intro: string;
   stats: { value: string; label: string }[];
-  sections: IClaudeStorySection[];
+  summary: string;
 }
 
 /** Two-letter typographic monogram derived from a project name (no emojis). */
