@@ -1,7 +1,7 @@
 {
-  "eyebrow": "How it's made",
+  "eyebrow": "How I work",
   "title": "Built with Claude",
-  "intro": "Almost every project here was designed, built and shipped in an AI-native workflow — me directing, Claude executing, and a wearable feeding my own context back into the loop. This is the honest story of how it all gets made.",
+  "intro": "The projects show what I've built. This is how I build — how I put my skills to work, and the reusable systems I've made to ship real products fast without ever dropping the quality bar.",
   "stats": [
     { "value": "14+", "label": "products & experiments" },
     { "value": "7", "label": "live on the web" },
@@ -10,52 +10,48 @@
   ],
   "sections": [
     {
-      "id": "how",
-      "emoji": "🧠",
-      "title": "How I build with Claude",
-      "body": "I work with Claude as a builder, not a chatbot. I describe a problem I'm actually living with; it explores the codebase, writes the code, runs the tests and deploys — while I keep every irreversible step behind an explicit yes. My local assistant, Jarvis, can even relay a voice request to Claude and read the answer back. The result: an idea can go from a spark to a live, SEO-ready, secured site in a single sitting.",
+      "id": "vibe",
+      "emoji": "",
+      "title": "Vibe engineering, end to end",
+      "body": "I work with AI as a builder, not a chatbot. I describe a real problem I'm living with, then direct the agent to explore the codebase, write the code, run the tests and deploy — while I keep the judgment: the architecture calls, the trade-offs, and an explicit human yes on anything that spends money or ships to users.",
       "points": [
-        "Problem in, working software out — I direct, it executes",
-        "Voice-to-build via my Jarvis assistant relaying to Claude",
-        "Every spend, publish or push stays behind a human yes"
-      ]
-    },
-    {
-      "id": "neosapien",
-      "emoji": "🎧",
-      "title": "Leveraging NeoSapien — my life as data",
-      "body": "I wear a NeoSapien AI recorder that transcribes and summarises my days. Rather than leave that in someone else's cloud, I pipe it into a private, local life-graph: 550+ memories mapped onto a 3D globe and embedded for a local RAG chat that answers questions about my own past. It also means my assistant has real context about me — so I re-explain myself far less, and the tools I build genuinely understand the person using them.",
-      "points": [
-        "Wearable memories → a private, local life-graph",
-        "550+ moments on a 3D globe + local RAG recall",
-        "Persistent context so I never start from scratch"
-      ]
-    },
-    {
-      "id": "architecture",
-      "emoji": "🏗️",
-      "title": "The architecture I keep discovering",
-      "body": "Building this many products back to back surfaced patterns I now reach for on purpose — the same architectural solutions kept solving different problems across the portfolio.",
-      "points": [
-        "One swappable DataSource seam — mock now, real feeds later — so screens never change (MoneyMap, Jetstream, My Life)",
-        "Local-first AI on Ollama — private, zero-cost RAG and agents that never leave my machine",
-        "Honest by design — real fees, taxes and benchmarks; losses shown as clearly as gains",
-        "An SEO-first, Cloudflare-secured baseline every project ships with from commit one",
-        "A per-repo 'project brain' so context persists and nothing valuable is re-explained",
-        "Human-in-the-loop gates on anything that spends money or can't be undone"
+        "Problem in, working software out — I direct, review and decide",
+        "Architecture, data modelling and API design stay my calls",
+        "Every spend, publish or push passes an explicit human approval"
       ]
     },
     {
       "id": "skills",
-      "emoji": "🛠️",
-      "title": "Skills I've built",
-      "body": "To make the workflow repeatable, I've packaged it into reusable agent skills — so the same house-quality bar and launch baseline apply every time, automatically.",
+      "emoji": "",
+      "title": "Reusable skills I've built",
+      "body": "To make the workflow repeatable, I've packaged my process into reusable agent skills — so the same house-quality bar and launch baseline apply automatically on every project, not from memory.",
       "points": [
-        "Ticket-to-PR automation — implement, self-review against house conventions, prep the PR",
+        "Ticket-to-PR automation: implement, self-review against my conventions, prep the PR",
         "A one-command 'solve' that drives implement → test → review end to end",
         "PR review, comment-resolution and summary skills in a consistent house style",
-        "Ship-hands-free — use standing credentials to do the work and hand back only the human steps",
-        "SEO-first and Cloudflare-first skills that enforce the launch baseline for me"
+        "Ship-hands-free: use standing credentials to do the work and hand back only the human steps"
+      ]
+    },
+    {
+      "id": "craft",
+      "emoji": "",
+      "title": "The craft is still mine",
+      "body": "The AI moves fast; the taste and engineering judgment are mine. I bring senior frontend craft to every build so the result feels considered, not generated — from component architecture to the motion and 3D that make it memorable.",
+      "points": [
+        "React + TypeScript component architecture and reusable design systems",
+        "Motion & 3D (Framer Motion, Three.js) used with restraint, for meaning not noise",
+        "Accessibility, responsive mobile-first layouts and Core-Web-Vitals performance"
+      ]
+    },
+    {
+      "id": "standards",
+      "emoji": "",
+      "title": "Standards I never skip",
+      "body": "Speed is worthless if it ships something fragile or dishonest. Every project inherits the same non-negotiables from commit one, enforced by my skills rather than left to chance.",
+      "points": [
+        "SEO-first: metadata, Open Graph, sitemap, robots, JSON-LD and clean semantic HTML",
+        "Cloudflare-secured deploys with SSL and sensible security defaults",
+        "Honest by design — I show the real numbers, including when they're unflattering"
       ]
     }
   ]

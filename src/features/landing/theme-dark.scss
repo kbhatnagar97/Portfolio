@@ -64,7 +64,7 @@
 .landing-page .skill-category,
 .landing-page .achievements-section,
 .landing-page .achievement-card,
-.landing-page .timeline-item__content,
+.landing-page .timeline-item,
 .landing-page .enhanced-project-card,
 .landing-page .professional-role,
 .landing-page .early-exp-card,
@@ -77,6 +77,9 @@
   border: 1px solid var(--border-soft);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(6px);
+}
+.landing-page .timeline-item__content {
+  background: transparent;
 }
 
 .landing-page .skill-category:hover,

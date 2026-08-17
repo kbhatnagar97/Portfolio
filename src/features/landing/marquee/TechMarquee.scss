@@ -30,29 +30,32 @@
 .marquee__item {
   display: inline-flex;
   align-items: center;
-  gap: 2.75rem;
-  padding: 0 1.4rem;
+  gap: 0.75rem;
+  padding: 0 1.9rem;
   white-space: nowrap;
 }
 
+.marquee__logo {
+  font-size: 1.8rem;
+  color: var(--text-mid-brown, #b9b3a6);
+  opacity: 0.8;
+  transition: color 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
+}
+.marquee__item:hover .marquee__logo {
+  color: var(--brand, var(--accent-gold, #e6b450));
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
 .marquee__label {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+  font-size: 1.02rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--text-mid-brown, #b9b3a6);
   transition: color 0.3s ease;
 }
 .marquee__item:hover .marquee__label {
-  color: var(--accent-gold, #e6b450);
-}
-
-.marquee__sep {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-gold, #e6b450);
-  opacity: 0.5;
+  color: var(--text-dark-brown, #f4f1ea);
 }
 
 @keyframes marquee-scroll {
