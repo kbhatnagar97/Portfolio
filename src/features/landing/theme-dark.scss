@@ -167,9 +167,9 @@
   font-size: 0.78rem;
 }
 .landing-page .enhanced-project-card .project-year {
-  background: rgba(230, 180, 80, 0.14);
-  color: var(--accent-gold);
-  border: 1px solid rgba(230, 180, 80, 0.3);
+  background: rgba(230, 180, 80, 0.18) !important;
+  color: #f2ce7d !important;
+  border: 1px solid rgba(230, 180, 80, 0.4) !important;
 }
 .landing-page .enhanced-project-card .project-complexity {
   background: rgba(255, 255, 255, 0.05);
@@ -189,16 +189,55 @@
 }
 
 // Leadership badges — consistent radius, breathing room, refined gold-tinted chips.
-.landing-page .leadership-grid {
-  gap: 1.1rem;
+.landing-page .leadership-section {
+  margin-top: 4rem;
+}
+.landing-page .leadership-section .leadership-grid {
+  gap: 1.25rem;
 }
 .landing-page .leadership-grid .leadership-badge {
   background: rgba(230, 180, 80, 0.1);
   border: 1px solid rgba(230, 180, 80, 0.28);
   color: #f0e4cc;
   border-radius: 14px;
-  padding: 1rem 1.4rem;
+  padding: 1.15rem 1.5rem;
   text-align: left;
+}
+
+// College projects — more breathing room in the grid + card.
+.landing-page .college-projects__grid {
+  gap: 1.75rem;
+}
+.landing-page .college-projects .enhanced-project-card {
+  padding: 1.75rem 1.9rem;
+}
+.landing-page .enhanced-project-card .tech-stack-title {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-dark-brown);
+}
+
+// Education certificates — cap thumbnail size so a lone/paired cert doesn't balloon.
+.landing-page .timeline-item__certificates .certificates-grid {
+  grid-template-columns: repeat(auto-fill, minmax(112px, 140px));
+  justify-content: start;
+}
+
+// Achievement certificates — kill the opaque light panel; small, uniform, classy, still clickable.
+.landing-page .achievement-card__certificates {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-soft);
+}
+.landing-page .achievement-card__certificates .certificates-gallery {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 158px));
+  justify-content: start;
+}
+.landing-page .certificates-more {
+  border-top-color: var(--border-soft);
+}
+.landing-page .certificate-image {
+  object-position: top;
 }
 // #endregion
 
@@ -332,6 +371,20 @@
 }
 .landing-page .certificate-container .certificate-number {
   display: none !important;
+}
+// "Click to view full size" hint + "+N more" — clearly legible, not muddy chips.
+.landing-page .certificates-hint {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #cdbf9f !important;
+  opacity: 1;
+  font-style: italic;
+}
+.landing-page .more-indicator {
+  background: rgba(230, 180, 80, 0.12);
+  border: 1px solid rgba(230, 180, 80, 0.3);
+  color: #f2ce7d !important;
 }
 .landing-page .file-viewer-modal__backdrop {
   background: rgba(4, 4, 8, 0.8);
