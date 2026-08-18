@@ -1,0 +1,4 @@
+# This project deploys with npm (package-lock.json). Ignore stray pnpm lockfiles
+# so Vercel doesn't switch package managers and fail the build.
+pnpm-lock.yaml
+pnpm-workspace.yaml
