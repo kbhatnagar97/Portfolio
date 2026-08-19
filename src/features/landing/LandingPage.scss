@@ -830,13 +830,12 @@ body {
   }
 }
 
-// Leadership badges enhanced animation
+// Leadership badges animation
 .leadership-badge {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 
   &:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(91, 62, 45, 0.2);
+    transform: translateY(-1px);
   }
 }
 
@@ -1886,56 +1885,36 @@ body {
     }
   }
 
-  .achievements-section {
-    margin-top: 4rem;
+  .achievements-title {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--text-dark-brown);
+    margin: 4rem 0 3rem;
+    letter-spacing: -0.03em;
     text-align: center;
+  }
 
-    .achievements-title {
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      font-weight: 700;
-      color: var(--text-dark-brown);
-      margin-bottom: 3rem;
-      position: relative;
-      display: inline-block;
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(
-          90deg,
-          var(--accent-gold),
-          var(--accent-gold-darker)
-        );
-        border-radius: 2px;
-      }
-    }
-
-    .achievements-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-
-      @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        max-width: 500px;
-      }
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      max-width: 500px;
     }
   }
 
   .achievement-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 10px 30px rgba(91, 62, 45, 0.1);
+    border: 1px solid rgba(234, 230, 225, 0.7);
+    box-shadow: 0 8px 32px var(--shadow-color);
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
@@ -1996,51 +1975,54 @@ body {
 
     &__certificates {
       margin-top: 1.5rem;
-      padding: 1.5rem;
-      background: rgba(251, 250, 248, 0.8);
-      border-radius: 15px;
-      border: 1px solid rgba(234, 230, 225, 0.7);
+      padding: 1.25rem;
+      background: rgba(251, 250, 248, 0.7);
+      border-radius: 16px;
+      border: 1px solid rgba(234, 230, 225, 0.6);
     }
 
     .certificates-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
       gap: 0.5rem;
+      margin-bottom: 1rem;
 
       .certificates-label {
         font-weight: 600;
         color: var(--text-dark-brown);
-        font-size: 0.9rem;
+        font-size: 0.875rem;
       }
 
       .certificates-hint {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-mid-brown);
-        opacity: 0.8;
+        opacity: 0.65;
+        margin-left: auto;
       }
     }
 
     .certificates-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
     .certificate-container {
       position: relative;
+      width: 120px;
+      flex-shrink: 0;
       border-radius: 12px;
       overflow: hidden;
-      background: white;
-      box-shadow: 0 4px 15px rgba(91, 62, 45, 0.1);
-      transition: all 0.3s ease;
+      background: var(--bg-cream);
+      box-shadow: 0 3px 10px rgba(91, 62, 45, 0.1);
+      border: 1px solid rgba(234, 230, 225, 0.5);
+      transition: all 0.25s ease;
 
       &:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(91, 62, 45, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(91, 62, 45, 0.18);
+        border-color: rgba(215, 159, 43, 0.4);
 
         .certificate-overlay {
           opacity: 1;
@@ -2059,10 +2041,10 @@ body {
       height: 100%;
       object-fit: cover;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease;
 
       &:hover {
-        transform: scale(1.05);
+        transform: scale(1.04);
       }
     }
 
@@ -2072,66 +2054,66 @@ body {
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(58, 36, 29, 0.8);
+      background: rgba(58, 36, 29, 0.75);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       opacity: 0;
-      transition: all 0.3s ease;
+      transition: opacity 0.25s ease;
       cursor: pointer;
 
       &__icon {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         color: white;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.375rem;
       }
 
       &__text {
         color: white;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 600;
         text-align: center;
+        letter-spacing: 0.02em;
       }
     }
 
     .certificate-number {
       position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
+      top: 0.375rem;
+      right: 0.375rem;
       background: var(--accent-gold);
       color: white;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(215, 159, 43, 0.4);
+      font-size: 0.65rem;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(215, 159, 43, 0.4);
     }
 
     .certificates-more {
-      text-align: center;
+      text-align: left;
       padding-top: 0.5rem;
       border-top: 1px solid rgba(234, 230, 225, 0.5);
 
       .more-indicator {
         font-size: 0.8rem;
         color: var(--text-mid-brown);
-        font-style: italic;
+        opacity: 0.7;
       }
     }
 
     @media (max-width: 768px) {
-      padding: 1.5rem;
+      padding: 1.25rem;
 
       &__header {
         flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 0.5rem;
+        align-items: flex-start;
+        gap: 0.375rem;
       }
 
       &__info {
@@ -2142,21 +2124,12 @@ body {
         text-align: center;
       }
 
-      .certificates-gallery {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+      .certificates-hint {
+        margin-left: 0;
       }
 
-      .certificates-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .certificates-gallery {
-        grid-template-columns: 1fr;
+      .certificate-container {
+        width: 100px;
       }
     }
   }
@@ -2352,55 +2325,57 @@ body {
     }
   }
 
-  .leadership-section {
-    margin: 3rem 0;
+  .leadership-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark-brown);
+    margin: 3rem 0 1.5rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
 
-    .leadership-title {
-      font-size: 1.8rem;
-      color: var(--text-dark-brown);
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
+  .leadership-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
 
-    .leadership-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1rem;
-    }
+  .leadership-badge {
+    background: rgba(215, 159, 43, 0.07);
+    border: 1px solid rgba(215, 159, 43, 0.28);
+    color: var(--text-dark-brown);
+    padding: 0.5rem 1.1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
 
-    .leadership-badge {
-      background: linear-gradient(
-        135deg,
-        var(--accent-gold),
-        var(--accent-gold-darker)
-      );
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 25px;
-      text-align: center;
-      font-weight: 500;
-      transition: all 0.3s ease;
-
-      &:hover {
-        transform: scale(1.05);
-      }
+    &:hover {
+      background: rgba(215, 159, 43, 0.14);
+      border-color: rgba(215, 159, 43, 0.5);
+      transform: translateY(-1px);
     }
   }
 
-  .college-projects {
-    margin: 3rem 0;
+  .college-projects__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark-brown);
+    margin: 2.5rem 0 1.5rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
 
-    &__title {
-      font-size: 1.8rem;
-      color: var(--text-dark-brown);
-      margin-bottom: 2rem;
-      text-align: center;
-    }
+  .college-projects__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
 
-    &__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
     }
   }
 
@@ -2456,9 +2431,9 @@ body {
 
   // Enhanced Project Cards
   .enhanced-project-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.85);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     border: 1px solid rgba(234, 230, 225, 0.7);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;

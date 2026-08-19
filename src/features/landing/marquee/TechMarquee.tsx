@@ -20,7 +20,6 @@ import {
   SiPostgresql,
   SiGraphql,
   SiRedux,
-  SiOpenai,
   SiGit,
   SiVercel,
 } from 'react-icons/si';
@@ -142,12 +141,6 @@ const TECHS: Tech[] = [
     Icon: SiRedux,
     color: '#764abc',
     url: 'https://redux.js.org/',
-  },
-  {
-    name: 'OpenAI',
-    Icon: SiOpenai,
-    color: '#ffffff',
-    url: 'https://platform.openai.com/docs',
   },
   {
     name: 'Git',

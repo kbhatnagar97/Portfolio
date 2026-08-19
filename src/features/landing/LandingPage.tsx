@@ -315,12 +315,11 @@ const LandingPage: React.FC = () => {
         </div>
 
         {/* Achievements Section */}
-        <div className='achievements-section scroll-animate fade-in-up'>
-          <h3 className='achievements-title scroll-animate zoom-in'>
-            Key Achievements & Recognition
-          </h3>
-          <div className='achievements-grid'>
-            {LANDING_PAGE_CONSTANTS.SKILLS.ACHIEVEMENTS.map(
+        <h3 className='achievements-title scroll-animate zoom-in'>
+          Key Achievements & Recognition
+        </h3>
+        <div className='achievements-grid'>
+          {LANDING_PAGE_CONSTANTS.SKILLS.ACHIEVEMENTS.map(
               (achievement, index) => (
                 <div
                   key={index}
@@ -412,19 +411,11 @@ const LandingPage: React.FC = () => {
                           ))}
                         </div>
 
-                        {achievement.IMAGES.length > 3 && (
-                          <div className='certificates-more'>
-                            <span className='more-indicator'>
-                              +{achievement.IMAGES.length - 3} more certificates
-                            </span>
-                          </div>
-                        )}
                       </div>
                     )}
                 </div>
               )
             )}
-          </div>
         </div>
       </section>
 
@@ -544,44 +535,35 @@ const LandingPage: React.FC = () => {
           </div>
 
           {/* Leadership Activities */}
-          <div
-            className='leadership-section scroll-animate fade-in-up'
-            style={{ animationDelay: '0.8s' }}
+          <h4
+            className='leadership-title scroll-animate slide-in-left'
+            style={{ animationDelay: '0.9s' }}
           >
-            <h4
-              className='leadership-title scroll-animate slide-in-left'
-              style={{ animationDelay: '0.9s' }}
-            >
-              Leadership & Activities
-            </h4>
-            <div className='leadership-grid'>
-              {LANDING_PAGE_CONSTANTS.JOURNEY.EDUCATION.LEADERSHIP_ACTIVITIES.map(
-                (activity, index) => (
-                  <div
-                    key={index}
-                    className='leadership-badge scroll-animate float-in'
-                    style={{ animationDelay: `${1.0 + index * 0.05}s` }}
-                  >
-                    {activity}
-                  </div>
-                )
-              )}
-            </div>
+            Leadership & Activities
+          </h4>
+          <div className='leadership-grid'>
+            {LANDING_PAGE_CONSTANTS.JOURNEY.EDUCATION.LEADERSHIP_ACTIVITIES.map(
+              (activity, index) => (
+                <div
+                  key={index}
+                  className='leadership-badge scroll-animate float-in'
+                  style={{ animationDelay: `${1.0 + index * 0.05}s` }}
+                >
+                  {activity}
+                </div>
+              )
+            )}
           </div>
 
           {/* College Projects */}
-          <div
-            className='college-projects scroll-animate fade-in-up'
-            style={{ animationDelay: '1.2s' }}
+          <h4
+            className='college-projects__title scroll-animate slide-in-left'
+            style={{ animationDelay: '1.3s' }}
           >
-            <h4
-              className='college-projects__title scroll-animate slide-in-left'
-              style={{ animationDelay: '1.3s' }}
-            >
-              Key College Projects
-            </h4>
-            <div className='college-projects__grid'>
-              {LANDING_PAGE_CONSTANTS.JOURNEY.EDUCATION.COLLEGE_PROJECTS.map(
+            Key College Projects
+          </h4>
+          <div className='college-projects__grid'>
+            {LANDING_PAGE_CONSTANTS.JOURNEY.EDUCATION.COLLEGE_PROJECTS.map(
                 (project, index) => (
                   <div
                     key={index}
@@ -682,7 +664,6 @@ const LandingPage: React.FC = () => {
                   </div>
                 )
               )}
-            </div>
           </div>
         </div>
 

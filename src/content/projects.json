@@ -1,33 +1,5 @@
 [
   {
-    "id": "astrolens",
-    "name": "Astrolens",
-    "emoji": "🔭",
-    "tagline": "Vedic kundli, compatibility & AI palm reading — done right",
-    "category": "Web Apps",
-    "status": "Live",
-    "live": true,
-    "url": "https://astrolens-mauve.vercel.app",
-    "repo": "",
-    "year": "2026",
-    "accent": "#7c3aed",
-    "stack": ["Next.js", "TypeScript", "TensorFlow.js", "three.js", "Firebase", "Firestore"],
-    "summary": "A free, accurate Vedic astrology toolkit — birth chart (kundli), 36-guna compatibility matching and on-device AI palm reading, built on a real sidereal ephemeris.",
-    "spark": "Every big astrology app I tried buried the actual calculations under paywalls, generic horoscopes and dark-pattern subscriptions. I wanted the real maths — Lahiri ayanamsa, proper ephemeris, actual Ashtakoot scoring — free and in a single clean place.",
-    "build": "I built a full Vedic toolkit: a real sidereal birth chart using the Moshier ephemeris, 36-guna Ashtakoot matching with dosha detection, a Panchang, daily horoscopes driven by live Moon transits, numerology — and a private on-device AI palm reader using TensorFlow.js hand-pose detection, so the camera feed never leaves the browser.",
-    "architecture": [
-      "Real sidereal calculations — Moshier ephemeris + Lahiri ayanamsa",
-      "On-device palm reading — TensorFlow hand-pose, zero server upload",
-      "First-party email auth + Firestore, optional ₹15 paywall toggle"
-    ],
-    "highlights": [
-      "Real Vedic kundli, nakshatra, dasha",
-      "Full 36-guna Ashtakoot matching",
-      "AI palm reader — on-device, private",
-      "Free — no account needed"
-    ]
-  },
-  {
     "id": "hapnin",
     "name": "Hapnin",
     "emoji": "🧭",
@@ -165,6 +137,34 @@
       "Markdown / JSON / agent exports",
       "Move context across AI tools",
       "No database, fully stateless"
+    ]
+  },
+  {
+    "id": "astrolens",
+    "name": "Astrolens",
+    "emoji": "🔭",
+    "tagline": "Vedic kundli, compatibility & AI palm reading — done right",
+    "category": "Web Apps",
+    "status": "Live",
+    "live": true,
+    "url": "https://astrolens-mauve.vercel.app",
+    "repo": "",
+    "year": "2026",
+    "accent": "#7c3aed",
+    "stack": ["Next.js", "TypeScript", "TensorFlow.js", "three.js", "Firebase", "Firestore"],
+    "summary": "A free, accurate Vedic astrology toolkit — birth chart (kundli), 36-guna compatibility matching and on-device AI palm reading, built on a real sidereal ephemeris.",
+    "spark": "Every big astrology app I tried buried the actual calculations under paywalls, generic horoscopes and dark-pattern subscriptions. I wanted the real maths — Lahiri ayanamsa, proper ephemeris, actual Ashtakoot scoring — free and in a single clean place.",
+    "build": "I built a full Vedic toolkit: a real sidereal birth chart using the Moshier ephemeris, 36-guna Ashtakoot matching with dosha detection, a Panchang, daily horoscopes driven by live Moon transits, numerology — and a private on-device AI palm reader using TensorFlow.js hand-pose detection, so the camera feed never leaves the browser.",
+    "architecture": [
+      "Real sidereal calculations — Moshier ephemeris + Lahiri ayanamsa",
+      "On-device palm reading — TensorFlow hand-pose, zero server upload",
+      "First-party email auth + Firestore, optional ₹15 paywall toggle"
+    ],
+    "highlights": [
+      "Real Vedic kundli, nakshatra, dasha",
+      "Full 36-guna Ashtakoot matching",
+      "AI palm reader — on-device, private",
+      "Free — no account needed"
     ]
   },
   {
