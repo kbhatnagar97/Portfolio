@@ -37,8 +37,9 @@ const LandingPage: React.FC = () => {
     subtitle: string;
   } | null>(null);
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const toggleMobileMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
   const closeMobileMenu = () => {
@@ -253,9 +254,6 @@ const LandingPage: React.FC = () => {
               {LANDING_PAGE_CONSTANTS.HERO.CTA_TEXT} <FaArrowRight />
             </a>
           </div>
-        </div>
-        <div className='hero__scroll-indicator scroll-animate fade-in-up persist-on-scroll stagger-3'>
-          <div className='scroll-arrow'></div>
         </div>
       </section>
 
