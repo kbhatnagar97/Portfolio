@@ -227,28 +227,28 @@
     "id": "off-the-bench",
     "name": "Off the Bench",
     "emoji": "🎾",
-    "tagline": "A premium tennis community, Delhi NCR",
+    "tagline": "Level-matched tennis for Delhi NCR",
     "category": "Web Apps",
-    "status": "In progress",
-    "live": false,
-    "url": "",
+    "status": "Live",
+    "live": true,
+    "url": "https://off-the-bench-nine.vercel.app",
     "repo": "",
     "year": "2026",
     "accent": "#84cc16",
     "stack": ["Next.js", "React", "three.js", "Tailwind"],
-    "summary": "A classy marketing site for a Delhi-NCR tennis community, with a scroll-driven 3D racket that strikes a ball toward you as the story unfolds.",
-    "spark": "Local tennis communities were all advertised with the same tired 'premium community' filler and clip-art. Nothing on screen actually felt like the sport.",
-    "build": "I built a standalone, understated marketing site whose hero is a scroll-told story — a live 3D ball and a procedural graphite racket that swings and strikes toward the viewer, with a synthesised 'pock' — concrete copy, zero filler.",
+    "summary": "A marketing site for a Delhi-NCR tennis community targeting former competitive players. The hero is a physics-accurate bouncing felt ball that drifts right on load and scrolls to centre as the Google Form appears.",
+    "spark": "Local tennis communities were all advertised with the same tired filler and clip-art. Nothing on screen actually felt like the sport — or spoke to players who had genuinely competed.",
+    "build": "I built a standalone marketing site whose hero is a scroll-driven, procedurally textured three.js tennis ball — accurate seams, felt sheen, pointer parallax — that slides from right to centre as the community form fades in. Concrete copy, zero filler, mobile-first.",
     "architecture": [
-      "Scroll-driven vanilla three.js hero",
-      "Web-Audio strike synthesis, gesture-gated",
-      "Its own standalone project and brand"
+      "Scroll-driven three.js hero, lazy-imported for SSR safety",
+      "Procedural felt texture + accurate seam formula on canvas",
+      "Physics squash, pointer parallax, smoothstep scroll easing"
     ],
     "highlights": [
-      "Scroll-driven 3D racket + ball",
-      "Web-Audio 'pock' on strike",
-      "Classy, concrete copy",
-      "Mobile-first premium design"
+      "Fluffy felt ball with accurate tennis seams",
+      "Scroll-driven right-to-centre animation",
+      "Concrete copy for competitive players",
+      "Mobile-first, SSR-safe three.js"
     ]
   },
   {
