@@ -112,6 +112,34 @@
     ]
   },
   {
+    "id": "learn",
+    "name": "Learn",
+    "emoji": "🎙️",
+    "tagline": "Paste a video link, get a transcript you can give to Claude",
+    "category": "Tools & Automation",
+    "status": "Live",
+    "live": true,
+    "url": "https://grab-sooty.vercel.app",
+    "repo": "",
+    "year": "2026",
+    "accent": "#6366f1",
+    "stack": ["Python", "yt-dlp", "Groq Whisper", "Flask", "Vercel"],
+    "summary": "A personal tool that downloads the audio from any Instagram, YouTube or TikTok link and returns a clean transcript — built to feed video context to Claude in one click instead of manually summarising what I watched.",
+    "spark": "I save a lot of videos to review later but kept losing the thread of what I actually learnt from them. Typing out notes manually felt like busywork, and there was no easy way to pull the content into Claude without re-watching or describing it by hand.",
+    "build": "I built a minimal one-field web tool: paste a video URL, hit Transcribe, copy the text. Locally it runs faster-whisper on-device with browser cookies for private content. The deployed version uses Groq's Whisper API and a COOKIES env var. The copy button puts the raw transcript on the clipboard — ready to paste straight into Claude for instant analysis.",
+    "architecture": [
+      "yt-dlp handles audio extraction across all platforms",
+      "Local: faster-whisper on CPU, browser cookies via yt-dlp",
+      "Deployed: Groq Whisper API, COOKIES env var for private content"
+    ],
+    "highlights": [
+      "Instagram, YouTube, TikTok support",
+      "One-click copy to give context to Claude",
+      "Runs locally (free) or on Vercel (Groq)",
+      "No storage — transcript lives only in the browser"
+    ]
+  },
+  {
     "id": "context-bridge",
     "name": "ContextBridge",
     "emoji": "🔗",
@@ -140,14 +168,14 @@
     ]
   },
   {
-    "id": "astrolens",
-    "name": "Astrolens",
+    "id": "astrolenz",
+    "name": "Astrolenz",
     "emoji": "🔭",
     "tagline": "Vedic kundli, compatibility & AI palm reading — done right",
     "category": "Web Apps",
     "status": "Live",
     "live": true,
-    "url": "https://astrolens-mauve.vercel.app",
+    "url": "https://astrolenz.com",
     "repo": "",
     "year": "2026",
     "accent": "#7c3aed",
