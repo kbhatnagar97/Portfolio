@@ -8,13 +8,16 @@
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href="https://kshitijbhatnagar.com/" />
-    <meta name="theme-color" content="#fbfaf8" />
+    <meta name="theme-color" content="#0b0a09" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
     <meta name='impact-site-verification' value='214ffe3b-5dc6-4c56-b095-724d5a930bc6' />
 
     <title>Kshitij Bhatnagar: Software Engineer & AI-native Builder</title>
     <meta
       name="description"
-      content="Kshitij Bhatnagar, software engineer building AI-native products. A portfolio of 18+ apps and experiments, from Vedic astrology tools and honest fintech to live 3D data globes and local-first AI, and the story of how each one was built."
+      content="Kshitij Bhatnagar, software engineer building AI-native products. A portfolio of {{PROJECT_COUNT}} apps and experiments, from Vedic astrology tools and honest fintech to live 3D data globes and local-first AI, and the story of how each one was built."
     />
     <meta
       name="keywords"
@@ -33,9 +36,11 @@
     />
     <meta
       property="og:description"
-      content="A portfolio of 18+ apps and experiments, from honest fintech to local-first AI, and the story of how each one was built."
+      content="A portfolio of {{PROJECT_COUNT}} apps and experiments, from honest fintech to local-first AI, and the story of how each one was built."
     />
-    <meta property="og:image" content="https://kshitijbhatnagar.com/images/Profile.JPG" />
+    <meta property="og:image" content="https://kshitijbhatnagar.com/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Kshitij Bhatnagar" />
 
     <!-- Twitter -->
@@ -46,232 +51,11 @@
     />
     <meta
       name="twitter:description"
-      content="A portfolio of 18+ apps and experiments, and the story of how each one was built."
+      content="A portfolio of {{PROJECT_COUNT}} apps and experiments, and the story of how each one was built."
     />
-    <meta name="twitter:image" content="https://kshitijbhatnagar.com/images/Profile.JPG" />
+    <meta name="twitter:image" content="https://kshitijbhatnagar.com/og.jpg" />
 
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": "Projects by Kshitij Bhatnagar",
-        "description": "A portfolio of 18+ apps and experiments built by Kshitij Bhatnagar, from Vedic astrology tools and honest fintech to live 3D data globes and local-first AI.",
-        "url": "https://kshitijbhatnagar.com",
-        "numberOfItems": 18,
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Hapnin",
-              "description": "Curated events and activities discovery that helps newcomers feel at home, warmer and less cluttered than the big ticketing apps.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://hapnin.city"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "OrbitalSpace",
-              "description": "A live 3D Earth that puts temperature for 260 cities, GDP per capita for 193 countries and every magnitude 4.5+ earthquake on one globe, with a page behind every dot.",
-              "applicationCategory": "FinanceApplication",
-              "operatingSystem": "Web",
-              "url": "https://orbitalspace.in"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "MoneyMap",
-              "description": "An honest, gamified multi-asset money manager on real market data, real fees and real Indian taxes. It shows losses as clearly as gains.",
-              "applicationCategory": "FinanceApplication",
-              "operatingSystem": "Web",
-              "url": "https://moneymap-eta.vercel.app"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 4,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Jetstream",
-              "description": "One app for the whole flight journey: book, then track on an immersive orthographic globe with live status, delay predictions and a lifetime travel passport.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://jetstream-rust.vercel.app"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 5,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Habit Tracker",
-              "description": "A habit tracker that turns daily routines into actionable insight with streaks, analytics and beautiful visualisations.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://habittracker.in"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 6,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "VideoNote",
-              "description": "Paste a link from YouTube, Instagram, TikTok and more, and get a timestamped transcript, a chapter timeline, study notes, flashcards, a quiz and an Ask chat that answers with cited timestamps.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://videonote.in"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 7,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "ContextBridge",
-              "description": "Paste a ChatGPT share link and get a clean, portable page plus exports, or let your agents pull it through an MCP server, so conversation context moves between ChatGPT, Claude, Gemini and coding agents.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web",
-              "url": "https://contextbridge.in"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 8,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Astrolenz",
-              "description": "A Vedic astrology toolkit on a real sidereal ephemeris: birth chart (kundli) with shadow readings, 36-guna compatibility matching, AI palm reading and an AI astrologer you can question about your own chart.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://astrolenz.com"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 9,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "My Life",
-              "description": "A private, local-first memory of my life: a spinnable 3D globe of everywhere I've been, built from wearable transcripts and photo metadata, with a chat that answers anything about my past.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web",
-              "url": "https://knowledge-graph-eta.vercel.app"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 10,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Jarvis",
-              "description": "A phone-first, self-hosted AI assistant with a custom particle-brain face, human voice, sandboxed file and network hands, and the ability to delegate hard tasks to a frontier model.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 11,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "LinkedIn Newsroom",
-              "description": "A personal newsroom that watches AI labs and news sources, rates every story, drafts a LinkedIn post with a designed 4:5 card, and posts only after I tap Approve on my phone.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 12,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Off the Bench",
-              "description": "A marketing site for a Delhi-NCR tennis community targeting former competitive players. The hero is a physics-accurate bouncing felt ball that drifts right on load and scrolls to centre as the Google Form appears.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://off-the-bench-nine.vercel.app"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 13,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Therapy Practice",
-              "description": "A calm, editorial one-page site for a CBT therapist, where clients learn about her approach and book a session, signature 'thought record' hero included.",
-              "applicationCategory": "WebApplication",
-              "operatingSystem": "Web",
-              "url": "https://therapy-site-ten.vercel.app"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 14,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "YouTube Studio Bot",
-              "description": "A zero-cost pipeline that researches, scripts, narrates and renders faceless personal-finance YouTube Shorts, driven end to end by local AI.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 15,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Voice Copilot",
-              "description": "A private assistant that learns my texting voice from my own chat exports and drafts openers and replies, with screenshot OCR input so I never retype.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 16,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "FARsight",
-              "description": "A pre-submission FAR and zoning checker for architects: pick the region, upload an IFC design, and get a pass/fail report with the cited clause and the change needed to comply.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 17,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "DevTo Growth",
-              "description": "A toolkit that drafts, illustrates and publishes developer articles to dev.to, tracking what's live and what's still a draft.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 18,
-            "item": {
-              "@type": "SoftwareApplication",
-              "name": "Gaussian Visualizer",
-              "description": "An interactive normal distribution for process capability: drag the mean, the spread and the spec limits right on the curve and watch Pp, Ppk, PPM and yield update live.",
-              "applicationCategory": "EducationalApplication",
-              "operatingSystem": "Web",
-              "url": "https://kshitijbhatnagar.com/gaussian-visualizer"
-            }
-          }
-        ]
-      }
-    </script>
+    <!--projects-jsonld-->
 
     <script type="application/ld+json">
       {
@@ -307,87 +91,16 @@
     <noscript>
       <main style="font-family:sans-serif;max-width:800px;margin:2rem auto;padding:0 1rem">
         <h1>Kshitij Bhatnagar: Software Engineer &amp; AI-native Builder</h1>
-        <p>Software engineer building AI-native products. A portfolio of 18+ apps and experiments, and the story of how each one was built.</p>
+        <p>Software engineer building products across interfaces, 3D, AI and infrastructure. {{PROJECT_COUNT}} projects, {{LIVE_COUNT}} of them live, and the story of how each one was built.</p>
         <nav>
+          <a href="mailto:kshitijbhatnagar97@gmail.com">Email</a> ·
           <a href="https://www.linkedin.com/in/kshitij-bhatnagar-18046374/">LinkedIn</a> ·
           <a href="https://github.com/kbhatnagar97">GitHub</a> ·
           <a href="https://dev.to/kbhatnagar">DEV</a>
         </nav>
-
         <h2>Projects</h2>
         <ul>
-          <li>
-            <h3><a href="https://hapnin.city">Hapnin</a>: A belonging engine for people new to a city</h3>
-            <p>Curated events and activities discovery that helps newcomers feel at home, warmer and less cluttered than the big ticketing apps. Stack: Next.js, React, Tailwind, Cloud Run, Postgres, Firebase.</p>
-          </li>
-          <li>
-            <h3><a href="https://orbitalspace.in">OrbitalSpace</a>: The whole planet, live, on one globe</h3>
-            <p>A live 3D Earth that puts temperature for 260 cities, GDP per capita for 193 countries and every magnitude 4.5+ earthquake on one globe, with a page behind every dot. Stack: Next.js, React, three.js, three-globe, GSAP, Firebase.</p>
-          </li>
-          <li>
-            <h3><a href="https://moneymap-eta.vercel.app">MoneyMap</a>: Watch $1,000 grow across every market, honestly</h3>
-            <p>An honest, gamified multi-asset money manager on real market data, real fees and real Indian taxes. It shows losses as clearly as gains. Stack: Next.js, React, TypeScript, Cloud Run, Cloud Scheduler, GCS.</p>
-          </li>
-          <li>
-            <h3><a href="https://jetstream-rust.vercel.app">Jetstream</a>: A cinematic companion for the whole journey</h3>
-            <p>One app for the whole flight journey: book, then track on an immersive orthographic globe with live status, delay predictions and a lifetime travel passport. Stack: Next.js, React, TypeScript, d3-geo, TopoJSON.</p>
-          </li>
-          <li>
-            <h3><a href="https://habittracker.in">Habit Tracker</a>: The system for self-improvement</h3>
-            <p>A habit tracker that turns daily routines into actionable insight with streaks, analytics and beautiful visualisations. Stack: React, TypeScript, Chart.js, Firebase, Vercel.</p>
-          </li>
-          <li>
-            <h3><a href="https://videonote.in">VideoNote</a>: Paste any video, get notes you can actually study</h3>
-            <p>Paste a link from YouTube, Instagram, TikTok and more, and get a timestamped transcript, a chapter timeline, study notes, flashcards, a quiz and an Ask chat that answers with cited timestamps. Stack: Python, yt-dlp, Groq Whisper, Firebase, Upstash Redis, Vercel.</p>
-          </li>
-          <li>
-            <h3><a href="https://contextbridge.in">ContextBridge</a>: Shared memory between AI chats</h3>
-            <p>Paste a ChatGPT share link and get a clean, portable page plus exports, or let your agents pull it through an MCP server, so conversation context moves between ChatGPT, Claude, Gemini and coding agents. Stack: Next.js, TypeScript, markdown-it, MCP SDK, transformers.js.</p>
-          </li>
-          <li>
-            <h3><a href="https://astrolenz.com">Astrolenz</a>: Vedic kundli, compatibility &amp; AI palm reading, done right</h3>
-            <p>A Vedic astrology toolkit on a real sidereal ephemeris: birth chart (kundli) with shadow readings, 36-guna compatibility matching, AI palm reading and an AI astrologer you can question about your own chart. Stack: Next.js, TypeScript, Firebase, Gemini on Vertex AI, TensorFlow.js, Razorpay.</p>
-          </li>
-          <li>
-            <h3><a href="https://knowledge-graph-eta.vercel.app">My Life</a>: A gen-AI trained on my own life</h3>
-            <p>A private, local-first memory of my life: a spinnable 3D globe of everywhere I&#x27;ve been, built from wearable transcripts and photo metadata, with a chat that answers anything about my past. Stack: Next.js, three.js, d3-geo, Ollama, RAG.</p>
-          </li>
-          <li>
-            <h3>Jarvis: A self-hosted personal AI COO</h3>
-            <p>A phone-first, self-hosted AI assistant with a custom particle-brain face, human voice, sandboxed file and network hands, and the ability to delegate hard tasks to a frontier model. Stack: Node, TypeScript, Ollama, Piper TTS, MCP.</p>
-          </li>
-          <li>
-            <h3>LinkedIn Newsroom: Breaking AI news to an approved post, from my phone</h3>
-            <p>A personal newsroom that watches AI labs and news sources, rates every story, drafts a LinkedIn post with a designed 4:5 card, and posts only after I tap Approve on my phone. Stack: n8n, Python, Claude, Headless Chrome, ntfy, LinkedIn API.</p>
-          </li>
-          <li>
-            <h3><a href="https://off-the-bench-nine.vercel.app">Off the Bench</a>: Level-matched tennis for Delhi NCR</h3>
-            <p>A marketing site for a Delhi-NCR tennis community targeting former competitive players. The hero is a physics-accurate bouncing felt ball that drifts right on load and scrolls to centre as the Google Form appears. Stack: Next.js, React, three.js, Tailwind.</p>
-          </li>
-          <li>
-            <h3><a href="https://therapy-site-ten.vercel.app">Therapy Practice</a>: A warm home for a CBT practice</h3>
-            <p>A calm, editorial one-page site for a CBT therapist, where clients learn about her approach and book a session, signature &#x27;thought record&#x27; hero included. Stack: HTML, CSS, JavaScript, Calendly.</p>
-          </li>
-          <li>
-            <h3>YouTube Studio Bot: An autonomous faceless Shorts studio</h3>
-            <p>A zero-cost pipeline that researches, scripts, narrates and renders faceless personal-finance YouTube Shorts, driven end to end by local AI. Stack: Python, Ollama, ffmpeg, TTS.</p>
-          </li>
-          <li>
-            <h3>Voice Copilot: Drafts messages in your own voice</h3>
-            <p>A private assistant that learns my texting voice from my own chat exports and drafts openers and replies, with screenshot OCR input so I never retype. Stack: Node, TypeScript, Ollama, Apple Vision OCR.</p>
-          </li>
-          <li>
-            <h3>FARsight: A zoning-compliance copilot for architects</h3>
-            <p>A pre-submission FAR and zoning checker for architects: pick the region, upload an IFC design, and get a pass/fail report with the cited clause and the change needed to comply. Stack: Python, FastAPI, IfcOpenShell, Shapely, Pydantic.</p>
-          </li>
-          <li>
-            <h3>DevTo Growth: An engine for technical-writing reach</h3>
-            <p>A toolkit that drafts, illustrates and publishes developer articles to dev.to, tracking what&#x27;s live and what&#x27;s still a draft. Stack: Python, dev.to API.</p>
-          </li>
-          <li>
-            <h3><a href="https://kshitijbhatnagar.com/gaussian-visualizer">Gaussian Visualizer</a>: Move the mean, watch the defects appear</h3>
-            <p>An interactive normal distribution for process capability: drag the mean, the spread and the spec limits right on the curve and watch Pp, Ppk, PPM and yield update live. Stack: JavaScript, SVG, Canvas, Vercel.</p>
-          </li>
+<!--projects-noscript-->
         </ul>
       </main>
     </noscript>

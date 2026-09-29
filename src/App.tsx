@@ -1,15 +1,5 @@
-import './App.scss';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import LandingPage from './features/landing/LandingPage';
+import Site from './site/Site';
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<LandingPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+const App = () => <Site />;
 
 export default App;

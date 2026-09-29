@@ -1,73 +1,45 @@
-# 🌟 Portfolio: Gaussian Visualizer
+# kshitijbhatnagar.com
 
-> A lean portfolio showcasing the Gaussian Visualizer - an interactive tool for exploring normal distributions and statistical concepts.
+Personal portfolio of Kshitij Bhatnagar, live at [kshitijbhatnagar.com](https://kshitijbhatnagar.com).
 
-## 🚀 Live Demo
+A single page built around one WebGL particle system. Sixteen thousand points morph between shapes as you scroll: an orb in the hero, then a UI wireframe, a globe, a neural network and an infrastructure stack for the four skills, a starfield behind the work, and a ring at the contact section. All content is ordinary HTML, so it stays readable, searchable and accessible without WebGL.
 
-Check out the live application: [kshitijbhatnagar.com](https://kshitijbhatnagar.com)
+## Stack
 
-## 📊 Featured Project: Gaussian Visualizer
+React 19, TypeScript and Vite. three.js with React Three Fiber for the scene, GSAP (ScrollTrigger and SplitText) and Lenis for motion, framer-motion for the project modal, SCSS for styling.
 
-![Gaussian Visualizer Demo](public/images/gaussian-tracker.gif)
+## How it fits together
 
-The Gaussian Visualizer is an interactive educational tool for exploring normal (Gaussian) distributions and process capability metrics, ideal for students, engineers, and data enthusiasts.
+| Path | What it does |
+| --- | --- |
+| `src/content/projects.json` | Every project, in display order. The single source of truth for the UI, the JSON-LD and the noscript list. |
+| `src/content/profile.json` | Hero copy, the four skills, education, leadership and links. |
+| `src/content/professional.json`, `achievements.json`, `claude-story.json` | Experience, awards with certificate images, and the How I work section. |
+| `src/site/scene/` | The particle scene. `shapes.ts` builds the point clouds, `state.ts` maps scroll position to a morph, `Scene.tsx` renders it. |
+| `src/site/sections/` | One component per page section, plus the project modal and certificate lightbox. |
+| `vite.config.ts` | Injects the project count, JSON-LD and noscript list into `index.html` at build time. |
 
-**Key Features:**
+Any element with `data-shape="<index>"` becomes a waypoint for the scene. The page centre is mapped onto one continuous morph between neighbouring waypoints, so there is never a jump at a section boundary.
 
-- **Live Distribution Chart:**
+## Adding a project
 
-  - Adjust the mean, standard deviation, and specification limits (LSL/USL) to see the normal curve update instantly.
-  - Visualize the impact of changes on the shape and spread of the distribution.
+1. Add an entry to `src/content/projects.json`. Set `featured: true` to show it in the horizontal gallery.
+2. Optional media goes in `public/media/`: `<id>.jpg` as the poster (16:10), `<id>.mp4` as a short muted loop, and `<id>-film.mp4` for a longer demo that plays in the project modal. Reference them with the `poster`, `video` and `film` fields.
+3. Projects without media get generated cover art in their `accent` colour.
 
-- **Process Capability Metrics:**
+Keep loops under 10 seconds and about 1 MB: `ffmpeg -i in.mov -vf scale=960:-2 -c:v libx264 -crf 26 -preset slow -movflags +faststart -an out.mp4`.
 
-  - Instantly calculate and display Pp, Ppk, and PPM (defects per million) as you adjust parameters.
-  - See how process centering and spread affect capability indices.
-
-- **Educational Tooltips:**
-
-  - Hover over controls and metrics to get clear, concise explanations of statistical concepts.
-  - Learn the formulas and significance of each metric in context.
-
-- **Modern, Responsive UI:**
-  - Built with React and TypeScript for a smooth, interactive experience.
-  - Clean, professional design that works on all devices.
-
-**Tech Stack:**
-
-- React & TypeScript for robust component architecture
-- Chart.js for high-performance data visualization
-- SCSS for maintainable styling
-- Vite for fast development and optimized builds
-
-## 🛠️ Local Development
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-
-### Setup
+## Development
 
 ```bash
-# Clone the repository
-git clone https://github.com/kbhatnagar97/Portfolio.git
-cd Portfolio
-
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
+npm run dev      # http://localhost:5173
+npm run build    # type check and production build
+npm run lint
 ```
 
-## 🔗 External Projects
+Pushing to `main` deploys to Vercel. `/gaussian-visualizer` is proxied to its own Vercel project through `vercel.json`.
 
-**Habit Tracker:** For a comprehensive habit tracking application with advanced analytics, visit [habit-tracker.in](https://habit-tracker.in)
+## License
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT, see [LICENSE](LICENSE).

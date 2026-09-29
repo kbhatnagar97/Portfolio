@@ -1,0 +1,93 @@
+{
+  "name": "Kshitij Bhatnagar",
+  "role": "Software Engineer",
+  "company": "HashedIn by Deloitte",
+  "careerStart": "2020-02",
+  "intro": "I turn ideas into live products: the interface, the 3D, the AI and the infrastructure underneath. Six years of enterprise frontend by day, a studio of shipped side products by night.",
+  "email": "kshitijbhatnagar97@gmail.com",
+  "photo": "/images/Profile.JPG",
+  "skills": [
+    {
+      "id": "interfaces",
+      "shape": "interface",
+      "title": "Interfaces that feel effortless",
+      "body": "Production React and TypeScript for enterprise clients since 2020: design systems, reusable component libraries, keyboard friendly accessible UI and pages that load fast.",
+      "proof": ["Component library that cut dev time by 40%", "30 to 40% faster page loads", "85%+ unit test coverage held"],
+      "tools": ["React", "TypeScript", "Next.js", "Web Components", "SCSS", "Tailwind", "Jest", "Accessibility"],
+      "projects": ["habit-tracker", "hapnin", "jetstream", "therapy-site"]
+    },
+    {
+      "id": "3d-data",
+      "shape": "globe",
+      "title": "3D and data you can touch",
+      "body": "Globes, particle fields and charts you drag. I use three.js, GSAP and d3 to turn dense numbers into something you understand by playing with it, like the particles on this page.",
+      "proof": ["Live data globe for 260 cities and 193 countries", "Tile free SVG flight globe", "Draggable process capability curve"],
+      "tools": ["three.js", "React Three Fiber", "GLSL shaders", "GSAP", "d3", "Chart.js", "SVG", "Canvas"],
+      "projects": ["orbitalspace", "jetstream", "gaussian-visualizer", "off-the-bench", "knowledge-graph"]
+    },
+    {
+      "id": "ai",
+      "shape": "network",
+      "title": "AI that does real work",
+      "body": "Agents, retrieval and speech pipelines with a human in the loop. I build with Claude, MCP, local models on Ollama, Whisper and Gemini, and I direct coding agents the way a lead directs a team.",
+      "proof": ["MCP server that Claude and Cursor can call", "Local RAG over 550+ personal memories", "Nothing posts or spends without approval"],
+      "tools": ["Claude", "MCP", "RAG", "Embeddings", "Ollama", "Whisper", "Gemini", "n8n"],
+      "projects": ["context-bridge", "learn", "linkedin-newsroom", "jarvis", "knowledge-graph", "hinge-copilot"]
+    },
+    {
+      "id": "shipping",
+      "shape": "stack",
+      "title": "Shipped, secured and paid for",
+      "body": "Products that run on real infrastructure, with sign in, payments, SEO and Cloudflare in front. I own the whole path from the database to the domain.",
+      "proof": ["Google sign in and Razorpay payments in production", "Cloudflare security on the product domains", "Serverless Python, Cloud Run and Postgres"],
+      "tools": ["Node", "Python", "Firebase", "Cloud Run", "Postgres", "Redis", "Cloudflare", "Vercel"],
+      "projects": ["astrolenz", "learn", "hapnin", "moneymap"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech, Electronics and Communication",
+      "minor": "Minor in Computer Science",
+      "institution": "VIT University",
+      "duration": "2016 to 2020",
+      "grade": "CGPA 8.8",
+      "certificates": [
+        "/images/Linkedin/VIT/VIT-Degree.jpeg",
+        "/images/Linkedin/VIT/VIT-Transfer-Certificate.jpeg",
+        "/images/Linkedin/VIT/Teaching-Assistant-Certificate.png",
+        "/images/Linkedin/VIT/SPIE-Membership-Certificate.jpeg"
+      ]
+    },
+    {
+      "degree": "Higher Secondary, Science",
+      "institution": "The Shri Ram School",
+      "duration": "2002 to 2016",
+      "certificates": [
+        "/images/Linkedin/School/ShrRam-Transfer-Certificate.jpeg",
+        "/images/Linkedin/School/ShriRam-Character-Certificate.jpeg"
+      ]
+    }
+  ],
+  "leadership": [
+    "Under Secretary General, Internal Affairs, VITCMUN",
+    "Treasurer, SPIE Optics and Photonics Society",
+    "Technical Adviser, OWASP",
+    "Head of Marketing, TechnoVIT and Vibrance",
+    "Student Mentor, VITeach",
+    "Teaching Assistant, Circuit Theory",
+    "Organiser, Sociothon"
+  ],
+  "collegeProjects": [
+    { "title": "Mobile Phone System", "year": "2019", "tech": "Raspberry Pi, GSM, Python", "body": "Calls, SMS and contacts on a Raspberry Pi with a GSM module." },
+    { "title": "Digital Lock System", "year": "2018", "tech": "8051, EEPROM, keypad", "body": "Password access control with attempt tracking and an emergency override." },
+    { "title": "Universal Remote", "year": "2017", "tech": "IR, AC mains control", "body": "One controller that learns IR codes and switches mains appliances safely." },
+    { "title": "Smart Home Security", "year": "2016", "tech": "PIR, thermistor", "body": "Motion and temperature monitoring with zone based alerts." }
+  ],
+  "links": [
+    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/kshitij-bhatnagar-18046374/" },
+    { "label": "GitHub", "href": "https://github.com/kbhatnagar97" },
+    { "label": "DEV", "href": "https://dev.to/kbhatnagar" },
+    { "label": "Stack Overflow", "href": "https://stackoverflow.com/users/20596775/kshitij-bhatnagar" },
+    { "label": "Instagram", "href": "https://www.instagram.com/kbhatnagar97" }
+  ]
+}
