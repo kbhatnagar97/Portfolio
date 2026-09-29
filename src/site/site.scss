@@ -535,11 +535,11 @@ dd {
 
   &__line {
     display: block;
-    // each line is the reveal mask: the padding gives italic overhang and descenders room inside it,
-    // the negative margins hand that space back so the title keeps its tight 0.88 rhythm
+    // each line is the reveal mask: side padding gives italic overhang room, the 1.2 line box already holds descenders,
+    // the negative margins hand the extra space back so the title keeps its tight 0.88 rhythm
     line-height: 1.2;
-    padding: 0.1em 0.2em 0.24em 0.12em;
-    margin: -0.26em -0.2em -0.4em -0.12em;
+    padding: 0.1em 0.2em 0 0.12em;
+    margin: -0.26em -0.2em -0.16em -0.12em;
 
     &--serif {
       font-family: var(--font-serif);

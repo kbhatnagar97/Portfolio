@@ -35,7 +35,7 @@ const Hero = () => {
           el.classList.add('is-revealing');
           gsap
             .timeline({ defaults: { ease: 'expo.out' } })
-            .from(split.chars, { yPercent: 130, duration: 1.4, stagger: 0.035, onComplete: reveal }, 0.15)
+            .from(split.chars, { yPercent: 115, duration: 1.4, stagger: 0.035, onComplete: reveal }, 0.15)
             .from('.hero__eyebrow, .hero__intro, .hero__actions', { y: 24, autoAlpha: 0, duration: 1.2, stagger: 0.1 }, 0.6)
             .from('.hero__stat', { y: 20, autoAlpha: 0, duration: 1, stagger: 0.08 }, 0.9)
             .from('.hero__hint', { autoAlpha: 0, duration: 1 }, 1.4);
