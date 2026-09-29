@@ -60,6 +60,12 @@ body {
   overflow-x: hidden;
 }
 
+// SplitText line masks clip to the line box; headings run tight line-heights, so widen the mask to keep descenders and italics whole
+[data-split] > div {
+  padding: 0.04em 0.12em 0.16em 0.04em;
+  margin: -0.04em -0.12em -0.16em -0.04em;
+}
+
 ::selection {
   background: var(--gold);
   color: var(--bg);
@@ -486,7 +492,7 @@ dd {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 120px var(--gutter) 32px;
+  padding: 120px var(--gutter) calc(32px + env(safe-area-inset-bottom));
   max-width: var(--max);
   margin: 0 auto;
 
@@ -521,7 +527,7 @@ dd {
   &__title {
     display: flex;
     flex-direction: column;
-    font-size: clamp(64px, 11.5vw, 188px);
+    font-size: clamp(56px, min(11.5vw, 21vh), 188px); // capped by height so short screens keep the intro and buttons in view
     font-weight: 500;
     line-height: 0.88;
     letter-spacing: -0.05em;
@@ -529,6 +535,11 @@ dd {
 
   &__line {
     display: block;
+    // SplitText masks each char to its line box: a taller line box keeps descenders and italic overhang visible,
+    // the negative margins hand the extra height back so the title stays tight
+    line-height: 1.2;
+    margin: -0.16em 0;
+    padding-right: 0.1em;
 
     &--serif {
       font-family: var(--font-serif);
@@ -537,7 +548,6 @@ dd {
       letter-spacing: -0.02em;
       color: var(--gold);
       padding-left: 0.04em;
-      padding-bottom: 0.08em;
     }
   }
 
@@ -621,6 +631,28 @@ dd {
       border-radius: 2px;
       background: var(--gold);
       animation: wheel 1.8s var(--ease) infinite;
+    }
+  }
+
+  @media (height < 760px) {
+    padding-top: 96px;
+
+    &__eyebrow {
+      margin-bottom: 16px;
+    }
+
+    &__intro {
+      margin-top: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    &__actions {
+      margin-top: 24px;
+    }
+
+    &__stats {
+      margin-top: 32px;
     }
   }
 
@@ -1781,7 +1813,7 @@ dd {
   max-width: var(--max);
   width: 100%;
   margin: 0 auto;
-  padding: 28px 0 32px;
+  padding: 28px 0 calc(32px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   font-size: 13px;
   color: var(--faint);
