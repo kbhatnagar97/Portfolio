@@ -527,7 +527,7 @@ dd {
   &__title {
     display: flex;
     flex-direction: column;
-    font-size: clamp(64px, 11.5vw, 188px);
+    font-size: clamp(56px, min(11.5vw, 21vh), 188px); // capped by height so short screens keep the intro and buttons in view
     font-weight: 500;
     line-height: 0.88;
     letter-spacing: -0.05em;
@@ -631,6 +631,28 @@ dd {
       border-radius: 2px;
       background: var(--gold);
       animation: wheel 1.8s var(--ease) infinite;
+    }
+  }
+
+  @media (height < 760px) {
+    padding-top: 96px;
+
+    &__eyebrow {
+      margin-bottom: 16px;
+    }
+
+    &__intro {
+      margin-top: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    &__actions {
+      margin-top: 24px;
+    }
+
+    &__stats {
+      margin-top: 32px;
     }
   }
 
