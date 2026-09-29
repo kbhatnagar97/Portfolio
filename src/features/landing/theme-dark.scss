@@ -1,6 +1,5 @@
 // Dark-luxury theme layer — imported LAST in LandingPage.tsx so it re-maps the
-// cream palette to ink + gold. Scoped under .landing-page so the Gaussian route
-// (which has no .landing-page wrapper) keeps its own styling.
+// cream palette to ink + gold. Scoped under .landing-page.
 
 .landing-page {
   // palette flip (these cascade to every descendant that uses the vars)

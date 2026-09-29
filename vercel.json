@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/gaussian-visualizer", "destination": "https://gaussian-visualizer.vercel.app/" },
+    { "source": "/gaussian-visualizer/:path*", "destination": "https://gaussian-visualizer.vercel.app/:path*" }
+  ]
+}

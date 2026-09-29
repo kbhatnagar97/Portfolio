@@ -1333,21 +1333,6 @@ body {
     }
   }
 
-  &--gaussian {
-    .project-showcase__text {
-      order: 2;
-      @media (max-width: 1024px) {
-        order: unset;
-      }
-    }
-    .project-showcase__visual {
-      order: 1;
-      @media (max-width: 1024px) {
-        order: unset;
-      }
-    }
-  }
-
   &__gif {
     width: 100%;
     height: auto;

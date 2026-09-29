@@ -214,7 +214,7 @@ const ProjectsShowcase: React.FC = () => {
             Things I&apos;ve built <span className='showcase__grad'>with AI</span>
           </h2>
           <p className='showcase__subtitle'>
-            {PROJECTS.length}+ products and experiments — {liveCount} live on the
+            {PROJECTS.length}+ products and experiments, {liveCount} live on the
             web. Every one started with a real problem. Open any card to read why
             it exists.
           </p>

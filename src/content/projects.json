@@ -11,10 +11,17 @@
     "repo": "",
     "year": "2026",
     "accent": "#e8794a",
-    "stack": ["Next.js", "React", "Tailwind", "Cloud Run", "Postgres", "Firebase"],
-    "summary": "Curated events and activities discovery that helps newcomers feel at home — warmer and less cluttered than the big ticketing apps.",
+    "stack": [
+      "Next.js",
+      "React",
+      "Tailwind",
+      "Cloud Run",
+      "Postgres",
+      "Firebase"
+    ],
+    "summary": "Curated events and activities discovery that helps newcomers feel at home, warmer and less cluttered than the big ticketing apps.",
     "spark": "When I moved cities and joined a 1,000-person newcomers' WhatsApp group, every genuine event drowned under housing, jobs and marketplace noise. I kept missing things I would have loved to attend.",
-    "build": "So I built a curated, community-first discovery app: verified organisers, structured listings and a deliberately calm interface — an installable, SEO-first PWA on a Postgres backend, live behind Cloudflare on hapnin.city.",
+    "build": "So I built a curated, community-first discovery app: verified organisers, structured listings and a deliberately calm interface: an installable, SEO-first PWA on a Postgres backend, live behind Cloudflare on hapnin.city.",
     "architecture": [
       "Curated + verified supply chosen over open chaos",
       "SEO-first SSG pages with per-event schema.org data",
@@ -28,10 +35,45 @@
     ]
   },
   {
+    "id": "orbitalspace",
+    "name": "OrbitalSpace",
+    "emoji": "🛰️",
+    "tagline": "The whole planet, live, on one globe",
+    "category": "Data & Finance",
+    "status": "Live",
+    "live": true,
+    "url": "https://orbitalspace.in",
+    "repo": "",
+    "year": "2026",
+    "accent": "#2997ff",
+    "stack": [
+      "Next.js",
+      "React",
+      "three.js",
+      "three-globe",
+      "GSAP",
+      "Firebase"
+    ],
+    "summary": "A live 3D Earth that puts temperature for 260 cities, GDP per capita for 193 countries and every magnitude 4.5+ earthquake on one globe, with a page behind every dot.",
+    "spark": "Live weather, national economics and earthquakes each sit on different sites, maps and tables. I wanted to see the whole planet at once and go from a glowing dot on a globe to the numbers behind it in a single click.",
+    "build": "I built one three.js globe with three layers: Stratum for live temperature and air quality, Meridian for World Bank indicators, and Signal for USGS earthquakes and NASA natural events. A scroll story flies a day and night Earth along one continuous camera path, and every city, country and quake gets its own page, live on orbitalspace.in behind Cloudflare.",
+    "architecture": [
+      "One shared globe engine drives three data layers",
+      "Daily snapshot rebuild + ISR, browser polls each source at its own cadence",
+      "Scroll camera on spline paths, one continuous flight with no seams"
+    ],
+    "highlights": [
+      "260 cities, 193 countries, M4.5+ quakes",
+      "Open-Meteo, World Bank, USGS and NASA data",
+      "A page behind every city, country and quake",
+      "Scroll story on a textured day and night Earth"
+    ]
+  },
+  {
     "id": "moneymap",
     "name": "MoneyMap",
     "emoji": "📈",
-    "tagline": "Watch $1,000 grow across every market — honestly",
+    "tagline": "Watch $1,000 grow across every market, honestly",
     "category": "Data & Finance",
     "status": "Live",
     "live": true,
@@ -39,12 +81,19 @@
     "repo": "",
     "year": "2026",
     "accent": "#22c55e",
-    "stack": ["Next.js", "React", "TypeScript", "Cloud Run", "Cloud Scheduler", "GCS"],
-    "summary": "An honest, gamified multi-asset money manager on real market data, real fees and real Indian taxes — it shows losses as clearly as gains.",
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Cloud Run",
+      "Cloud Scheduler",
+      "GCS"
+    ],
+    "summary": "An honest, gamified multi-asset money manager on real market data, real fees and real Indian taxes. It shows losses as clearly as gains.",
     "spark": "Every 'get rich' tool I saw quietly hid fees, taxes and the boring truth that most active trading loses to simply holding an index. I wanted to see the honest version with my own eyes.",
-    "build": "I built a gamified money manager that runs $1,000 of paper money across stocks, crypto, bonds and ETFs with real fees and Indian taxes modelled on every trade, benchmarked against buy-and-hold — ticking 24/7 on Cloud Run.",
+    "build": "I built a gamified money manager that runs $1,000 of paper money across stocks, crypto, bonds and ETFs with real fees and Indian taxes modelled on every trade, benchmarked against buy-and-hold, ticking 24/7 on Cloud Run.",
     "architecture": [
-      "Honest by design — real fees, real tax, real benchmark",
+      "Honest by design: real fees, real tax, real benchmark",
       "Swappable Broker + DataSource seams (paper now, real later)",
       "Stateful ticker on Cloud Run + Scheduler + GCS ledger"
     ],
@@ -52,7 +101,7 @@
       "Real live data (Binance + Yahoo)",
       "Models fees + Indian crypto/equity tax",
       "24/7 paper trader on Google Cloud",
-      "Never fakes returns — honest by design"
+      "Never fakes returns, honest by design"
     ]
   },
   {
@@ -67,10 +116,16 @@
     "repo": "",
     "year": "2026",
     "accent": "#38bdf8",
-    "stack": ["Next.js", "React", "TypeScript", "d3-geo", "TopoJSON"],
-    "summary": "One app for the whole flight journey — book, then track on an immersive orthographic globe with live status, delay predictions and a lifetime travel passport.",
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "d3-geo",
+      "TopoJSON"
+    ],
+    "summary": "One app for the whole flight journey: book, then track on an immersive orthographic globe with live status, delay predictions and a lifetime travel passport.",
     "spark": "I loved one app for tracking flights and a different one for booking them, and hated bouncing between the two. No single product owned the whole journey end to end.",
-    "build": "So I built one companion for the entire trip — search and book, then track on an immersive globe with live status and delay predictions, then keep a lifetime travel passport — all rendered as tile-free SVG with no API keys.",
+    "build": "So I built one companion for the entire trip: search and book, then track on an immersive globe with live status and delay predictions, then keep a lifetime travel passport, all rendered as tile-free SVG with no API keys.",
     "architecture": [
       "Single swappable DataSource adapter (mock → real)",
       "Self-contained SVG globe, no map tiles or keys",
@@ -95,48 +150,61 @@
     "repo": "https://github.com/kbhatnagar97/Habit-Tracker",
     "year": "2025",
     "accent": "#8b5cf6",
-    "stack": ["React", "TypeScript", "Chart.js", "Firebase", "Vercel"],
+    "stack": [
+      "React",
+      "TypeScript",
+      "Chart.js",
+      "Firebase",
+      "Vercel"
+    ],
     "summary": "A habit tracker that turns daily routines into actionable insight with streaks, analytics and beautiful visualisations.",
     "spark": "I would start habits on motivation alone and lose them within weeks, because I could not actually see my progress or spot where I slipped.",
-    "build": "I built a habit tracker that turns routines into data — streaks, analytics and clear visualisations with drag-and-drop planning — so consistency becomes something you can watch and defend.",
+    "build": "I built a habit tracker that turns routines into data: streaks, analytics and clear visualisations with drag-and-drop planning, so consistency becomes something you can watch and defend.",
     "architecture": [
       "React + Chart.js insight layer",
-      "Firebase sync, cross-device PWA",
+      "Firebase Auth + Firestore sync across devices",
       "Deployed behind Cloudflare on habittracker.in"
     ],
     "highlights": [
       "Streaks + analytics",
       "Beautiful data visualisations",
       "Drag-and-drop planning",
-      "Cross-device PWA"
+      "Syncs across devices"
     ]
   },
   {
     "id": "learn",
-    "name": "Learn",
-    "emoji": "🎙️",
-    "tagline": "Paste a video link, get a transcript you can give to Claude",
-    "category": "Tools & Automation",
+    "name": "VideoNote",
+    "emoji": "📝",
+    "tagline": "Paste any video, get notes you can actually study",
+    "category": "Web Apps",
     "status": "Live",
     "live": true,
-    "url": "https://grab-sooty.vercel.app",
+    "url": "https://videonote.in",
     "repo": "",
     "year": "2026",
     "accent": "#6366f1",
-    "stack": ["Python", "yt-dlp", "Groq Whisper", "Flask", "Vercel"],
-    "summary": "A personal tool that downloads the audio from any Instagram, YouTube or TikTok link and returns a clean transcript — built to feed video context to Claude in one click instead of manually summarising what I watched.",
+    "stack": [
+      "Python",
+      "yt-dlp",
+      "Groq Whisper",
+      "Firebase",
+      "Upstash Redis",
+      "Vercel"
+    ],
+    "summary": "Paste a link from YouTube, Instagram, TikTok and more, and get a timestamped transcript, a chapter timeline, study notes, flashcards, a quiz and an Ask chat that answers with cited timestamps.",
     "spark": "I save a lot of videos to review later but kept losing the thread of what I actually learnt from them. Typing out notes manually felt like busywork, and there was no easy way to pull the content into Claude without re-watching or describing it by hand.",
-    "build": "I built a minimal one-field web tool: paste a video URL, hit Transcribe, copy the text. Locally it runs faster-whisper on-device with browser cookies for private content. The deployed version uses Groq's Whisper API and a COOKIES env var. The copy button puts the raw transcript on the clipboard — ready to paste straight into Claude for instant analysis.",
+    "build": "What started as a one-field transcriber grew into VideoNote. It uses YouTube captions when it can and otherwise transcribes the audio with Whisper large v3 turbo on Groq, then writes a chapter timeline, notes, flashcards and a quiz you can question. Google sign in, prepaid Pro passes through Razorpay and a Redis usage meter all run on one Python function, live on videonote.in behind Cloudflare.",
     "architecture": [
-      "yt-dlp handles audio extraction across all platforms",
-      "Local: faster-whisper on CPU, browser cookies via yt-dlp",
-      "Deployed: Groq Whisper API, COOKIES env var for private content"
+      "Captions first, Whisper fallback, audio deleted after",
+      "One Python serverless function, Firebase Google sign in",
+      "Disclosed daily limits, no fake reference prices"
     ],
     "highlights": [
-      "Instagram, YouTube, TikTok support",
-      "One-click copy to give context to Claude",
-      "Runs locally (free) or on Vercel (Groq)",
-      "No storage — transcript lives only in the browser"
+      "YouTube, Instagram, TikTok, X and more",
+      "Timeline, notes, flashcards and quiz",
+      "Ask chat with cited timestamps",
+      "Videos are never kept"
     ]
   },
   {
@@ -147,31 +215,37 @@
     "category": "Tools & Automation",
     "status": "Live",
     "live": true,
-    "url": "https://context-bridge-ashen.vercel.app",
+    "url": "https://contextbridge.in",
     "repo": "",
     "year": "2026",
     "accent": "#f59e0b",
-    "stack": ["Next.js", "TypeScript", "markdown-it"],
-    "summary": "Paste a ChatGPT share link and get a clean, portable page plus exports so you can move conversation context between ChatGPT, Claude, Gemini and agents.",
-    "spark": "A work network blocked a ChatGPT share link I needed, and more generally my context was trapped inside one assistant — I could not cleanly carry a conversation into Claude or an agent.",
-    "build": "I built a bridge that turns any ChatGPT share into a clean page plus Markdown, JSON and 'copy-for-agent' exports, so conversation context becomes portable shared memory between AI tools.",
+    "stack": [
+      "Next.js",
+      "TypeScript",
+      "markdown-it",
+      "MCP SDK",
+      "transformers.js"
+    ],
+    "summary": "Paste a ChatGPT share link and get a clean, portable page plus exports, or let your agents pull it through an MCP server, so conversation context moves between ChatGPT, Claude, Gemini and coding agents.",
+    "spark": "A work network blocked a ChatGPT share link I needed, and more generally my context was trapped inside one assistant. I could not cleanly carry a conversation into Claude or an agent.",
+    "build": "I built a bridge that turns any ChatGPT share into a clean page plus Markdown, JSON and 'copy-for-agent' exports, then shipped an MCP server so Claude, Cursor and other agents can bridge links and search bridged chats by meaning with an in-process embedding model and no API key. It now lives on contextbridge.in behind Cloudflare.",
     "architecture": [
-      "Stateless — the share link is the store",
+      "The share link is the source, storage is optional",
       "Translate-proxy fallback for blocked networks",
-      "CORS-open exports for agents"
+      "MCP server with 5 tools for any MCP host"
     ],
     "highlights": [
       "ChatGPT share → clean page",
       "Markdown / JSON / agent exports",
-      "Move context across AI tools",
-      "No database, fully stateless"
+      "MCP server for Claude, Cursor and more",
+      "Semantic search, no API key"
     ]
   },
   {
     "id": "astrolenz",
     "name": "Astrolenz",
     "emoji": "🔭",
-    "tagline": "Vedic kundli, compatibility & AI palm reading — done right",
+    "tagline": "Vedic kundli, compatibility & AI palm reading, done right",
     "category": "Web Apps",
     "status": "Live",
     "live": true,
@@ -179,20 +253,27 @@
     "repo": "",
     "year": "2026",
     "accent": "#7c3aed",
-    "stack": ["Next.js", "TypeScript", "TensorFlow.js", "three.js", "Firebase", "Firestore"],
-    "summary": "A free, accurate Vedic astrology toolkit — birth chart (kundli), 36-guna compatibility matching and on-device AI palm reading, built on a real sidereal ephemeris.",
-    "spark": "Every big astrology app I tried buried the actual calculations under paywalls, generic horoscopes and dark-pattern subscriptions. I wanted the real maths — Lahiri ayanamsa, proper ephemeris, actual Ashtakoot scoring — free and in a single clean place.",
-    "build": "I built a full Vedic toolkit: a real sidereal birth chart using the Moshier ephemeris, 36-guna Ashtakoot matching with dosha detection, a Panchang, daily horoscopes driven by live Moon transits, numerology — and a private on-device AI palm reader using TensorFlow.js hand-pose detection, so the camera feed never leaves the browser.",
+    "stack": [
+      "Next.js",
+      "TypeScript",
+      "Firebase",
+      "Gemini on Vertex AI",
+      "TensorFlow.js",
+      "Razorpay"
+    ],
+    "summary": "A Vedic astrology toolkit on a real sidereal ephemeris: birth chart (kundli) with shadow readings, 36-guna compatibility matching, AI palm reading and an AI astrologer you can question about your own chart.",
+    "spark": "Every big astrology app I tried buried the actual calculations under generic horoscopes and dark-pattern subscriptions, and only ever told you what was great about your chart. I wanted the real maths: Lahiri ayanamsa, proper ephemeris, actual Ashtakoot scoring, plus an honest read on the blind spots, in one clean place.",
+    "build": "I built a full Vedic toolkit: a sidereal birth chart on the Moshier ephemeris with plain-English decode and shadow cards, 36-guna Ashtakoot matching with dosha detection, Panchang, numerology, a Sade Sati timeline and a Knowledge Hub. An on-device TensorFlow.js scanner frames each palm before Gemini reads it, and an AI astrologer answers questions about any saved chart. Sign in, credits and Razorpay top-ups run on Firebase, live on astrolenz.com.",
     "architecture": [
-      "Real sidereal calculations — Moshier ephemeris + Lahiri ayanamsa",
-      "On-device palm reading — TensorFlow hand-pose, zero server upload",
-      "First-party email auth + Firestore, optional ₹15 paywall toggle"
+      "Real sidereal calculations: Moshier ephemeris + Lahiri ayanamsa",
+      "On-device hand scan, Gemini palm reading on Vertex AI",
+      "Server-side credit ledger in Firestore, Razorpay top-ups"
     ],
     "highlights": [
       "Real Vedic kundli, nakshatra, dasha",
       "Full 36-guna Ashtakoot matching",
-      "AI palm reader — on-device, private",
-      "Free — no account needed"
+      "AI palm reader and AI astrologer",
+      "Free horoscope, Panchang and Knowledge Hub"
     ]
   },
   {
@@ -207,14 +288,20 @@
     "repo": "",
     "year": "2026",
     "accent": "#06b6d4",
-    "stack": ["Next.js", "three.js", "d3-geo", "Ollama", "RAG"],
-    "summary": "A private, local-first memory of my life — a spinnable 3D globe of everywhere I've been, built from wearable transcripts and photo metadata, with a chat that answers anything about my past.",
+    "stack": [
+      "Next.js",
+      "three.js",
+      "d3-geo",
+      "Ollama",
+      "RAG"
+    ],
+    "summary": "A private, local-first memory of my life: a spinnable 3D globe of everywhere I've been, built from wearable transcripts and photo metadata, with a chat that answers anything about my past.",
     "spark": "I realised my memory of where I had been and what I had felt was scattered across photos and a wearable, and quietly slipping away. I wanted to actually see and question my own life.",
-    "build": "I built a private, local-first life graph: a spinnable 3D globe of every place I've been from photo GPS and wearable transcripts, plus a local RAG chat — 'a gen-AI of my life' — that answers questions about my past with real memories and photos.",
+    "build": "I built a private, local-first life graph: a spinnable 3D globe of every place I've been from photo GPS and wearable transcripts, plus a local RAG chat, 'a gen-AI of my life', that answers questions about my past with real memories and photos.",
     "architecture": [
       "Local-first RAG on Ollama, zero cloud cost",
       "DataSource seam for wearable + photo metadata",
-      "Photo metadata only (GPS/time) — pixels never leave the Mac"
+      "Photo metadata only (GPS/time), pixels never leave the Mac"
     ],
     "highlights": [
       "3D globe of every place I've been",
@@ -235,12 +322,18 @@
     "repo": "",
     "year": "2026",
     "accent": "#e11d48",
-    "stack": ["Node", "TypeScript", "Ollama", "Piper TTS", "MCP"],
+    "stack": [
+      "Node",
+      "TypeScript",
+      "Ollama",
+      "Piper TTS",
+      "MCP"
+    ],
     "summary": "A phone-first, self-hosted AI assistant with a custom particle-brain face, human voice, sandboxed file and network hands, and the ability to delegate hard tasks to a frontier model.",
-    "spark": "I was doing the same operational glue-work over and over, and wanted a private assistant that could actually act on my behalf — not another chatbot that only talks.",
-    "build": "I built a self-hosted AI COO with a bespoke particle-brain face, wake-word voice and neural TTS, and sandboxed 'hands' for files and my network — a mediator that delegates the hard jobs to a frontier model, always behind human-approval gates.",
+    "spark": "I was doing the same operational glue-work over and over, and wanted a private assistant that could actually act on my behalf, not another chatbot that only talks.",
+    "build": "I built a self-hosted AI COO with a bespoke particle-brain face, wake-word voice and neural TTS, and sandboxed 'hands' for files and my network, a mediator that delegates the hard jobs to a frontier model, always behind human-approval gates.",
     "architecture": [
-      "Mediator pattern — local brain delegates to Claude",
+      "Mediator pattern: local brain delegates to Claude",
       "Sandboxed, path-guarded tools",
       "Human-in-the-loop on anything irreversible"
     ],
@@ -249,6 +342,41 @@
       "Local neural TTS + wake word",
       "Sandboxed file & network tools",
       "Safety gates on money & irreversible actions"
+    ]
+  },
+  {
+    "id": "linkedin-newsroom",
+    "name": "LinkedIn Newsroom",
+    "emoji": "📰",
+    "tagline": "Breaking AI news to an approved post, from my phone",
+    "category": "AI & Agents",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#d946ef",
+    "stack": [
+      "n8n",
+      "Python",
+      "Claude",
+      "Headless Chrome",
+      "ntfy",
+      "LinkedIn API"
+    ],
+    "summary": "A personal newsroom that watches AI labs and news sources, rates every story, drafts a LinkedIn post with a designed 4:5 card, and posts only after I tap Approve on my phone.",
+    "spark": "Big AI launches move fast, and by the time I had read the news, written a post and made an image, the moment had passed. I wanted to be early without handing my LinkedIn over to a bot.",
+    "build": "I built a pipeline on n8n that polls 45 sources every five minutes, has Claude Haiku rate each story, and has Claude draft the post in my voice with a rendered 1080×1350 card. Each draft arrives as one phone notification with Approve, Edit on Mac and Reject, and only an Approve publishes it through the LinkedIn Posts API with companies tagged automatically.",
+    "architecture": [
+      "Claude Haiku gate, Claude Opus drafts, validator pass on every draft",
+      "Approval over ntfy, no inbound tunnel",
+      "Persist before every risky step, one attempt per run"
+    ],
+    "highlights": [
+      "45 sources polled every 5 minutes",
+      "Stories rated 1 to 10, only the best get drafted",
+      "Nightly digest carousel on busy news days",
+      "Nothing posts without my Approve"
     ]
   },
   {
@@ -263,10 +391,15 @@
     "repo": "",
     "year": "2026",
     "accent": "#84cc16",
-    "stack": ["Next.js", "React", "three.js", "Tailwind"],
+    "stack": [
+      "Next.js",
+      "React",
+      "three.js",
+      "Tailwind"
+    ],
     "summary": "A marketing site for a Delhi-NCR tennis community targeting former competitive players. The hero is a physics-accurate bouncing felt ball that drifts right on load and scrolls to centre as the Google Form appears.",
-    "spark": "Local tennis communities were all advertised with the same tired filler and clip-art. Nothing on screen actually felt like the sport — or spoke to players who had genuinely competed.",
-    "build": "I built a standalone marketing site whose hero is a scroll-driven, procedurally textured three.js tennis ball — accurate seams, felt sheen, pointer parallax — that slides from right to centre as the community form fades in. Concrete copy, zero filler, mobile-first.",
+    "spark": "Local tennis communities were all advertised with the same tired filler and clip-art. Nothing on screen actually felt like the sport, or spoke to players who had genuinely competed.",
+    "build": "I built a standalone marketing site whose hero is a scroll-driven, procedurally textured three.js tennis ball (accurate seams, felt sheen, pointer parallax) that slides from right to centre as the community form fades in. Concrete copy, zero filler, mobile-first.",
     "architecture": [
       "Scroll-driven three.js hero, lazy-imported for SSR safety",
       "Procedural felt texture + accurate seam formula on canvas",
@@ -291,9 +424,14 @@
     "repo": "",
     "year": "2026",
     "accent": "#10b981",
-    "stack": ["HTML", "CSS", "JavaScript", "Calendly"],
-    "summary": "A calm, editorial one-page site for a CBT therapist, where clients learn about her approach and book a session — signature 'thought record' hero included.",
-    "spark": "My sister was starting her CBT practice, and every template site felt cold and clinical, or buried the one thing clients actually need — a way to book.",
+    "stack": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "Calendly"
+    ],
+    "summary": "A calm, editorial one-page site for a CBT therapist, where clients learn about her approach and book a session, signature 'thought record' hero included.",
+    "spark": "My sister was starting her CBT practice, and every template site felt cold and clinical, or buried the one thing clients actually need: a way to book.",
     "build": "I built a warm, editorial one-pager with a signature CBT 'thought record' hero and inline booking, so clients understand her approach and book in a couple of taps.",
     "architecture": [
       "Zero-build static site, deploys free",
@@ -319,10 +457,15 @@
     "repo": "",
     "year": "2026",
     "accent": "#ef4444",
-    "stack": ["Python", "Ollama", "ffmpeg", "TTS"],
+    "stack": [
+      "Python",
+      "Ollama",
+      "ffmpeg",
+      "TTS"
+    ],
     "summary": "A zero-cost pipeline that researches, scripts, narrates and renders faceless personal-finance YouTube Shorts, driven end to end by local AI.",
     "spark": "I wanted to test whether a faceless content channel could be run end to end by AI at zero cost, instead of paying for a stack of SaaS tools to do each step.",
-    "build": "I built a fully local pipeline that researches, scripts, narrates and renders real 1080×1920 personal-finance Shorts with local LLMs and ffmpeg — designed to eventually run autonomously under Jarvis.",
+    "build": "I built a fully local pipeline that researches, scripts, narrates and renders real 1080×1920 personal-finance Shorts with local LLMs and ffmpeg, designed to eventually run autonomously under Jarvis.",
     "architecture": [
       "Local, zero-cost render pipeline",
       "Research → script → voice → video stages",
@@ -347,14 +490,19 @@
     "repo": "",
     "year": "2026",
     "accent": "#a855f7",
-    "stack": ["Node", "TypeScript", "Ollama", "Apple Vision OCR"],
-    "summary": "A private assistant that learns my texting voice from my own chat exports and drafts openers and replies — with screenshot OCR input so I never retype.",
+    "stack": [
+      "Node",
+      "TypeScript",
+      "Ollama",
+      "Apple Vision OCR"
+    ],
+    "summary": "A private assistant that learns my texting voice from my own chat exports and drafts openers and replies, with screenshot OCR input so I never retype.",
     "spark": "I text nothing like the generic, try-hard openers messaging apps seem to encourage, and retyping context from screenshots to get help was tedious.",
-    "build": "I built a private assistant that learns my texting voice from my own chat exports and drafts messages that sound like me, with Apple Vision OCR so I can paste a screenshot instead of retyping. It is strictly draft-only — I always send myself.",
+    "build": "I built a private assistant that learns my texting voice from my own chat exports and drafts messages that sound like me, with Apple Vision OCR so I can paste a screenshot instead of retyping. It is strictly draft-only. I always send myself.",
     "architecture": [
       "Local model of my own voice",
       "Apple Vision OCR input, no retyping",
-      "Draft-only — no scraping or auto-send"
+      "Draft-only, no scraping or auto-send"
     ],
     "highlights": [
       "Learns your texting voice",
@@ -375,19 +523,25 @@
     "repo": "",
     "year": "2026",
     "accent": "#f97316",
-    "stack": ["Next.js", "FastAPI", "IfcOpenShell", "PostGIS"],
-    "summary": "A pre-submission FAR/zoning compliance checker: drop a pin, auto-detect the zone, upload an IFC design, and get a pass/fail report with fixes to comply.",
-    "spark": "Architects I know waste days manually cross-checking designs against dense, non-machine-readable zoning PDFs — and still risk a rejection at submission.",
-    "build": "I'm building a pre-submission compliance copilot: pin a location, auto-detect the zone, pull that place's rules, upload an IFC model, and get a pass/fail report with fixes — a trustworthy pre-check between government rules and architects.",
+    "stack": [
+      "Python",
+      "FastAPI",
+      "IfcOpenShell",
+      "Shapely",
+      "Pydantic"
+    ],
+    "summary": "A pre-submission FAR and zoning checker for architects: pick the region, upload an IFC design, and get a pass/fail report with the cited clause and the change needed to comply.",
+    "spark": "Architects I know waste days manually cross-checking designs against dense, non-machine-readable zoning PDFs, and still risk a rejection at submission.",
+    "build": "I built the compliance core first: it parses an IFC model with IfcOpenShell, computes FAR and ground coverage, and checks them against cited, versioned rule packs for residential plots. Delhi's numbers are verified against the MPD-2021 table and Gurugram's against the Haryana Building Code 2017, with Noida marked provisional because its regulations only exist as scanned PDFs. Detecting the zone from a map pin is the next step.",
     "architecture": [
-      "Geospatial zone detection in PostGIS",
       "IFC (ISO 16739) parsing via IfcOpenShell",
-      "Hand-curated, cited, versioned rule pack"
+      "Hand-curated, cited, versioned rule packs",
+      "Deterministic gap solver suggests the fix"
     ],
     "highlights": [
-      "Pin → zone → rules → IFC check",
+      "Region, IFC upload, pass/fail report",
       "Pass/fail with fixes to comply",
-      "Delhi-first, cited rule pack",
+      "Delhi and Gurugram rules verified",
       "A pre-check, not a legal authority"
     ]
   },
@@ -403,7 +557,10 @@
     "repo": "",
     "year": "2026",
     "accent": "#64748b",
-    "stack": ["Python", "dev.to API"],
+    "stack": [
+      "Python",
+      "dev.to API"
+    ],
     "summary": "A toolkit that drafts, illustrates and publishes developer articles to dev.to, tracking what's live and what's still a draft.",
     "spark": "I wanted my technical writing to actually compound reach, but publishing, illustrating and tracking articles by hand was slow and easy to drop.",
     "build": "I built a Python toolkit that drafts, renders cover images and diagrams, and publishes to dev.to through the API while tracking exactly what's live versus still a draft.",
@@ -423,28 +580,33 @@
     "id": "gaussian-visualizer",
     "name": "Gaussian Visualizer",
     "emoji": "📊",
-    "tagline": "See statistics change in real time",
+    "tagline": "Move the mean, watch the defects appear",
     "category": "Data & Finance",
     "status": "Live",
     "live": true,
     "url": "/gaussian-visualizer",
-    "repo": "https://github.com/kbhatnagar97/Portfolio",
-    "year": "2025",
+    "repo": "",
+    "year": "2026",
     "accent": "#d79f2b",
-    "stack": ["React", "TypeScript", "Chart.js"],
-    "summary": "An interactive tool that makes normal distributions and process-capability metrics tangible — adjust the mean, spread and limits and watch Pp, Ppk and PPM update instantly.",
-    "spark": "Understanding process capability from static textbook curves never clicked for me — you could not feel how the numbers actually move as the process shifts.",
-    "build": "I built an interactive visualiser where adjusting the mean, spread and spec limits instantly updates the curve and the Pp/Ppk/PPM metrics, making the statistics tangible. It lives right here on this site.",
+    "stack": [
+      "JavaScript",
+      "SVG",
+      "Canvas",
+      "Vercel"
+    ],
+    "summary": "An interactive normal distribution for process capability: drag the mean, the spread and the spec limits right on the curve and watch Pp, Ppk, PPM and yield update live.",
+    "spark": "Understanding process capability from static textbook curves never clicked for me. You could not feel how the numbers actually move as the process shifts.",
+    "build": "I rebuilt it as its own small app: an SVG chart where the spec limits, the mean and the shoulder of the curve are draggable handles, live Pp, Ppk, PPM and yield with a plain-language verdict, and a hero where simulated parts fall into a histogram as the process drifts, so defects visibly land outside the limits. It is one static page with no dependencies, served on this domain.",
     "architecture": [
-      "Real-time Chart.js distribution",
-      "Lightweight statistics under the hood",
-      "Embedded route inside this portfolio"
+      "One static HTML file, no build and no dependencies",
+      "Accurate tail maths, so the Six Sigma preset reads 3.4 PPM",
+      "Standalone Vercel app proxied to /gaussian-visualizer here"
     ],
     "highlights": [
-      "Live distribution chart",
-      "Instant Pp / Ppk / PPM",
-      "Educational tooltips",
-      "Runs right here on this site"
+      "Drag the limits, mean and σ on the curve",
+      "Live Pp, Ppk, PPM and yield",
+      "Presets from a 20 mm bolt to Six Sigma",
+      "Keyboard accessible handles"
     ]
   }
 ]

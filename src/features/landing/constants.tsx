@@ -133,30 +133,6 @@ export const LANDING_PAGE_CONSTANTS = {
       },
     },
 
-    GAUSSIAN_VISUALIZER: {
-      TITLE: 'The System for Understanding Data',
-      TECH_TAGS: ['React', 'TypeScript', 'Chart.js'],
-      DESCRIPTION: {
-        PARAGRAPH_1:
-          'Statistics come alive when you can see them change in real-time. This interactive Gaussian distribution visualizer makes complex statistical concepts accessible through intuitive controls and instant visual feedback.',
-        PARAGRAPH_2:
-          "Built with cutting-edge technology that Chart.js doesn't readily provide, using lightweight statistical libraries running mathematical computations under the hood to make this level of real-time visualization possible. Watch as process capability metrics update instantly, revealing the story hidden in your data.",
-      },
-      ACTIONS: {
-        PRIMARY: {
-          TEXT: 'Interactive Demo',
-          HREF: '/gaussian-visualizer',
-        },
-        SECONDARY: {
-          TEXT: 'Source Code',
-          HREF: 'https://github.com/kbhatnagar97/Portfolio',
-        },
-      },
-      IMAGE: {
-        SRC: '/images/gaussian-tracker.gif',
-        ALT: 'Gaussian Visualizer Demo',
-      },
-    },
   },
 
   // Journey Section
@@ -285,24 +261,6 @@ export const LANDING_PAGE_CONSTANTS = {
     SECTION_SUBTITLE: 'Showcasing innovation through code',
     
     PROJECTS: [
-      {
-        ID: 'gaussian-visualizer',
-        TITLE: 'Gaussian Distribution Visualizer',
-        SUBTITLE: 'Interactive Statistical Learning',
-        DESCRIPTION: 'Real-time Gaussian distribution visualization with dynamic parameter control, built with React and D3.js for enhanced statistical understanding.',
-        TECH_STACK: ['React', 'TypeScript', 'D3.js', 'SCSS', 'Vite'],
-        FEATURES: [
-          'Real-time parameter adjustment',
-          'Interactive probability calculations',
-          'Responsive data visualization',
-          'Educational tooltips'
-        ],
-        DEMO_URL: '/gaussian-visualizer',
-        GITHUB_URL: '#',
-        STATUS: 'LIVE',
-        IMPACT: '40% improved data visualization accuracy',
-        ICON: '📊'
-      },
       {
         ID: 'habit-tracker',
         TITLE: 'Smart Habit Tracker',
