@@ -535,11 +535,11 @@ dd {
 
   &__line {
     display: block;
-    // SplitText masks each char to its line box: a taller line box keeps descenders and italic overhang visible,
-    // the negative margins hand the extra height back so the title stays tight
+    // each line is the reveal mask: side padding gives italic overhang room, the 1.2 line box already holds descenders,
+    // the negative margins hand the extra space back so the title keeps its tight 0.88 rhythm
     line-height: 1.2;
-    margin: -0.16em 0;
-    padding-right: 0.1em;
+    padding: 0.1em 0.2em 0 0.12em;
+    margin: -0.26em -0.2em -0.16em -0.12em;
 
     &--serif {
       font-family: var(--font-serif);
@@ -547,8 +547,13 @@ dd {
       font-weight: 400;
       letter-spacing: -0.02em;
       color: var(--gold);
-      padding-left: 0.04em;
+      padding-left: 0.16em;
     }
+  }
+
+  // clip only while the chars rise in; once they land nothing can slice a glyph
+  &.is-revealing &__line {
+    overflow: hidden;
   }
 
   &__intro {
