@@ -1,0 +1,74 @@
+// Card bot floor: the canvas crew, its caption and the mobile card rules.
+
+.acard {
+  --bot-shell: #1d1813;
+  --bot-head: #2a221b;
+
+  // the engine writes --bots-ar so phones get a portrait shelf stack
+  & &__screen {
+    aspect-ratio: var(--bots-ar, 16 / 9);
+    overflow: hidden;
+  }
+
+  &__bots {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  &__live,
+  &__corner {
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &__caption {
+    position: absolute;
+    right: 44px;
+    bottom: 12px;
+    left: 16px;
+    z-index: 1;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--holo) 85%, transparent);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    transition: opacity 0.12s linear;
+
+    &.is-swap {
+      opacity: 0;
+    }
+  }
+
+  &__screen.is-compact &__caption {
+    bottom: 10px;
+    display: -webkit-box;
+    line-height: 1.25;
+    white-space: normal;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  & &__stats dt {
+    font-size: 11px;
+  }
+
+  @media (width <= 560px) {
+    & &__body {
+      padding: 20px;
+    }
+
+    & &__launch {
+      justify-self: stretch;
+      min-height: 56px;
+    }
+  }
+}

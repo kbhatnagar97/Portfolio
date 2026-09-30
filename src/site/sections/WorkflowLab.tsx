@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { gsap, lockScroll, reducedMotion } from '../smooth';
-import { KIND_LABEL, NH, NW, edgeKind, edgePath, layoutOf, type TPoint } from '../flow';
+import { BOT, ITEM, KIND_LABEL, NH, NW, edgeKind, edgePath, itemOf, layoutOf, type TItem, type TLayout, type TPoint } from '../flow';
 import type { IAutomation, IFlowChoice, IFlowStep } from '../data';
 import '../lab.scss';
 
@@ -43,24 +43,123 @@ let seq = 0;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// #region Packet
-// Reads the edge path every frame, so a packet follows its edge even while a node is being dragged.
-const Packet = ({ d, tone, onDone }: { d: string; tone: string; onDone: () => void }) => {
+// #region Layout mode
+// portrait tablets get the stack too: the wide board would shrink node text under 10px there
+const Q_COMPACT = '(max-width: 720px), (max-height: 560px), (max-width: 900px) and (orientation: portrait)';
+const Q_STRIP = '(max-height: 560px) and (orientation: landscape)';
+const subscribeMode = (cb: () => void) => {
+  const qs = [Q_COMPACT, Q_STRIP].map((q) => matchMedia(q));
+  qs.forEach((q) => q.addEventListener('change', cb));
+  return () => qs.forEach((q) => q.removeEventListener('change', cb));
+};
+const modeNow = (): TLayout => (matchMedia(Q_STRIP).matches ? 'strip' : matchMedia(Q_COMPACT).matches ? 'stack' : 'wide');
+// #endregion
+
+// #region Bot
+const PARTS = ['chassis', 'head', 'wheelL', 'wheelR', 'arm', 'antenna'] as const;
+type TPart = (typeof PARTS)[number];
+const ARM_HOME: [number, number] = [BOT.arm.sx + 3, BOT.arm.sy + 3];
+const HOME: Record<TPart, [number, number]> = {
+  chassis: [BOT.chassis.x, BOT.chassis.y],
+  head: [BOT.head.x, BOT.head.y],
+  wheelL: [-BOT.wheel.x, BOT.wheel.y],
+  wheelR: [BOT.wheel.x, BOT.wheel.y],
+  arm: ARM_HOME,
+  antenna: [0, (BOT.antenna.y1 + BOT.antenna.y2) / 2],
+};
+const STALK = (BOT.antenna.y1 - BOT.antenna.y2) / 2;
+
+// Each part is drawn about its own centre, so a broken part tumbles about itself.
+const botPart = (part: TPart, halo = false) => {
+  switch (part) {
+    case 'chassis':
+      return (
+        <>
+          <path className='lab__bot-shell' d={BOT.chassis.d} />
+          <path className='lab__bot-stripe' d={BOT.stripe.d} />
+        </>
+      );
+    case 'head':
+      return (
+        <>
+          <line className='lab__bot-limb' y1={BOT.neck.y1 - BOT.head.y} y2={BOT.neck.y2 - BOT.head.y} />
+          <path className='lab__bot-head' d={BOT.head.d} />
+          <g transform={`translate(${BOT.visor.x - BOT.head.x} ${BOT.visor.y - BOT.head.y})`}>
+            <path className='lab__bot-visor' d={BOT.visor.d} />
+          </g>
+          <circle className='lab__bot-pupil' r={BOT.pupil.r} cx={BOT.visor.x - BOT.pupil.dx + BOT.pupil.slide * 0.6} cy={BOT.visor.y - BOT.head.y} />
+          <circle className='lab__bot-pupil' r={BOT.pupil.r} cx={BOT.visor.x + BOT.pupil.dx + BOT.pupil.slide * 0.6} cy={BOT.visor.y - BOT.head.y} />
+          {halo && <circle className='lab__bot-halo' r='11' />}
+        </>
+      );
+    case 'wheelL':
+    case 'wheelR':
+      return (
+        <>
+          <circle className='lab__bot-wheel' r={BOT.wheel.r} />
+          <line className='lab__bot-spoke' y1={-BOT.wheel.r} y2={BOT.wheel.r} />
+        </>
+      );
+    case 'arm':
+      return (
+        <>
+          <line className='lab__bot-limb' x1='-1' y1={-BOT.arm.len / 2} x2='1' y2={BOT.arm.len / 2} />
+          <circle className='lab__bot-tip' r={BOT.arm.hand} cx='1' cy={BOT.arm.len / 2} />
+        </>
+      );
+    case 'antenna':
+      return (
+        <>
+          <line className='lab__bot-stalk' y1={STALK} y2={-STALK} />
+          <circle className='lab__bot-glow' r={BOT.antenna.glow} cy={-STALK} />
+          <circle className='lab__bot-tip' r={BOT.antenna.tip} cy={-STALK} />
+        </>
+      );
+  }
+};
+// #endregion
+
+// #region Courier
+const CS = 1.8;
+// The packet is a courier bot carrying the flow's item; it reads the edge path every frame, so it follows a node being dragged.
+const Packet = ({ d, tone, item, onDone }: { d: string; tone: string; item: TItem; onDone: () => void }) => {
   const path = useRef<SVGPathElement>(null);
   const dot = useRef<SVGGElement>(null);
+  const bot = useRef<SVGGElement>(null);
+  const body = useRef<SVGGElement>(null);
 
   useEffect(() => {
     const p = path.current;
     const g = dot.current;
-    if (!p || !g) return;
+    const b = bot.current;
+    const bd = body.current;
+    if (!p || !g || !b || !bd) return;
     const o = { t: 0 };
+    const t0 = performance.now();
+    let lx = NaN;
+    let ly = 0;
+    let dir = 1;
+    let dist = 0;
     const tween = gsap.to(o, {
       t: 1,
       duration: reducedMotion() ? 0.05 : 0.8,
       ease: 'power1.inOut',
       onUpdate: () => {
         const pt = p.getPointAtLength(o.t * p.getTotalLength());
+        if (!Number.isNaN(lx)) {
+          const dx = pt.x - lx;
+          dist += Math.hypot(dx, pt.y - ly);
+          const s = dx < 0 ? -1 : 1;
+          if (Math.abs(dx) >= 0.01 && s !== dir) {
+            dir = s;
+            b.setAttribute('transform', `scale(${CS * s} ${CS})`);
+          }
+        }
+        lx = pt.x;
+        ly = pt.y;
         g.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+        bd.setAttribute('transform', `translate(0 ${Math.sin(((performance.now() - t0) / 1000) * Math.PI * 6) * 1.2})`);
+        b.style.setProperty('--spin', `${dist / (BOT.wheel.r * CS)}rad`);
       },
       onComplete: onDone,
     });
@@ -69,14 +168,221 @@ const Packet = ({ d, tone, onDone }: { d: string; tone: string; onDone: () => vo
     };
   }, [onDone]);
 
+  const [ax, ay] = ARM_HOME;
   return (
     <>
       <path ref={path} d={d} fill='none' stroke='none' />
       <g ref={dot} className={`lab__packet lab__packet--${tone}`}>
-        <circle r='18' className='lab__packet-halo' />
-        <circle r='6' />
+        <circle r='18' className='lab__packet-halo' transform='scale(1 0.3)' />
+        <g ref={bot} className='lab__courier' transform={`scale(${CS} ${CS})`}>
+          {(['wheelL', 'wheelR'] as const).map((w) => (
+            <g key={w} transform={`translate(${HOME[w][0]} ${HOME[w][1]})`}>
+              {botPart(w)}
+            </g>
+          ))}
+          <g ref={body}>
+            {(['chassis', 'head', 'antenna'] as const).map((w) => (
+              <g key={w} transform={`translate(${HOME[w][0]} ${HOME[w][1]})`}>
+                {botPart(w)}
+              </g>
+            ))}
+            <polyline className='lab__bot-limb' points={`${ax - 3},${ay - 3} ${ax + 4},${ay - 10} ${ax - 1},-40`} />
+            <path className='lab__courier-item' d={ITEM[item].d} transform='translate(0 -46)' />
+            <circle className='lab__bot-tip' r={BOT.arm.hand} cx={ax - 1} cy='-40' />
+          </g>
+        </g>
       </g>
     </>
+  );
+};
+// #endregion
+
+// #region Resident
+const RS = 1.4;
+const rand = (n: number) => (Math.random() * 2 - 1) * n;
+const H = 1 / 120;
+const G = 1200;
+// half extents in bot units, so a part rests on its real edge rather than on a circle
+const EXT: Record<TPart, [number, number]> = { chassis: [9, 6], head: [7, 5], wheelL: [3.5, 3.5], wheelR: [3.5, 3.5], arm: [2, 5.5], antenna: [2.5, 5] };
+const LIE: Record<TPart, [number, number, number]> = {
+  chassis: [-2, -9.5, 84],
+  head: [14, -6.5, -25],
+  wheelL: [-16, -3.5, 0],
+  wheelR: [24, -3.5, 0],
+  arm: [6, -2, 90],
+  antenna: [-12, -2.5, 70],
+};
+const KICK: Record<TPart, () => [number, number, number]> = {
+  chassis: () => [rand(60), -140, rand(4)],
+  head: () => [rand(120), -260 + rand(60), rand(12)],
+  wheelL: () => [-90 - Math.random() * 60, -60, 0],
+  wheelR: () => [90 + Math.random() * 60, -60, 0],
+  arm: () => [rand(180), -180, rand(10)],
+  antenna: () => [rand(150), -320, rand(15)],
+};
+const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
+
+interface IBody {
+  x: number;
+  y: number;
+  px: number;
+  py: number;
+  a: number;
+  spin: number;
+  hw: number;
+  hh: number;
+}
+
+// A Thinker standing on a node that has a fallback; knocking the node offline breaks it into parts that fall on the node.
+const Resident = ({ down }: { down: boolean }) => {
+  const parts = useRef<(SVGGElement | null)[]>([]);
+  const sparks = useRef<(SVGLineElement | null)[]>([]);
+  const bodies = useRef<IBody[]>(PARTS.map((p) => ({ x: HOME[p][0] * RS, y: HOME[p][1] * RS, px: 0, py: 0, a: 0, spin: 0, hw: EXT[p][0] * RS, hh: EXT[p][1] * RS })));
+  const first = useRef(true);
+
+  useEffect(() => {
+    const B = bodies.current;
+    const draw = () => B.forEach((b, i) => parts.current[i]?.setAttribute('transform', `translate(${b.x} ${b.y}) rotate(${(b.a * 180) / Math.PI}) scale(${RS})`));
+    const wasFirst = first.current;
+    first.current = false;
+    if (wasFirst && !down) return;
+
+    if (reducedMotion() || wasFirst) {
+      PARTS.forEach((p, i) => {
+        const [x, y, deg] = down ? LIE[p] : [...HOME[p], 0];
+        Object.assign(B[i], { x: x * RS, y: y * RS, a: (deg * Math.PI) / 180 });
+      });
+      draw();
+      return;
+    }
+
+    if (!down) {
+      const tweens = B.map((b, i) => {
+        b.a = wrap(b.a);
+        const [hx, hy] = HOME[PARTS[i]];
+        return gsap.fromTo(b, { x: b.x, y: b.y, a: b.a }, { x: hx * RS, y: hy * RS, a: 0, duration: 0.5, delay: i * 0.06, ease: 'back.out(2)', onUpdate: draw });
+      });
+      const visor = parts.current[PARTS.indexOf('head')]?.querySelector('.lab__bot-visor');
+      if (visor) tweens.push(gsap.fromTo(visor, { opacity: 0 }, { opacity: 1, duration: 0.08, repeat: 1, repeatDelay: 0.08, delay: 0.85 }));
+      return () => tweens.forEach((t) => t.kill());
+    }
+
+    PARTS.forEach((p, i) => {
+      const [vx, vy, spin] = KICK[p]();
+      const b = B[i];
+      b.px = b.x - vx * H;
+      b.py = b.y - vy * H;
+      b.spin = spin;
+    });
+    const [cx, cy] = [HOME.chassis[0] * RS, HOME.chassis[1] * RS];
+    const fx = sparks.current.map((l, i) => {
+      const ang = (i / 4) * Math.PI * 2 + rand(0.5);
+      return gsap.fromTo(
+        l,
+        { attr: { x1: cx, y1: cy, x2: cx, y2: cy }, opacity: 1 },
+        { attr: { x1: cx + Math.cos(ang) * 14, y1: cy + Math.sin(ang) * 14, x2: cx + Math.cos(ang) * 30, y2: cy + Math.sin(ang) * 30 }, opacity: 0, duration: 0.25, ease: 'power2.out' },
+      );
+    });
+    const left = -(NW - 44);
+    let acc = 0;
+    let life = 1.6;
+    const step = () => {
+      B.forEach((b) => {
+        const vx = (b.x - b.px) * 0.999;
+        const vy = (b.y - b.py) * 0.999 + G * H * H;
+        b.px = b.x;
+        b.py = b.y;
+        b.x += vx;
+        b.y += vy;
+        b.a += b.spin * H;
+        b.spin *= 0.98;
+        const s = Math.abs(Math.sin(b.a));
+        const c = Math.abs(Math.cos(b.a));
+        const ey = b.hw * s + b.hh * c;
+        const ex = b.hw * c + b.hh * s;
+        if (b.y + ey > 0) {
+          const vyn = b.y - b.py;
+          b.y = -ey;
+          b.py = b.y + vyn * 0.35;
+          // wheels roll away, everything else scrapes to a stop
+          const vxt = (b.x - b.px) * (b.hw === b.hh ? 0.99 : 0.85);
+          b.px = b.x - vxt;
+          if (b.hw === b.hh) b.spin += (vxt / H / b.hw - b.spin) * 0.6;
+          else {
+            // flat parts settle on a face instead of balancing on a corner
+            const off = b.hw < b.hh ? Math.PI / 2 : 0;
+            b.a += (off + Math.round((b.a - off) / Math.PI) * Math.PI - b.a) * 0.15;
+            b.spin *= 0.8;
+          }
+        }
+        if (b.x - ex < left || b.x + ex > 44) {
+          const vxn = b.x - b.px;
+          b.x = clamp(b.x, left + ex, 44 - ex);
+          b.px = b.x + vxn * 0.35;
+        }
+      });
+      for (let i = 0; i < B.length; i++)
+        for (let j = i + 1; j < B.length; j++) {
+          const a = B[i];
+          const b = B[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const min = (a.hw + a.hh + b.hw + b.hh) / 2;
+          const d2 = dx * dx + dy * dy;
+          if (d2 >= min * min || d2 === 0) continue;
+          const d = Math.sqrt(d2);
+          const push = (min - d) / d / 2;
+          a.x -= dx * push;
+          a.y -= dy * push;
+          b.x += dx * push;
+          b.y += dy * push;
+        }
+    };
+    const tick = (_t: number, dtMs: number) => {
+      const dt = Math.min(dtMs / 1000, 0.1);
+      acc += dt;
+      life -= dt;
+      for (let n = 0; acc >= H && n < 6; n++, acc -= H) step();
+      if (acc >= H) acc = 0;
+      draw();
+      if (life <= 0) gsap.ticker.remove(tick);
+    };
+    gsap.ticker.add(tick);
+    return () => {
+      gsap.ticker.remove(tick);
+      fx.forEach((t) => t.kill());
+    };
+  }, [down]);
+
+  return (
+    <svg className={`lab__resident ${down ? 'is-down' : ''}`} aria-hidden='true' overflow='visible' width='1' height='1'>
+      <g className='lab__resident-crew'>
+        {PARTS.map((p, i) => (
+          <g
+            key={p}
+            ref={(el) => {
+              parts.current[i] = el;
+            }}
+            transform={`translate(${HOME[p][0] * RS} ${HOME[p][1] * RS}) scale(${RS})`}
+          >
+            {botPart(p, true)}
+          </g>
+        ))}
+      </g>
+      {[0, 1, 2, 3].map((i) => (
+        <line
+          key={i}
+          ref={(el) => {
+            sparks.current[i] = el;
+          }}
+          className='lab__resident-spark'
+          x1='0'
+          y1='0'
+          x2='0'
+          y2='0'
+        />
+      ))}
+    </svg>
   );
 };
 // #endregion
@@ -86,11 +392,23 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   const viewport = useRef<HTMLDivElement>(null);
   const closing = useRef(false);
   const origin = useRef({ x: innerWidth / 2, y: innerHeight / 2 });
-  const [compact] = useState(() => matchMedia('(max-width: 720px)').matches);
-  const board = useMemo(() => layoutOf(flow, compact), [flow, compact]);
+  const bar = useRef<HTMLElement>(null);
+  const dock = useRef<HTMLDivElement>(null);
+  const sheet = useRef<HTMLElement>(null);
+  const askRef = useRef<HTMLDivElement>(null);
+  const mode = useSyncExternalStore(subscribeMode, modeNow);
+  const compact = mode !== 'wide';
+  const board = useMemo(() => layoutOf(flow, mode), [flow, mode]);
   const byId = useMemo(() => Object.fromEntries(flow.nodes.map((n) => [n.id, n])), [flow]);
+  const item = itemOf(flow);
 
   const [pos, setPos] = useState<Record<string, TPoint>>(board.pos);
+  // a layout switch (rotation, resize) drops drag offsets, they belong to the old layout
+  const [posBoard, setPosBoard] = useState(board);
+  if (posBoard !== board) {
+    setPosBoard(board);
+    setPos(board.pos);
+  }
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
   const [selected, setSelected] = useState<string>();
   const [inspected, setInspected] = useState<Set<string>>(new Set());
@@ -105,6 +423,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   const [done, setDone] = useState<Set<TMission>>(new Set());
   const [toast, setToast] = useState<{ id: number; title: string; xp?: number }>();
   const [missionsOpen, setMissionsOpen] = useState(false);
+  const [logOpen, setLogOpen] = useState(false);
 
   const offlineRef = useRef(offline);
   offlineRef.current = offline;
@@ -115,6 +434,12 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   const consoleRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef(view);
   viewRef.current = view;
+  const posRef = useRef(pos);
+  posRef.current = pos;
+  const layoutRef = useRef({ mode, board });
+  layoutRef.current = { mode, board };
+  const lastUser = useRef(-1e9);
+  const cam = useRef<gsap.core.Tween>(undefined);
 
   const xp = MISSIONS.filter((m) => done.has(m.id)).reduce((n, m) => n + m.xp, 0);
   const rank = [...RANKS].reverse().find(([min]) => xp >= min)?.[1] ?? RANKS[0][1];
@@ -124,15 +449,75 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   const fit = useCallback(() => {
     const el = viewport.current;
     if (!el) return;
+    cam.current?.kill();
     const { width: w, height: h } = el.getBoundingClientRect();
-    const pad = compact ? { t: 76, b: 200, l: 12, r: 12 } : { t: 96, b: 214, l: 56, r: 56 };
-    const aw = w - pad.l - pad.r;
-    const ah = h - pad.t - pad.b;
-    const k = compact ? Math.min(aw / board.w, 1) : Math.min(aw / board.w, ah / board.h, 1.1);
-    setView({ k, x: pad.l + (aw - board.w * k) / 2, y: compact ? pad.t : pad.t + Math.max(0, (ah - board.h * k) / 2) });
-  }, [board, compact]);
+    if (mode === 'wide') {
+      const aw = w - 112;
+      const ah = h - 96 - 214;
+      const k = Math.min(aw / board.w, ah / board.h, 1.1);
+      setView({ k, x: 56 + (aw - board.w * k) / 2, y: 96 + Math.max(0, (ah - board.h * k) / 2) });
+      return;
+    }
+    // measured, because the bar wraps and the dock grows with the ask on small screens
+    const t = (bar.current?.offsetHeight ?? 60) + 6;
+    const b = h - (dock.current?.offsetTop ?? h) + 6;
+    const aw = w - 24;
+    const ah = h - t - b;
+    if (mode === 'strip') {
+      const k = Math.min(ah / board.h, 1);
+      setView({ k, x: 12, y: t + Math.max(0, (ah - board.h * k) / 2) });
+    } else {
+      const k = Math.min(aw / board.w, 1.25);
+      setView({ k, x: 12 + (aw - board.w * k) / 2, y: t });
+    }
+  }, [board, mode]);
+
+  // The part of the screen not covered by the bar, the dock, the inspector or the ask, in viewport px.
+  const openBand = () => {
+    const r = viewport.current!.getBoundingClientRect();
+    const band = { t: bar.current ? bar.current.getBoundingClientRect().bottom - r.top : 0, b: r.height, l: 0, r: r.width };
+    [dock.current, sheet.current, askRef.current].forEach((el) => {
+      if (!el) return;
+      const e = el.getBoundingClientRect();
+      if (!e.width) return;
+      // only the landscape ask floats at the side; everywhere else it sits in the dock
+      if (e.width > r.width * 0.6 || (el === askRef.current && layoutRef.current.mode !== 'strip')) band.b = Math.min(band.b, e.top - r.top);
+      else band.r = Math.min(band.r, e.left - r.left);
+    });
+    return band;
+  };
+
+  // Pan so the node the run is heading to sits in the open part of the screen; wide boards only move for the ask or the inspector.
+  const follow = (id: string, force = false) => {
+    const { mode: m, board: b } = layoutRef.current;
+    const p = posRef.current[id];
+    if ((m === 'wide' && !force) || !p || !viewport.current || (!force && performance.now() - lastUser.current < 3000)) return;
+    const v = viewRef.current;
+    const band = openBand();
+    const hw = (NW / 2) * v.k;
+    const hh = (NH / 2) * v.k;
+    const sx = v.x + p.x * v.k;
+    const sy = v.y + p.y * v.k;
+    let { x, y } = v;
+    if (sx - hw < band.l || sx + hw > band.r) {
+      const tx = band.l + (band.r - band.l) * (m === 'strip' ? 0.35 : 0.5) - p.x * v.k;
+      x = clamp(tx, Math.min(band.r - b.w * v.k - 12, band.l + 12), Math.max(band.l + 12, v.x));
+    }
+    // the resident bot stands on top of the node, so leave headroom above it
+    if (sy - hh - 60 * v.k < band.t || sy + hh > band.b) {
+      const ty = band.t + (band.b - band.t) * 0.4 - p.y * v.k;
+      y = clamp(ty, Math.min(band.b - b.h * v.k - 12, band.t + 12), Math.max(band.t + 12, v.y));
+    }
+    if (x === v.x && y === v.y) return;
+    cam.current?.kill();
+    if (reducedMotion()) return setView({ ...v, x, y });
+    const o = { x: v.x, y: v.y };
+    cam.current = gsap.to(o, { x, y, duration: 0.5, ease: 'power2.out', onUpdate: () => setView((cur) => ({ ...cur, x: o.x, y: o.y })) });
+  };
 
   const zoomAt = useCallback((cx: number, cy: number, factor: number) => {
+    lastUser.current = performance.now();
+    cam.current?.kill();
     setView((v) => {
       const k = clamp(v.k * factor, 0.3, 2.2);
       return { k, x: cx - ((cx - v.x) * k) / v.k, y: cy - ((cy - v.y) * k) / v.k };
@@ -151,6 +536,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     // native listener: React's wheel handler is passive, and ctrl plus wheel must not zoom the whole page
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      lastUser.current = performance.now();
+      cam.current?.kill();
       const r = el.getBoundingClientRect();
       if (e.ctrlKey || e.metaKey) zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.01));
       else setView((v) => ({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY }));
@@ -220,6 +607,11 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       setPackets((p) => [...p, { id, from, to, tone, done: finish }]);
     });
 
+  const hop = (from: string, to: string, tone?: string) => {
+    follow(to);
+    return travel(from, to, tone);
+  };
+
   const stop = useCallback(() => {
     token.current++;
     pending.current.forEach((f) => f());
@@ -247,7 +639,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       if (offlineRef.current.has(step.node) && node.fallback) {
         chaos = true;
         if (node.fallback.via) {
-          if (cur) await travel(cur, node.fallback.via, 'alt');
+          if (cur) await hop(cur, node.fallback.via, 'alt');
           if (!alive()) return;
           flash(node.fallback.via);
           cur = node.fallback.via;
@@ -255,7 +647,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         log(node.fallback.log, 'alt');
         continue;
       }
-      if (cur) await travel(cur, step.node, edgeKind(flow, cur, step.node) === 'fallback' ? 'alt' : 'go');
+      if (cur) await hop(cur, step.node, edgeKind(flow, cur, step.node) === 'fallback' ? 'alt' : 'go');
+      else follow(step.node);
       if (!alive()) return;
       flash(step.node);
       log(step.log);
@@ -277,12 +670,12 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         if (!alive() || !choice) return;
         complete('decide');
         log(choice.log, choice.tone);
-        for (const hop of choice.route) {
-          await travel(cur, hop.node);
+        for (const h of choice.route) {
+          await hop(cur, h.node);
           if (!alive()) return;
-          flash(hop.node);
-          log(hop.log, 'ok');
-          cur = hop.node;
+          flash(h.node);
+          log(h.log, 'ok');
+          cur = h.node;
         }
         break;
       }
@@ -323,6 +716,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
 
   const onDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
+    cam.current?.kill();
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     e.currentTarget.setPointerCapture(e.pointerId);
     if (pointers.current.size === 2) {
@@ -343,6 +737,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       const [a, b] = [...pointers.current.values()];
       if (!a || !b) return;
       const r = e.currentTarget.getBoundingClientRect();
+      lastUser.current = performance.now();
       const factor = (g.k0! * Math.hypot(a.x - b.x, a.y - b.y)) / g.d0! / viewRef.current.k;
       zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, factor);
       return;
@@ -351,7 +746,10 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     const dy = e.clientY - g.sy;
     if (!g.moved && Math.hypot(dx, dy) < 5) return;
     g.moved = true;
-    if (g.kind === 'pan') setView((v) => ({ ...v, x: g.ox + dx, y: g.oy + dy }));
+    if (g.kind === 'pan') {
+      lastUser.current = performance.now();
+      setView((v) => ({ ...v, x: g.ox + dx, y: g.oy + dy }));
+    }
     else if (g.id) {
       const k = viewRef.current.k;
       const id = g.id;
@@ -363,6 +761,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     pointers.current.delete(e.pointerId);
     const g = gesture.current;
     gesture.current = undefined;
+    if (g?.kind === 'pan' && !g.moved && e.type === 'pointerup') inspect(undefined);
     if (!g || g.kind !== 'node' || !g.id) return;
     if (g.moved) complete('drag');
     else inspect(selected === g.id ? undefined : g.id);
@@ -397,7 +796,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   useLayoutEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
     const r = opener?.getBoundingClientRect();
-    if (r && r.width) origin.current = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    // Safari never focuses a clicked button, so activeElement can be the body far above the viewport
+    if (r && r.width && opener !== document.body && r.bottom > 0 && r.top < innerHeight) origin.current = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     lockScroll(true);
     root.current?.querySelector<HTMLElement>('.lab__run')?.focus({ preventScroll: true });
 
@@ -408,7 +808,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       ctx = gsap.context(() => {
         gsap
           .timeline()
-          .fromTo(el, { clipPath: `circle(0px at ${x}px ${y}px)` }, { clipPath: `circle(${Math.hypot(innerWidth, innerHeight)}px at ${x}px ${y}px)`, duration: 1, ease: 'expo.inOut' })
+          .fromTo(el, { clipPath: `circle(0px at ${x}px ${y}px)` }, { clipPath: `circle(${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px at ${x}px ${y}px)`, duration: 1, ease: 'expo.inOut' })
           .from('.lab__boot p', { opacity: 0, x: -12, duration: 0.3, stagger: 0.16 }, 0.35)
           .to('.lab__boot', { opacity: 0, duration: 0.4 }, 1.35)
           .from('.lab__reactor', { scale: 0.2, opacity: 0, duration: 1.4, ease: 'expo.out' }, 0.4)
@@ -437,7 +837,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         run();
       }
       if (e.key === 'Tab' && root.current) {
-        const focusable = [...root.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')];
+        const focusable = [...root.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')].filter((el) => el.getClientRects().length);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
@@ -454,6 +854,17 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   });
 
   useEffect(() => () => stop(), [stop]);
+
+  useEffect(() => () => void cam.current?.kill(), []);
+
+  // the asking node and the inspected node must never sit under the prompt or the sheet
+  useEffect(() => {
+    const id = ask?.node ?? selected;
+    if (!id) return;
+    const raf = requestAnimationFrame(() => follow(id, true));
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- follow reads refs; rerun only when the target changes
+  }, [ask, selected]);
 
   useEffect(() => {
     consoleRef.current?.scrollTo({ top: consoleRef.current.scrollHeight });
@@ -508,13 +919,14 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           <span className='lab__node-label'>{n.label}</span>
           <span className='lab__node-sub'>{offline.has(n.id) ? 'Offline' : n.sub}</span>
           {inspected.has(n.id) && <span className='lab__node-seen' aria-hidden='true' />}
+          {n.fallback && <Resident down={offline.has(n.id)} />}
         </button>
       );
     });
 
   const renderInspector = () =>
     node && (
-      <aside className='lab__inspector' aria-label={`${node.label} details`}>
+      <aside ref={sheet} className='lab__inspector' aria-label={`${node.label} details`} data-lenis-prevent>
         <header>
           <p className='lab__mono'>
             Stage {flow.nodes.indexOf(node) + 1} of {flow.nodes.length} · {KIND_LABEL[node.kind]}
@@ -548,7 +960,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     );
 
   const renderMissions = () => (
-    <div className='lab__missions' id='lab-missions' hidden={!missionsOpen}>
+    <div className='lab__missions' id='lab-missions' hidden={!missionsOpen} data-lenis-prevent>
       <p className='lab__mono'>
         Clearance · {rank} · {xp} / {MAX_XP} XP
       </p>
@@ -572,7 +984,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   );
 
   const renderDock = () => (
-    <div className='lab__dock'>
+    <div ref={dock} className='lab__dock'>
       <div className='lab__controls'>
         <button type='button' className='lab__run' onClick={run} disabled={running}>
           <span className='lab__run-core' aria-hidden='true' />
@@ -591,11 +1003,14 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           <button type='button' className='lab__icon lab__icon--wide' onClick={reset}>
             Reset
           </button>
+          <button type='button' className='lab__icon lab__icon--wide lab__logbtn' aria-expanded={logOpen} aria-controls='lab-log' onClick={() => setLogOpen((o) => !o)}>
+            Log
+          </button>
         </div>
         <p className='lab__hint'>{compact ? 'Drag nodes or the board. Pinch to zoom.' : 'Drag nodes. Drag the board to pan, ctrl scroll to zoom. Space runs.'}</p>
       </div>
       {ask && (
-        <div className='lab__ask' role='alertdialog' aria-labelledby='lab-ask'>
+        <div ref={askRef} className='lab__ask' role='alertdialog' aria-labelledby='lab-ask'>
           <p className='lab__mono'>Incoming · {byId[ask.node].label}</p>
           <p id='lab-ask'>{ask.prompt}</p>
           <div>
@@ -607,7 +1022,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           </div>
         </div>
       )}
-      <div ref={consoleRef} className='lab__console' role='log' aria-live='polite' aria-label='Run log' data-lenis-prevent>
+      <div ref={consoleRef} id='lab-log' className={`lab__console ${logOpen ? 'is-open' : ''}`} role='log' aria-live='polite' aria-label='Run log' data-lenis-prevent>
         {logs.length === 0 && <p className='lab__console-idle'>Standing by. Hit run and watch the data move.</p>}
         {logs.map((l) => (
           <p key={l.id} className={l.tone ? `is-${l.tone}` : ''}>
@@ -622,7 +1037,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   return createPortal(
     <div
       ref={root}
-      className={`lab ${compact ? 'lab--compact' : ''} ${cleared ? 'is-cleared' : ''} ${running ? 'is-running' : ''}`}
+      className={`lab lab--${mode} ${compact ? 'lab--compact' : ''} ${cleared ? 'is-cleared' : ''} ${running ? 'is-running' : ''}`}
       role='dialog'
       aria-modal='true'
       aria-labelledby='lab-title'
@@ -642,15 +1057,17 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         <div className='lab__stage' style={{ width: board.w, height: board.h, transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})` }}>
           <svg className='lab__wires' width={board.w} height={board.h} aria-hidden='true'>
             {renderEdges()}
-            {packets.map((p) => (
-              <Packet key={p.id} d={edgePath(pos[p.from], pos[p.to], edgeKind(flow, p.from, p.to))} tone={p.tone} onDone={p.done} />
-            ))}
           </svg>
           {renderNodes()}
+          <svg className='lab__wires' width={board.w} height={board.h} aria-hidden='true'>
+            {packets.map((p) => (
+              <Packet key={p.id} d={edgePath(pos[p.from], pos[p.to], edgeKind(flow, p.from, p.to))} tone={p.tone} item={item} onDone={p.done} />
+            ))}
+          </svg>
         </div>
       </div>
 
-      <header className='lab__bar'>
+      <header ref={bar} className='lab__bar'>
         <div className='lab__title'>
           <p className='lab__mono'>
             <span className='lab__led lab__led--live' aria-hidden='true' /> Workflow lab · live {flow.cadence}

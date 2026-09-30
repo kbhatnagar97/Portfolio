@@ -1,31 +1,8 @@
 import type { CSSProperties, PointerEvent } from 'react';
 import { AUTOMATIONS, type IAutomation } from '../data';
-import { NH, NW, edgePath, layoutOf, mainRoute } from '../flow';
 import { SHAPE } from '../scene/shapes';
 import '../lab.scss';
-
-// #region Mini board
-// A live thumbnail of the real board: same layout, edges and route, with packets looping through it.
-const MiniFlow = ({ flow }: { flow: IAutomation }) => {
-  const { pos, w, h } = layoutOf(flow, false);
-  const route = mainRoute(flow, pos);
-  return (
-    <svg className='acard__flow' viewBox={`0 0 ${w} ${h}`} aria-hidden='true'>
-      {flow.edges.map(([a, b, kind]) => (
-        <path key={`${a}-${b}`} className={`acard__wire acard__wire--${kind ?? 'main'}`} d={edgePath(pos[a], pos[b], kind)} />
-      ))}
-      {flow.nodes.map((n) => (
-        <rect key={n.id} className={`acard__node acard__node--${n.kind}`} x={pos[n.id].x - NW / 2} y={pos[n.id].y - NH / 2} width={NW} height={NH} rx={16} />
-      ))}
-      {[0, 1, 2].map((i) => (
-        <circle key={i} className='acard__packet' r={12}>
-          <animateMotion dur='7s' repeatCount='indefinite' begin={`${-i * 2.3}s`} path={route} />
-        </circle>
-      ))}
-    </svg>
-  );
-};
-// #endregion
+import { BotFloor } from '../bots/BotFloor';
 
 const AutomationCard = ({ flow, index, onOpen }: { flow: IAutomation; index: number; onOpen: (id: string) => void }) => {
   const tilt = (e: PointerEvent<HTMLElement>) => {
@@ -33,6 +10,11 @@ const AutomationCard = ({ flow, index, onOpen }: { flow: IAutomation; index: num
     const r = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
     e.currentTarget.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
+    // a tilted card would skew the bot floor's pointer mapping
+    if ((e.target as HTMLElement).closest('.acard__screen')) {
+      ['--rx', '--ry'].forEach((p) => e.currentTarget.style.removeProperty(p));
+      return;
+    }
     e.currentTarget.style.setProperty('--rx', `${((e.clientY - r.top) / r.height - 0.5) * -5}deg`);
     e.currentTarget.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 7}deg`);
   };
@@ -47,7 +29,7 @@ const AutomationCard = ({ flow, index, onOpen }: { flow: IAutomation; index: num
       data-fade
     >
       <div className='acard__screen'>
-        <MiniFlow flow={flow} />
+        <BotFloor flow={flow} />
         <span className='acard__corner acard__corner--tl' aria-hidden='true' />
         <span className='acard__corner acard__corner--br' aria-hidden='true' />
         <p className='acard__live'>
@@ -81,7 +63,7 @@ const AutomationCard = ({ flow, index, onOpen }: { flow: IAutomation; index: num
 
 const Automations = ({ onOpen }: { onOpen: (id: string) => void }) => (
   <section id='automations' className='autos' aria-labelledby='autos-title'>
-    <header className='section-head' data-shape={SHAPE.network}>
+    <header className='section-head' data-shape={SHAPE.field}>
       <p className='section-head__index'>03 / My personal automations</p>
       <h2 id='autos-title' data-split>
         Small robots that run my day while I build.
