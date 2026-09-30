@@ -441,12 +441,20 @@ dd {
     z-index: -1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 8px;
-    padding: 96px var(--gutter) 40px;
+    padding: 96px var(--gutter) calc(40px + env(safe-area-inset-bottom));
     background: var(--bg);
     overflow-y: auto;
     overscroll-behavior: contain;
+
+    // auto margins centre the list but, unlike justify-content, keep the top reachable when it overflows
+    > :first-child {
+      margin-top: auto;
+    }
+
+    > :last-child {
+      margin-bottom: auto;
+    }
 
     &[hidden] {
       display: none;
@@ -454,12 +462,17 @@ dd {
 
     a {
       display: flex;
-      align-items: baseline;
-      gap: 14px;
-      font-size: clamp(40px, 12vw, 64px);
+      align-items: center;
+      gap: 16px;
+      font-size: clamp(30px, min(12vw, 8vh), 64px);
       line-height: 1.15;
       letter-spacing: -0.03em;
       text-decoration: none;
+    }
+
+    .nav__num {
+      width: 2ch;
+      font-size: 12px;
     }
   }
 
