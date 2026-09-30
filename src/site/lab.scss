@@ -727,6 +727,16 @@
     text-overflow: ellipsis;
   }
 
+  // the wide board scales down on laptops; these grow against --k so kind and sub stay at 11px on screen
+  .lab--wide & .lab__node-kind {
+    font-size: clamp(11px, calc(11px / var(--k, 1)), 17px);
+    letter-spacing: 0.06em;
+  }
+
+  .lab--wide & .lab__node-sub {
+    font-size: clamp(13px, calc(11px / var(--k, 1)), 17px);
+  }
+
   &-seen {
     position: absolute;
     top: 10px;
@@ -900,6 +910,14 @@
   width: 44px;
   height: 44px;
   font-size: 26px;
+}
+
+@media (pointer: coarse) {
+  .lab__chip,
+  .lab__icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .lab__missions {
@@ -1342,10 +1360,12 @@
     display: none;
   }
 
+  // opaque, because nodes panned up under the bar would show through the chip text
   .lab__chip {
     justify-content: center;
     min-height: 44px;
     padding: 0 14px;
+    background: #06090b;
     font-size: 11px;
   }
 
@@ -1577,6 +1597,18 @@
 
   .lab__toast {
     top: calc(60px + env(safe-area-inset-top));
+  }
+
+  // the inspector owns the right side here, so the toast centres in what is left
+  .lab__inspector ~ .lab__toast {
+    left: calc((100vw - min(320px, 45vw) - 16px) / 2);
+    max-width: calc(100vw - min(320px, 45vw) - 32px);
+  }
+
+  // the strip board scales to about 0.66 on a 360px tall phone; these keep kind and sub at 11px after that
+  .lab__node-kind,
+  .lab__node-sub {
+    font-size: 17px;
   }
 }
 // #endregion

@@ -17,9 +17,22 @@ const ITEM_KNOCK = 300;
 // #endregion
 
 // #region Types
-export type TDisc = { x: number; y: number; px: number; py: number; r: number; a: number; spin: number; still: number; nw: boolean };
-export type TPart = TDisc & { hx: number; hy: number; ha: number; dl: number };
-export type TThing = TDisc & {
+// One shape for every physics body, so the hot loops stay monomorphic and never box their numbers.
+export type TBody = {
+  x: number;
+  y: number;
+  px: number;
+  py: number;
+  r: number;
+  a: number;
+  spin: number;
+  still: number;
+  nw: boolean;
+  hx: number;
+  hy: number;
+  ha: number;
+  dl: number;
+  life: number;
   st: 'off' | 'free' | 'held' | 'flight';
   kind: TItem;
   n: number;
@@ -41,7 +54,10 @@ export type TThing = TDisc & {
   age: number;
   fling: boolean;
 };
-export type TStrip = TDisc & { life: number };
+export type TDisc = TBody;
+export type TPart = TBody;
+export type TThing = TBody;
+export type TStrip = TBody;
 export type TRole = 'clock' | 'scout' | 'thinker' | 'bouncer' | 'courier' | 'human' | 'bench';
 export type TPose = 'idle' | 'reach' | 'hold' | 'think' | 'carry' | 'cross' | 'sit';
 export type TLed = 'idle' | 'work' | 'wait' | 'alarm' | 'sleep';
@@ -119,11 +135,14 @@ export type TWorld = {
 // #endregion
 
 // #region Factories
-export const disc = (r: number): TDisc => ({ x: 0, y: 0, px: 0, py: 0, r, a: 0, spin: 0, still: 0, nw: false });
-export const thing = (): TThing => ({
-  ...disc(6), st: 'off', kind: 'crate', n: 1, holder: -1, score: 0, dashed: false, copy: false, alpha: 1, squash: 0,
-  tx: 0, ty: 0, T: 0, ft: 0, aim: -1, prop: -1, hatch: NaN, thrower: -1, tag: 0, age: 0, fling: false,
+// -0 seeds (not a small integer) keep the float fields unboxed doubles from the first write
+export const body = (r: number): TBody => ({
+  x: -0, y: -0, px: -0, py: -0, r, a: -0, spin: -0, still: -0, nw: false, hx: -0, hy: -0, ha: -0, dl: -0, life: -0,
+  st: 'off', kind: 'crate', n: 1, holder: -1, score: 0, dashed: false, copy: false, alpha: 1, squash: -0,
+  tx: -0, ty: -0, T: -0, ft: -0, aim: -1, prop: -1, hatch: NaN, thrower: -1, tag: 0, age: -0, fling: false,
 });
+export const disc = body;
+export const thing = () => body(6);
 export const pool = <T>(n: number, make: () => T) => Array.from({ length: n }, make);
 // Oldest first when the pool is full, so effects never allocate.
 export const take = <T extends { t: number; life: number }>(list: T[]) => {
@@ -144,7 +163,6 @@ export const place = (d: TDisc, x: number, y: number) => {
   d.x = d.px = x;
   d.y = d.py = y;
 };
-// Ballistic launch that lands on (tx, ty) after T seconds.
 export const launch = (d: TDisc, tx: number, ty: number, T: number) => setVel(d, (tx - d.x) / T, (ty - d.y - 0.5 * G * T * T) / T);
 // #endregion
 
@@ -204,7 +222,6 @@ const link = (a: TDisc, b: TDisc, len: number, k: number, rope: boolean) => {
   b.y -= dy * o;
 };
 
-// Pushes two circles apart by inverse mass; returns the closing speed.
 const sep = (a: TDisc, ra: number, wa: number, b: TDisc, rb: number, wb: number) => {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
@@ -225,7 +242,11 @@ const sep = (a: TDisc, ra: number, wa: number, b: TDisc, rb: number, wb: number)
 
 // #region Step
 const stepBot = (w: TWorld, b: TBot, bi: number) => {
-  const [base, chest, head, hand, tip] = b.p;
+  const base = b.p[0];
+  const chest = b.p[1];
+  const head = b.p[2];
+  const hand = b.p[3];
+  const tip = b.p[4];
   const s = b.s;
   if (b.mode === 'kin') {
     // the antenna always wobbles, pinned to the head
@@ -243,7 +264,7 @@ const stepBot = (w: TWorld, b: TBot, bi: number) => {
     return;
   }
   if (b.mode === 'rag') {
-    for (const q of b.p) integrate(q, G, DAMP);
+    for (let k = 0; k < 5; k++) integrate(b.p[k], G, DAMP);
     if (w.gk === 1 && w.gi === bi) {
       const q = b.p[w.gp];
       q.x += (w.gx - q.x) * 0.6;
@@ -302,7 +323,8 @@ export const step = (w: TWorld) => {
     bots[i].mt += H;
     stepBot(w, bots[i], i);
   }
-  for (const it of items) {
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
     if (it.st !== 'free' && it.st !== 'flight') continue;
     it.age += H;
     if (it.st === 'free' && it.still > 0.3 && !(w.gk === 2 && items[w.gi] === it)) continue;
@@ -317,12 +339,30 @@ export const step = (w: TWorld) => {
     bounds(L, it, E_ITEM, true);
     it.r = r;
   }
-  for (const d of strips) {
+  for (let i = 0; i < strips.length; i++) {
+    const d = strips[i];
     if (d.life <= 0) continue;
     integrate(d, G * 0.3, 0.985);
     bounds(L, d, E_PART, false);
   }
   collide(w);
+  for (let i = 0; i < bots.length; i++) {
+    const b = bots[i];
+    if (b.mode === 'broken') for (let k = 0; k < 6; k++) guard(L, b.parts[k], b.parts[k].r);
+    else if (b.mode === 'rag') for (let k = 0; k < 5; k++) guard(L, b.p[k], b.p[k].r * b.s);
+  }
+  for (let i = 0; i < items.length; i++) if (items[i].st === 'free') guard(L, items[i], items[i].r + items[i].n - 1);
+};
+
+// A push can shove a body resting on a one-way floor under its line, where the next substep would let it fall through.
+const guard = (L: TLayout, d: TDisc, r: number) => {
+  if (d.nw) return;
+  for (let i = 0; i < L.F; i++) {
+    const f = L.floors[i];
+    if (d.py + r <= f.y + 1 && d.y + r > f.y && (d.x < f.g0 || d.x > f.g1)) d.y = f.y - r;
+  }
+  if (d.x < r) d.x = r;
+  else if (d.x > L.W - r) d.x = L.W - r;
 };
 
 // Steers the last quarter of a throw onto the moving catcher; a hatch hop re-aims below the floor.
@@ -364,8 +404,14 @@ const collide = (w: TWorld) => {
       const c = items[j];
       if (c.st === 'free') sep(a, ra, 1, c, c.r + c.n - 1, 1);
     }
-    for (const b of bots) {
-      if (b.role === 'human' || b.mode === 'broken' || b.mode === 'mend' || b.away) continue;
+    for (let j = 0; j < bots.length; j++) {
+      const b = bots[j];
+      if (b.role === 'human' || b.away) continue;
+      if (b.mode === 'broken') {
+        for (let k = 0; k < 6; k++) sep(a, ra, 0.25, b.parts[k], b.parts[k].r, 1);
+        continue;
+      }
+      if (b.mode === 'mend') continue;
       const wb = b.mode === 'rag' ? 0.5 : 0;
       for (let k = 1; k < 3; k++) {
         const v = sep(a, ra, 1, b.p[k], (k === 1 ? 8 : 6.5) * b.s, wb);
@@ -373,14 +419,19 @@ const collide = (w: TWorld) => {
         if (v > ITEM_KNOCK && a.fling) knock(b);
       }
     }
-    for (const b of bots) if (b.mode === 'broken') for (const q of b.parts) sep(a, ra, 0.25, q, q.r, 1);
   }
   for (let i = 0; i < bots.length; i++) {
     const a = bots[i];
     if (a.mode === 'broken') {
-      for (const b of bots) {
-        if (b.mode !== 'kin' || b.role === 'human' || b === a) continue;
-        for (const q of a.parts) sep(b.p[1], 8 * b.s, 0, q, q.r, 1);
+      for (let j = 0; j < bots.length; j++) {
+        const b = bots[j];
+        if (b.mode !== 'kin' || b.role === 'human' || b.away || j === i) continue;
+        // debris clears the whole drawn body, so a head never comes to rest inside a neighbour
+        for (let k = 0; k < 6; k++) {
+          const q = a.parts[k];
+          sep(b.p[1], 10 * b.s, 0, q, q.r + 1.5, 1);
+          sep(b.p[2], 7 * b.s, 0, q, q.r + 1.5, 1);
+        }
       }
       continue;
     }

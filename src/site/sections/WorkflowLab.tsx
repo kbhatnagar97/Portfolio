@@ -44,8 +44,8 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // #region Layout mode
-// portrait tablets get the stack too: the wide board would shrink node text under 10px there
-const Q_COMPACT = '(max-width: 720px), (max-height: 560px), (max-width: 900px) and (orientation: portrait)';
+// under 1100 by 780 the wide board scales node text under 11px, so tablets and small laptops read the stack
+const Q_COMPACT = '(max-width: 1100px), (max-height: 780px)';
 const Q_STRIP = '(max-height: 560px) and (orientation: landscape)';
 const subscribeMode = (cb: () => void) => {
   const qs = [Q_COMPACT, Q_STRIP].map((q) => matchMedia(q));
@@ -122,18 +122,23 @@ const botPart = (part: TPart, halo = false) => {
 // #region Courier
 const CS = 1.8;
 // The packet is a courier bot carrying the flow's item; it reads the edge path every frame, so it follows a node being dragged.
+// It walks over the node cards so the stacked phone rows never bury it, and fades at both ends so it never sits on the stage being read.
 const Packet = ({ d, tone, item, onDone }: { d: string; tone: string; item: TItem; onDone: () => void }) => {
   const path = useRef<SVGPathElement>(null);
   const dot = useRef<SVGGElement>(null);
   const bot = useRef<SVGGElement>(null);
   const body = useRef<SVGGElement>(null);
 
-  useEffect(() => {
+  // layout effect: the courier is placed before the first paint, never at the board origin
+  useLayoutEffect(() => {
     const p = path.current;
     const g = dot.current;
     const b = bot.current;
     const bd = body.current;
     if (!p || !g || !b || !bd) return;
+    const p0 = p.getPointAtLength(0);
+    g.setAttribute('transform', `translate(${p0.x} ${p0.y})`);
+    g.setAttribute('opacity', '0');
     const o = { t: 0 };
     const t0 = performance.now();
     let lx = NaN;
@@ -158,6 +163,7 @@ const Packet = ({ d, tone, item, onDone }: { d: string; tone: string; item: TIte
         lx = pt.x;
         ly = pt.y;
         g.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+        g.setAttribute('opacity', `${clamp(Math.min(o.t, 1 - o.t) / 0.12, 0, 1)}`);
         bd.setAttribute('transform', `translate(0 ${Math.sin(((performance.now() - t0) / 1000) * Math.PI * 6) * 1.2})`);
         b.style.setProperty('--spin', `${dist / (BOT.wheel.r * CS)}rad`);
       },
@@ -452,10 +458,18 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     cam.current?.kill();
     const { width: w, height: h } = el.getBoundingClientRect();
     if (mode === 'wide') {
+      // fit the nodes, not the padded board, down to where the dock's controls start, so laptop text stays readable
+      const d = dock.current;
+      const top = d ? d.offsetTop + Math.min(...Array.from(d.children, (c) => (c as HTMLElement).offsetTop)) : h - 214;
+      const ps = Object.values(board.pos);
+      const x0 = Math.min(...ps.map((p) => p.x)) - NW / 2;
+      const x1 = Math.max(...ps.map((p) => p.x)) + NW / 2;
+      const y0 = Math.min(...ps.map((p) => p.y)) - NH / 2 - 56;
+      const y1 = Math.max(...ps.map((p) => p.y)) + NH / 2;
       const aw = w - 112;
-      const ah = h - 96 - 214;
-      const k = Math.min(aw / board.w, ah / board.h, 1.1);
-      setView({ k, x: 56 + (aw - board.w * k) / 2, y: 96 + Math.max(0, (ah - board.h * k) / 2) });
+      const ah = top - 96 - 12;
+      const k = Math.min(aw / (x1 - x0), ah / (y1 - y0), 1.1);
+      setView({ k, x: 56 + (aw - (x1 - x0) * k) / 2 - x0 * k, y: 96 + Math.max(0, (ah - (y1 - y0) * k) / 2) - y0 * k });
       return;
     }
     // measured, because the bar wraps and the dock grows with the ask on small screens
@@ -653,13 +667,15 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       flash(step.node);
       log(step.log);
       const from = step.node;
-      step.branches?.forEach((b) =>
-        travel(from, b.to, b.tone ?? 'drop').then(() => {
+      step.branches?.forEach((b) => {
+        // a branch with no tone keeps its item (a digest, a tray) unless it goes to the discard node
+        const tone = b.tone ?? (byId[b.to].kind === 'drop' ? 'drop' : 'go');
+        travel(from, b.to, tone).then(() => {
           if (!alive()) return;
           flash(b.to);
-          log(b.log, b.tone ?? 'drop');
-        }),
-      );
+          log(b.log, tone);
+        });
+      });
       cur = step.node;
 
       if (step.ask) {
@@ -790,7 +806,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     const el = root.current;
     if (!el || reducedMotion()) return onClose();
     const { x, y } = origin.current;
-    gsap.to(el, { clipPath: `circle(0px at ${x}px ${y}px)`, duration: 0.6, ease: 'expo.in', onComplete: onClose });
+    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    gsap.fromTo(el, { clipPath: `circle(${r}px at ${x}px ${y}px)` }, { clipPath: `circle(0px at ${x}px ${y}px)`, duration: 0.6, ease: 'expo.in', onComplete: onClose });
   }, [onClose, stop]);
 
   useLayoutEffect(() => {
@@ -808,7 +825,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       ctx = gsap.context(() => {
         gsap
           .timeline()
-          .fromTo(el, { clipPath: `circle(0px at ${x}px ${y}px)` }, { clipPath: `circle(${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px at ${x}px ${y}px)`, duration: 1, ease: 'expo.inOut' })
+          // the clip is cleared once open: a circle sized for portrait would cut the lab after a rotation
+          .fromTo(el, { clipPath: `circle(0px at ${x}px ${y}px)` }, { clipPath: `circle(${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px at ${x}px ${y}px)`, duration: 1, ease: 'expo.inOut', clearProps: 'clipPath' })
           .from('.lab__boot p', { opacity: 0, x: -12, duration: 0.3, stagger: 0.16 }, 0.35)
           .to('.lab__boot', { opacity: 0, duration: 0.4 }, 1.35)
           .from('.lab__reactor', { scale: 0.2, opacity: 0, duration: 1.4, ease: 'expo.out' }, 0.4)
@@ -1041,7 +1059,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       role='dialog'
       aria-modal='true'
       aria-labelledby='lab-title'
-      style={{ '--accent': flow.accent, '--gx': `${view.x}px`, '--gy': `${view.y}px`, '--gs': `${40 * view.k}px` } as CSSProperties}
+      style={{ '--accent': flow.accent, '--gx': `${view.x}px`, '--gy': `${view.y}px`, '--gs': `${40 * view.k}px`, '--k': view.k } as CSSProperties}
     >
       <div className='lab__grid' aria-hidden='true' />
       <svg className='lab__reactor' viewBox='-200 -200 400 400' aria-hidden='true'>

@@ -1,7 +1,7 @@
 import type { TFlowKind } from '../data';
 import { BOT, ITEM, type TItem } from '../flow';
 import { PROP_SCALE, floorOf, type TLayout, type TProp } from './geometry';
-import { H, disc, place, setVel, take, type TBot, type TDisc, type TPart, type TPose, type TRole, type TThing, type TWorld } from './physics';
+import { H, disc, place, setVel, take, type TBot, type TDisc, type TPose, type TRole, type TThing, type TWorld } from './physics';
 
 // #region Palette
 export type TPalette = Record<'bg' | 'text' | 'muted' | 'holo' | 'line' | 'shell' | 'head' | 'human' | 'drop' | 'accent', string> & { k: Record<TFlowKind, string> };
@@ -98,7 +98,7 @@ const dot = (ctx: CanvasRenderingContext2D, x: number, y: number, r: number) => 
 // #region Crew
 const ROLE: Record<TFlowKind, TRole> = { trigger: 'clock', source: 'scout', ai: 'thinker', rule: 'bouncer', output: 'courier', human: 'human', drop: 'courier' };
 const SCALE: Record<TRole, number> = { clock: 1.1, scout: 1, thinker: 1.25, bouncer: 1.1, courier: 1, human: 1, bench: PROP_SCALE };
-const HAND: Record<TPose, [number, number]> = { idle: [7, -6.3], reach: [7, -6.3], hold: [9, -15], think: [8, -23], carry: [5, -22], cross: [-1, -12], sit: [6, -5] };
+const HAND: Record<TPose, [number, number]> = { idle: [7, -6.3], reach: [7, -6.3], hold: [12, -15], think: [8, -23], carry: [5, -22], cross: [-1, -12], sit: [6, -5] };
 
 export const makeBot = (L: TLayout, kind: TFlowKind, st: number, x: number, f: number, dir: 1 | -1, bench: boolean): TBot => {
   const role = bench ? 'bench' : ROLE[kind];
@@ -106,7 +106,7 @@ export const makeBot = (L: TLayout, kind: TFlowKind, st: number, x: number, f: n
   const b: TBot = {
     role, kind, st, s, f, homeF: f, homeX: x, x, tx: x, vmax: 140, dir,
     mode: 'kin', p: [disc(3.5), disc(6), disc(5), disc(1.8), disc(1.6)],
-    parts: [7, 6, 3.5, 3.5, 4, 4].map((r) => ({ ...disc(r * s), hx: 0, hy: 0, ha: 0, dl: 0 })),
+    parts: [7, 6, 3.5, 3.5, 4, 4].map((r) => disc(r * s)),
     slow: 0, mt: 0, crash: false, bump: false, dizzy: 0,
     pose: bench ? 'sit' : role === 'bouncer' ? 'cross' : 'idle', hx: 7, hy: -6.3, rx: 0, ry: 0, lean: 0, leanT: 0, tilt: 0,
     hop: 0, hopH: 0, kick: 0, shake: 0, lookX: x + dir * 40, lookY: L.floors[f].y - 30, pupil: 0,
@@ -182,7 +182,6 @@ export const poseBot = (b: TBot, L: TLayout, t: number, dt: number) => {
   b.pupil += (look - b.pupil) * k;
 };
 
-// Where a held item sits for the current pose.
 export const holdPoint = (b: TBot) => {
   const hand = b.p[3];
   if (b.role === 'human') return rot(hand.x, hand.y, 0, 0, 0);
@@ -238,6 +237,9 @@ export const breakBot = (w: TWorld, b: TBot, col: string, puffs: number) => {
   const ht = rot(head.x, head.y, ha, 0, -5 * s);
   place(pn, (ht.x + tip.x) / 2, (ht.y + tip.y) / 2);
   pn.a = ha;
+  // part discs are wider than the ragdoll particles, so one can spawn through the floor the bot lies on
+  const fl = w.L.floors[floorOf(w.L, Math.max(base.y, chest.y, head.y))];
+  for (const q of b.parts) if ((q.x < fl.g0 || q.x > fl.g1) && q.y + q.r > fl.y) q.y = q.py = fl.y - q.r;
   const vx0 = (chest.x - chest.px) / H;
   const vy0 = (chest.y - chest.py) / H;
   b.parts.forEach((q, i) => {
@@ -288,14 +290,20 @@ export const mendBot = (b: TBot, L: TLayout) => {
     [x + (5 + 1) * s * d, fy - 10.2 * s, arm, 0.18],
     [x, fy - 34.5 * s, 0, 0.12],
   ];
-  b.parts.forEach((q: TPart, i) => {
+  b.parts.forEach((q, i) => {
     [q.hx, q.hy, q.ha, q.dl] = homes[i];
   });
   b.mode = 'mend';
   b.mt = 0;
 };
 
-export const mended = (b: TBot) => b.parts.every((q) => Math.abs(q.x - q.hx) < 1.5 && Math.abs(q.y - q.hy) < 1.5);
+export const mended = (b: TBot) => {
+  for (let i = 0; i < 6; i++) {
+    const q = b.parts[i];
+    if (Math.abs(q.x - q.hx) >= 1.5 || Math.abs(q.y - q.hy) >= 1.5) return false;
+  }
+  return true;
+};
 
 export const snapHome = (b: TBot, L: TLayout) => {
   b.mode = 'kin';
@@ -321,7 +329,11 @@ export const drawBot = (ctx: CanvasRenderingContext2D, b: TBot, C: TPalette, t: 
     drawParts(ctx, b, C, col);
     return;
   }
-  const [base, chest, head, hand, tip] = b.p;
+  const base = b.p[0];
+  const chest = b.p[1];
+  const head = b.p[2];
+  const hand = b.p[3];
+  const tip = b.p[4];
   const ca = Math.atan2(chest.x - base.x, base.y - chest.y);
   const ha = Math.atan2(head.x - chest.x, chest.y - head.y);
   world(ctx);
@@ -422,7 +434,6 @@ const visor = (ctx: CanvasRenderingContext2D, b: TBot, C: TPalette, col: string,
   ctx.fillStyle = C.bg;
   ctx.beginPath();
   if (b.mode === 'rag') {
-    // grabbed face: two chevrons and a line
     ctx.strokeStyle = C.bg;
     ctx.lineWidth = 0.7;
     ctx.moveTo(-2.6, -0.8);
@@ -502,7 +513,12 @@ const drawParts = (ctx: CanvasRenderingContext2D, b: TBot, C: TPalette, col: str
   const pt = paths();
   const s = b.s;
   const d = b.dir;
-  const [pc, ph, pl, pr, pa, pn] = b.parts;
+  const pc = b.parts[0];
+  const ph = b.parts[1];
+  const pl = b.parts[2];
+  const pr = b.parts[3];
+  const pa = b.parts[4];
+  const pn = b.parts[5];
   at(ctx, pl.x, pl.y, pl.a, s, s);
   wheel(ctx, C);
   at(ctx, pr.x, pr.y, pr.a, s, s);
@@ -539,15 +555,17 @@ const drawParts = (ctx: CanvasRenderingContext2D, b: TBot, C: TPalette, col: str
 // #endregion
 
 // #region Draw items and props
-export const drawItem = (ctx: CanvasRenderingContext2D, it: TThing, x: number, y: number, C: TPalette, digitFont: string) => {
+export const drawItem = (ctx: CanvasRenderingContext2D, it: TThing, x: number, y: number, C: TPalette, digitFont: string, tagR: number, fan: number) => {
   const spec = ITEM[it.kind];
   const p = paths().item[it.kind];
   const sq = it.squash > 0 ? 0.7 : 1;
+  // a tall stack would tower over its carrier's visor, so three fanned cards stand in for the rest
+  const n = Math.min(it.n, 3);
   ctx.globalAlpha = it.alpha;
   ctx.setLineDash(it.dashed ? DASH : SOLID);
-  for (let i = 0; i < it.n; i++) {
-    const o = rot(x, y, it.a, 0, -i * spec.h * 0.8);
-    at(ctx, o.x, o.y, it.a, 1, sq);
+  for (let i = 0; i < n; i++) {
+    const o = rot(x, y, it.a, i * 2.5 * fan, -i * spec.h * 0.6);
+    at(ctx, o.x, o.y, it.a + i * 0.12 * fan, 1, sq);
     ctx.strokeStyle = it.dashed ? C.holo : it.copy ? C.accent : C.text;
     ctx.lineWidth = 1;
     if (!it.dashed) {
@@ -561,10 +579,12 @@ export const drawItem = (ctx: CanvasRenderingContext2D, it: TThing, x: number, y
     at(ctx, x + spec.w / 2, y - spec.h / 2, 0, 1, 1);
     ctx.fillStyle = C.accent;
     ctx.beginPath();
-    dot(ctx, 0, 0, 5);
+    dot(ctx, 0, 0, tagR);
     ctx.fill();
     ctx.fillStyle = C.bg;
     ctx.font = digitFont;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(it.score === 10 ? '10' : '9', 0, 0.5);
   }
   ctx.globalAlpha = 1;
@@ -607,8 +627,8 @@ export const drawGate = (ctx: CanvasRenderingContext2D, b: TBot, col: string, C:
   ctx.stroke();
 };
 
-// The human is a button and a gloved hand, never a bot.
-export const drawHuman = (ctx: CanvasRenderingContext2D, x: number, fy: number, press: number, glove: number, wiggle: number, buzz: number, C: TPalette, t: number) => {
+// The human is a button and a gloved hand, never a bot; the glove hangs from the floor above so its cable never skewers that station.
+export const drawHuman = (ctx: CanvasRenderingContext2D, x: number, fy: number, press: number, glove: number, top: number, wiggle: number, buzz: number, C: TPalette, t: number) => {
   world(ctx);
   ctx.strokeStyle = C.human;
   ctx.fillStyle = C.shell;
@@ -630,13 +650,16 @@ export const drawHuman = (ctx: CanvasRenderingContext2D, x: number, fy: number, 
     line(ctx, x + 15 - j, fy - 16, x + 15 - j, fy - 6);
     ctx.stroke();
   }
-  if (glove <= -60) return;
+  if (glove <= top) return;
   world(ctx);
+  const alpha = ctx.globalAlpha;
   ctx.strokeStyle = C.muted;
   ctx.lineWidth = 1;
   ctx.beginPath();
-  line(ctx, x, -60, x, glove - 8);
+  line(ctx, x - 3, top, x + 3, top);
+  line(ctx, x, top, x, Math.max(top, glove - 8));
   ctx.stroke();
+  ctx.globalAlpha = alpha * Math.min(1, (glove - top) / 14);
   ctx.fillStyle = C.human;
   ctx.fillRect(x - 8, glove - 9, 16, 4);
   ctx.fillStyle = C.text;
@@ -647,6 +670,7 @@ export const drawHuman = (ctx: CanvasRenderingContext2D, x: number, fy: number, 
     ctx.roundRect(x - 7.5 + i * 4, glove - 5 + w, 3, len, 1.5);
     ctx.fill();
   }
+  ctx.globalAlpha = alpha;
 };
 // #endregion
 
@@ -710,7 +734,8 @@ export const drawLabels = (ctx: CanvasRenderingContext2D, L: TLayout, C: TPalett
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = C.text;
-  for (const s of L.stations) {
+  for (let i = 0; i < L.stations.length; i++) {
+    const s = L.stations[i];
     const live = only >= 0;
     if (live ? s.i !== only : L.compact && s.node.kind !== 'human') continue;
     ctx.globalAlpha = live ? 1 : 0.45;

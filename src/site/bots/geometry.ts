@@ -34,15 +34,19 @@ export const routeOf = (flow: IAutomation) => {
 // #endregion
 
 // #region Layout
+export const sizeOf = (N: number, compact: boolean) => {
+  const F = compact ? Math.ceil(N / 4) : 2;
+  // the bottom band holds a two line caption clear of the last floor's labels
+  return { W: compact ? 320 : 480, H: compact ? F * 100 + 86 : 280, F };
+};
+
 export const layoutFor = (flow: IAutomation, compact: boolean): TLayout => {
   const route = routeOf(flow);
   const N = route.length;
-  const W = compact ? 320 : 480;
-  const F = compact ? Math.ceil(N / 4) : 2;
+  const { W, H, F } = sizeOf(N, compact);
   const C = Math.ceil(N / F);
-  const H = compact ? F * 100 + 70 : 270;
   const pitch = W / C;
-  const floorY = (f: number) => (compact ? 120 + f * 100 : 132 + f * 104);
+  const floorY = (f: number) => (compact ? 120 + f * 100 : 124 + f * 100);
   const floors: TFloor[] = [];
   for (let f = 0; f < F; f++) {
     const last = f === F - 1;
@@ -82,8 +86,6 @@ export const layoutFor = (flow: IAutomation, compact: boolean): TLayout => {
   return { compact, W, H, F, C, pitch, floors, stations, props, station, prop };
 };
 
-
-// The floor a point stands on or falls toward.
 export const floorOf = (L: TLayout, y: number) => {
   for (let i = 0; i < L.F; i++) if (L.floors[i].y >= y - 2) return i;
   return L.F - 1;

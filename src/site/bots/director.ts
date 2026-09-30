@@ -2,7 +2,7 @@ import type { IAutomation, IFlowStep } from '../data';
 import { itemOf } from '../flow';
 import { PROP_SCALE, floorOf, layoutFor, type TLayout } from './geometry';
 import {
-  H, launch, place, pool, setVel, speed, step, take, thing,
+  H, body, launch, place, pool, setVel, speed, step, take, thing,
   type TBot, type TRing, type TThing, type TWorld,
 } from './physics';
 import {
@@ -10,10 +10,13 @@ import {
   holdPoint, intact, makeBot, mendBot, mended, poseBot, ragdoll, settle, snapHome, world, type TPalette,
 } from './crew';
 
+// BotFloor loads this module lazily, so the palette and view helpers ride along with it.
+export { readPalette, setView } from './crew';
+
 // #region Types
 type TCue = { kind: 'ring' | 'rain' | 'station' | 'ask' | 'rest'; st: number; log: string; step?: IFlowStep; next: number; last: boolean; crash: boolean; kick: boolean };
 type TLater = { at: number; fn: () => boolean | void };
-type TFonts = { label: string; glyph: string; digit: string };
+type TFonts = { label: string; glyph: string; digit: string; tagR: number };
 
 const mulberry32 = (seed: number) => () => {
   seed = (seed + 0x6d2b79f5) | 0;
@@ -38,7 +41,7 @@ export class BotWorld {
   C: TPalette;
   cap: HTMLElement;
   labels: string[] = [];
-  fonts: TFonts = { label: '', glyph: '', digit: '' };
+  fonts: TFonts = { label: '', glyph: '', digit: '', tagR: 5 };
   human = -1;
   bench: Record<number, number> = {};
   time = 0;
@@ -68,7 +71,8 @@ export class BotWorld {
   rain: number[] = [];
   rainN = 0;
   caught = 0;
-  glove = -60;
+  glove = 0;
+  gTop = 0;
   press = 0;
   wiggle = 0;
   buzz = 0;
@@ -77,10 +81,12 @@ export class BotWorld {
   timer = -1;
   chomp: number[] = [];
   logOf: string[] = [];
-  capNext = '';
+  capQ = ['', '', '', ''];
+  capQH = [0, 0, 0, 0];
+  capH = 0;
+  capN = 0;
   capAt = -1;
   capHold = 0;
-  capFor = 0.8;
   fade = 0;
   hover = -1;
   px = -999;
@@ -90,6 +96,7 @@ export class BotWorld {
   pingIn = 0;
   dt = 0;
   recv = 0;
+  calm = 0;
   timerBot = -1;
   landed = false;
   // #endregion
@@ -107,13 +114,17 @@ export class BotWorld {
       bots.push(makeBot(L, p.node.kind, p.st, p.x, p.f, p.dir, true));
     });
     this.w = {
-      L, bots, items: pool(10, thing), strips: pool(24, () => ({ ...thing(), r: 1.5, life: 0 })),
-      puffs: pool(12, () => ({ x: 0, y: 0, r: 0, t: 1, life: 0 })),
-      sparks: pool(16, () => ({ x: 0, y: 0, vx: 0, vy: 0, t: 1, life: 0, c: '' })),
-      rings: pool(6, () => ({ x: 0, y: 0, r0: 0, r1: 0, t: 1, life: 0, c: '' })),
-      glyphs: pool(10, () => ({ x: 0, y: 0, vy: 0, t: 1, life: 0, text: '', c: '' })),
+      L, bots, items: pool(10, thing), strips: pool(24, () => body(1.5)),
+      // -0 seeds keep these fields unboxed doubles from the first frame
+      puffs: pool(12, () => ({ x: -0, y: -0, r: -0, t: 1.5, life: -0 })),
+      sparks: pool(16, () => ({ x: -0, y: -0, vx: -0, vy: -0, t: 1.5, life: -0, c: '' })),
+      rings: pool(6, () => ({ x: -0, y: -0, r0: -0, r1: -0, t: 1.5, life: -0, c: '' })),
+      glyphs: pool(10, () => ({ x: -0, y: -0, vy: -0, t: 1.5, life: -0, text: '', c: '' })),
       gk: 0, gi: -1, gp: 0, gx: 0, gy: 0,
     };
+    const hs = L.stations[this.human];
+    // the glove drops from just under the floor above, below that station's label
+    this.gTop = this.glove = hs && hs.f > 0 ? L.floors[hs.f - 1].y + 16 : 20;
     this.mendAt = bots.map(() => 0);
     this.chomp = L.props.map(() => 0);
     this.logOf = this.w.items.map(() => '');
@@ -124,7 +135,9 @@ export class BotWorld {
   setFonts(ctx: CanvasRenderingContext2D, scale: number) {
     const u = Math.max(8.5, 10 / scale);
     const mono = '"Geist Mono", ui-monospace, monospace';
-    this.fonts = { label: `${u}px ${mono}`, glyph: `${10 / scale}px ${mono}`, digit: `${Math.max(6, 10 / scale)}px ${mono}` };
+    const digit = `${Math.max(6, 10 / scale)}px ${mono}`;
+    ctx.font = digit;
+    this.fonts = { label: `${u}px ${mono}`, glyph: `${10 / scale}px ${mono}`, digit, tagR: Math.max(5, ctx.measureText('10').width / 2 + 1.5) };
     this.labels = this.L.stations.map((s) => fitLabel(ctx, s.node.label, this.L.pitch - 6, this.fonts.label));
   }
 
@@ -132,13 +145,30 @@ export class BotWorld {
     drawStatic(ctx, this.L, this.C, this.labels, this.fonts.label);
   }
 
-  // Each line stays up long enough to read; a fallback line holds longer.
+  // Each line stays up long enough to read; a fallback line holds longer and drops the station prefix so its key words fit.
   say(st: number, text: string, hold = 0.8) {
     const node = this.L.stations[st].node;
-    this.capNext = `${String(st + 1).padStart(2, '0')} ${node.label.toUpperCase()} · ${text}`;
-    this.capAt = Math.max(this.time + 0.12, this.capHold);
-    this.capFor = hold;
-    if (this.capAt - this.time < 0.13) this.cap.classList.add('is-swap');
+    const Q = this.capQ.length;
+    const line = hold >= 2 ? text : `${String(st + 1).padStart(2, '0')} ${node.label.toUpperCase()} · ${text}`;
+    // a cue that restarts after a visitor interrupts it says its line again; show it once
+    if (line === (this.capN ? this.capQ[(this.capH + this.capN - 1) % Q] : this.cap.textContent)) return;
+    if (this.capN === Q) {
+      // a full queue sheds its oldest ordinary line; fallback lines carry the takeover story
+      let k = 0;
+      while (k < Q - 1 && this.capQH[(this.capH + k) % Q] >= 2) k++;
+      for (; k > 0; k--) {
+        const to = (this.capH + k) % Q;
+        const from = (this.capH + k - 1) % Q;
+        this.capQ[to] = this.capQ[from];
+        this.capQH[to] = this.capQH[from];
+      }
+      this.capH = (this.capH + 1) % Q;
+      this.capN--;
+    }
+    const tail = (this.capH + this.capN) % Q;
+    this.capQ[tail] = line;
+    this.capQH[tail] = hold;
+    this.capN++;
   }
   // #endregion
 
@@ -188,13 +218,17 @@ export class BotWorld {
     this.enter();
     this.fumble = this.rnd() < 0.1 ? 1 + Math.floor(this.rnd() * 4) : -1;
     this.throws = 0;
-    let est = 0.8;
+    let est = 1.1;
     cues.forEach((c) => {
       const node = c.st >= 0 ? this.L.stations[c.st].node : undefined;
-      est += c.kind === 'ask' ? 2.1 : c.kind === 'rain' ? 1.4 : c.kind === 'ring' ? 0.6 : node?.kind === 'ai' ? 1.1 : 0.55;
-      if (c.next >= 0) est += clamp(0.35 + Math.abs(this.L.stations[c.next].x - this.L.stations[c.st].x) / 600, 0.35, 0.9);
+      est += c.kind === 'ask' ? 2.6 : c.kind === 'rain' ? 1.4 : c.kind === 'ring' ? 0.6 : node?.kind === 'ai' ? 1.1 : 0.55;
+      if (c.next < 0) return;
+      const a = this.L.stations[c.st];
+      const b = this.L.stations[c.next];
+      // an upward hop flies a long arc, and a hop down through a hatch re-aims once below the floor
+      est += b.f < a.f ? 0.9 : clamp(0.35 + Math.abs(b.x - a.x) / 600, 0.35, 0.9) + (b.f > a.f ? 0.35 : 0);
     });
-    this.tempo = clamp(11 / est, 0.75, 1.1);
+    this.tempo = clamp(10.5 / est, 0.6, 1.1);
     if (this.rnd() < 0.05) this.at(2 + this.rnd() * 5, () => this.sneeze());
   }
 
@@ -225,6 +259,7 @@ export class BotWorld {
     this.landed = false;
     this.fetcher = -1;
     this.retried = false;
+    this.calm = 0;
     this.jitter = 0.75 + this.rnd() * 0.5;
     const c = this.cues[this.ci];
     this.actor = c && c.st >= 0 ? c.st : -1;
@@ -248,12 +283,15 @@ export class BotWorld {
     this.dt = dt;
     this.time += dt;
     this.loopT += dt;
+    if (this.capAt < 0 && this.capN > 0) this.capAt = Math.max(this.time + 0.12, this.capHold);
     if (this.capAt >= 0 && this.time >= this.capAt - 0.12) this.cap.classList.add('is-swap');
     if (this.capAt >= 0 && this.time >= this.capAt) {
-      this.cap.textContent = this.capNext;
+      this.cap.textContent = this.capQ[this.capH];
       this.cap.classList.remove('is-swap');
       this.capAt = -1;
-      this.capHold = this.time + this.capFor;
+      this.capHold = this.time + this.capQH[this.capH];
+      this.capH = (this.capH + 1) % this.capQ.length;
+      this.capN--;
     }
     for (let i = this.later.length - 1; i >= 0; i--) {
       const l = this.later[i];
@@ -298,7 +336,7 @@ export class BotWorld {
     });
     this.main = -1;
     this.later.length = 0;
-    this.glove = -60;
+    this.glove = this.gTop;
     this.timer = -1;
     this.startLoop();
   }
@@ -306,12 +344,13 @@ export class BotWorld {
   upkeep(dt: number) {
     const { bots, items } = this.w;
     const target = this.main >= 0 && items[this.main].st !== 'off' ? items[this.main] : undefined;
-    bots.forEach((b, i) => {
+    for (let i = 0; i < bots.length; i++) {
+      const b = bots[i];
       if (b.role === 'human') {
         const s = this.L.stations[b.st];
         b.p[3].x = s.x;
         b.p[3].y = s.y - 32 + this.press * 4.5;
-        return;
+        continue;
       }
       if (b.crash) this.smash(i, 1.6);
       if (b.bump) ragdoll(b);
@@ -319,7 +358,7 @@ export class BotWorld {
         b.dizzy = Math.max(0, b.dizzy - dt);
         const grabbed = this.w.gk === 1 && this.w.gi === i;
         let v = 0;
-        for (const q of b.p) v = Math.max(v, speed(q));
+        for (let k = 0; k < 5; k++) v = Math.max(v, speed(b.p[k]));
         b.slow = !grabbed && v < 8 ? b.slow + dt : 0;
         if ((b.slow > 0.25 && b.dizzy <= 0) || (!grabbed && b.mt > 5)) {
           settle(b, this.L);
@@ -331,7 +370,7 @@ export class BotWorld {
         b.flash = 0.32;
         this.ring(b.p[2].x, b.p[2].y, 4, 18, 0.5, this.C.holo);
       }
-      if (b.mode !== 'kin') return;
+      if (b.mode !== 'kin') continue;
       b.glow = this.hover === i ? 1 : 0;
       const near = Math.hypot(this.px - b.x, this.py - b.p[1].y) < 90;
       b.lookX = near ? this.px : target ? target.x : b.x + b.dir * 40;
@@ -339,21 +378,24 @@ export class BotWorld {
       if (b.gate > 0 && this.actor !== i) b.gate = Math.max(0, b.gate - dt * 3);
       if (b.role === 'thinker' && this.actor !== i) b.halo = Math.max(0, b.halo - dt * 2);
       poseBot(b, this.L, this.time, dt);
-    });
+    }
     this.gagIn -= dt;
     if (this.gagIn <= 0) this.gag();
     this.zIn -= dt;
     if (this.zIn <= 0) {
       this.zIn = 1.4;
-      for (const b of bots) if (b.asleep && b.mode === 'kin') this.glyph(b.p[2].x + 6, b.p[2].y - 6, 'z', this.C.muted, 1.4, -14);
+      for (let i = 0; i < bots.length; i++) {
+        const b = bots[i];
+        if (b.asleep && b.mode === 'kin') this.glyph(b.p[2].x + 6, b.p[2].y - 6, 'z', this.C.muted, 1.4, -14);
+      }
     }
     this.press = Math.max(0, this.press - dt * 3);
     this.buzz = Math.max(0, this.buzz - dt);
     this.pill = Math.max(0, this.pill - dt);
     this.wiggle = Math.max(0, this.wiggle - dt);
     const c = this.cues[this.ci];
-    if (!c || c.kind !== 'ask' || this.ph >= 4) this.glove = Math.max(-60, this.glove - dt * 260);
-    this.chomp.forEach((v, i) => (this.chomp[i] = Math.max(0, v - dt)));
+    if (!c || c.kind !== 'ask' || this.ph >= 4) this.glove = Math.max(this.gTop, this.glove - dt * 260);
+    for (let i = 0; i < this.chomp.length; i++) this.chomp[i] = Math.max(0, this.chomp[i] - dt);
   }
 
   gag() {
@@ -475,7 +517,8 @@ export class BotWorld {
       const hx = hp.x;
       const hy = hp.y;
       let low: TThing | undefined;
-      for (const idx of this.rain) {
+      for (let r = 0; r < this.rain.length; r++) {
+        const idx = this.rain[r];
         const it = items[idx];
         if (it.st !== 'free') continue;
         if (!low || it.y > low.y) low = it;
@@ -520,7 +563,8 @@ export class BotWorld {
     const b = this.w.bots[c.st];
     if (this.ph === 0) {
       if (!this.receive(c.st, true)) return false;
-      this.say(c.st, c.log);
+      // a crashing model never gets to claim its success log; the pop announces the fallback instead
+      if (!c.crash) this.say(c.st, c.log);
       b.led = 'work';
       this.next(1);
       return false;
@@ -539,7 +583,6 @@ export class BotWorld {
     return this.pitch(c);
   }
 
-  // Throws the main item on to the next station, or ends the line.
   pitch(c: TCue) {
     if (c.next < 0) return true;
     if (this.main < 0 || this.w.items[this.main].st !== 'held' || this.w.items[this.main].holder !== this.actor) {
@@ -762,7 +805,7 @@ export class BotWorld {
     }
     if (this.ph === 1) {
       const u = clamp((this.pt - 0.4 * T) / (0.45 * T), 0, 1);
-      this.glove = -60 + (pressY + 60) * (1 - (1 - u) * (1 - u));
+      this.glove = this.gTop + (pressY - this.gTop) * (1 - (1 - u) * (1 - u));
       if (u < 1) return false;
       this.wiggle = this.rnd() < 0.25 ? 0.6 * T : 0;
       this.next(2);
@@ -947,10 +990,12 @@ export class BotWorld {
       this.poofInto(this.main, bi);
       return false;
     }
-    if (this.pt > 7) {
+    if (this.pt > 5) {
       this.poofInto(this.main, bi);
       return false;
     }
+    // an item leaning on a standing bot is nudged every substep and never sleeps, so slowness alone counts as settled
+    this.calm = it.st === 'free' && speed(it) < 12 ? this.calm + this.dt : 0;
     if ((this.w.gk === 2 && items[this.w.gi] === it) || it.st === 'flight') return false;
     if (it.st === 'held') {
       const h = bots[it.holder];
@@ -974,10 +1019,10 @@ export class BotWorld {
       f.pose = 'reach';
       f.rx = it.x;
       f.ry = it.y;
-      if (Math.abs(f.x - it.x) < 10 && it.y > f.p[1].y - 12) this.pick(this.main, this.fetcher);
+      if (Math.abs(f.x - it.x) < 18 && it.y > f.p[1].y - 12) this.pick(this.main, this.fetcher);
       return false;
     }
-    if (it.still < 0.25) return false;
+    if (it.still < 0.25 && this.calm < 0.25) return false;
     const fl = floorOf(this.L, it.y);
     const th = it.thrower >= 0 ? bots[it.thrower] : undefined;
     if (fetch && !this.retried && th && th.role !== 'human' && intact(th) && th.f === fl) {
@@ -1035,19 +1080,20 @@ export class BotWorld {
 
   items(dt: number) {
     const { items, bots } = this.w;
-    items.forEach((it, i) => {
-      if (it.st === 'off') return;
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (it.st === 'off') continue;
       it.squash = Math.max(0, it.squash - dt);
       if (it.st === 'held') {
         const b = bots[it.holder];
         if (b.role !== 'human' && b.mode !== 'kin') {
           this.drop(i);
-          return;
+          continue;
         }
         const hp = holdPoint(b);
         place(it, hp.x, hp.y);
         it.a *= 0.8;
-        return;
+        continue;
       }
       if (it.y > this.L.H + 60 || it.x < -80 || it.x > this.L.W + 80) it.st = 'off';
       if (it.st === 'flight' && it.aim >= 0) {
@@ -1058,7 +1104,7 @@ export class BotWorld {
           b.ry = (b.p[3].y + it.y) / 2;
         }
       }
-    });
+    }
   }
 
   detect() {
@@ -1105,7 +1151,7 @@ export class BotWorld {
     const it = this.w.items[idx];
     const p = this.L.props[pi];
     const col = this.C.k[p.node.kind];
-    this.glyph(p.x, p.kind === 'tray' ? p.y - 4 : p.y - 22, `+${it.tag || 1}`, col, 1.2, -10);
+    this.glyph(p.x, p.kind === 'tray' ? p.y - 4 : p.y - 30, `+${it.tag || 1}`, col, 1.2, -10);
     if (this.logOf[idx]) this.say(p.st, this.logOf[idx]);
     this.landed = true;
     if (p.kind === 'shredder') {
@@ -1161,22 +1207,28 @@ export class BotWorld {
 
   fx(dt: number) {
     const w = this.w;
-    for (const p of w.puffs) if (p.t < p.life) {
+    for (let i = 0; i < w.puffs.length; i++) {
+      const p = w.puffs[i];
+      if (p.t >= p.life) continue;
       p.t += dt;
       p.y -= 30 * dt;
       p.r += 6 * dt;
     }
-    for (const s of w.sparks) if (s.t < s.life) {
+    for (let i = 0; i < w.sparks.length; i++) {
+      const s = w.sparks[i];
+      if (s.t >= s.life) continue;
       s.t += dt;
       s.x += s.vx * dt;
       s.y += s.vy * dt;
     }
-    for (const r of w.rings) if (r.t < r.life) r.t += dt;
-    for (const g of w.glyphs) if (g.t < g.life) {
+    for (let i = 0; i < w.rings.length; i++) if (w.rings[i].t < w.rings[i].life) w.rings[i].t += dt;
+    for (let i = 0; i < w.glyphs.length; i++) {
+      const g = w.glyphs[i];
+      if (g.t >= g.life) continue;
       g.t += dt;
       g.y += g.vy * dt;
     }
-    for (const d of w.strips) if (d.life > 0) d.life -= dt;
+    for (let i = 0; i < w.strips.length; i++) if (w.strips[i].life > 0) w.strips[i].life -= dt;
   }
   // #endregion
 
@@ -1194,32 +1246,37 @@ export class BotWorld {
     ctx.beginPath();
     ctx.rect(0, -400, L.W, L.H + 800);
     ctx.clip();
-    L.props.forEach((p, i) => {
-      if (p.kind === 'tray') drawTray(ctx, p, itemOf(this.flow), C);
+    const kind = itemOf(this.flow);
+    for (let i = 0; i < L.props.length; i++) {
+      const p = L.props[i];
+      if (p.kind === 'tray') drawTray(ctx, p, kind, C);
       else if (p.kind === 'shredder') drawShredderLid(ctx, p, this.chomp[i] > 0 ? Math.abs(Math.sin(this.chomp[i] * 30)) : 0, C);
-    });
-    bots.forEach((b) => {
+    }
+    for (let i = 0; i < bots.length; i++) {
+      const b = bots[i];
       if (b.role === 'bouncer') drawGate(ctx, b, C.k.rule, C);
       if (b.asleep && b.mode === 'kin') {
         ctx.globalAlpha = 0.7;
         drawBot(ctx, b, C, this.time);
         ctx.globalAlpha = 1;
       }
-    });
+    }
     if (this.human >= 0) {
       const s = L.stations[this.human];
-      drawHuman(ctx, s.x, s.y, this.press, -999, 0, this.buzz, C, this.time);
+      drawHuman(ctx, s.x, s.y, this.press, this.gTop, this.gTop, 0, this.buzz, C, this.time);
     }
-    bots.forEach((b) => {
+    for (let i = 0; i < bots.length; i++) {
+      const b = bots[i];
       if (b.role !== 'human' && !(b.asleep && b.mode === 'kin')) drawBot(ctx, b, C, this.time);
-    });
-    items.forEach((it) => {
-      if (it.st !== 'off') drawItem(ctx, it, it.x, it.y, C, this.fonts.digit);
-    });
+    }
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (it.st !== 'off') drawItem(ctx, it, it.x, it.y, C, this.fonts.digit, this.fonts.tagR, it.st === 'held' ? bots[it.holder].dir : 1);
+    }
     this.drawFx(ctx);
-    if (this.human >= 0 && this.glove > -60) {
+    if (this.human >= 0 && this.glove > this.gTop) {
       const s = L.stations[this.human];
-      drawHuman(ctx, s.x, s.y, this.press, this.glove, this.wiggle, 0, C, this.time);
+      drawHuman(ctx, s.x, s.y, this.press, this.glove, this.gTop, this.wiggle, 0, C, this.time);
       if (this.pill > 0) this.drawPill(ctx, s.x, s.y - 64);
     }
     if (this.timer >= 0) this.drawTimer(ctx);
@@ -1237,7 +1294,9 @@ export class BotWorld {
     const C = this.C;
     world(ctx);
     ctx.fillStyle = C.text;
-    for (const p of w.puffs) if (p.t < p.life) {
+    for (let i = 0; i < w.puffs.length; i++) {
+      const p = w.puffs[i];
+      if (p.t >= p.life) continue;
       ctx.globalAlpha = 0.25 * (1 - p.t / p.life);
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -1245,14 +1304,18 @@ export class BotWorld {
     }
     ctx.globalAlpha = 1;
     ctx.lineWidth = 1;
-    for (const s of w.sparks) if (s.t < s.life) {
+    for (let i = 0; i < w.sparks.length; i++) {
+      const s = w.sparks[i];
+      if (s.t >= s.life) continue;
       ctx.strokeStyle = s.c;
       ctx.beginPath();
       ctx.moveTo(s.x, s.y);
       ctx.lineTo(s.x - s.vx * 0.03, s.y - s.vy * 0.03);
       ctx.stroke();
     }
-    for (const r of w.rings) if (r.t < r.life) {
+    for (let i = 0; i < w.rings.length; i++) {
+      const r = w.rings[i];
+      if (r.t >= r.life) continue;
       const u = r.t / r.life;
       ctx.strokeStyle = r.c;
       ctx.globalAlpha = 1 - u;
@@ -1261,7 +1324,9 @@ export class BotWorld {
       ctx.stroke();
     }
     ctx.fillStyle = C.muted;
-    for (const d of w.strips) if (d.life > 0) {
+    for (let i = 0; i < w.strips.length; i++) {
+      const d = w.strips[i];
+      if (d.life <= 0) continue;
       ctx.globalAlpha = Math.min(1, d.life);
       const c = Math.cos(d.a);
       const s = Math.sin(d.a);
@@ -1275,7 +1340,9 @@ export class BotWorld {
     ctx.font = this.fonts.glyph;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    for (const g of w.glyphs) if (g.t < g.life) {
+    for (let i = 0; i < w.glyphs.length; i++) {
+      const g = w.glyphs[i];
+      if (g.t >= g.life) continue;
       ctx.globalAlpha = Math.min(1, 2 * (1 - g.t / g.life));
       ctx.fillStyle = g.c;
       ctx.fillText(g.text, g.x, g.y);
@@ -1360,7 +1427,7 @@ export class BotWorld {
         if (pi === undefined) return;
         const p = this.L.props[pi];
         const g = this.w.glyphs[tags++ % this.w.glyphs.length];
-        Object.assign(g, { x: p.x, y: p.kind === 'tray' ? p.y - 8 : p.y - 26, vy: 0, t: 0, life: Infinity, text: `+${countOf(br.log)}`, c: this.C.k[p.node.kind] });
+        Object.assign(g, { x: p.x, y: p.kind === 'tray' ? p.y - 8 : p.y - 32, vy: 0, t: 0, life: Infinity, text: `+${countOf(br.log)}`, c: this.C.k[p.node.kind] });
         if (p.kind === 'tray') p.shown = 1;
         else {
           const idx = this.spawn(p.x, p.y - 16);

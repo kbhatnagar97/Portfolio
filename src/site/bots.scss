@@ -27,34 +27,36 @@
     pointer-events: none;
   }
 
+  // two lines everywhere: the fallback logs carry their key words at the end
   &__caption {
     position: absolute;
     right: 44px;
-    bottom: 12px;
+    bottom: 10px;
     left: 16px;
     z-index: 1;
+    display: -webkit-box;
     overflow: hidden;
     font-family: var(--font-mono);
     font-size: 11px;
-    line-height: 1.4;
+    line-height: 1.25;
     color: color-mix(in srgb, var(--holo) 85%, transparent);
-    white-space: nowrap;
-    text-overflow: ellipsis;
     pointer-events: none;
     transition: opacity 0.12s linear;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 
     &.is-swap {
       opacity: 0;
     }
   }
 
-  &__screen.is-compact &__caption {
-    bottom: 10px;
-    display: -webkit-box;
-    line-height: 1.25;
-    white-space: normal;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+  // landscape phones: the whole crew floor fits under the site header, the engine letterboxes the rest
+  @media (orientation: landscape) and (height <= 560px) {
+    // a definite width keeps the capped height from shrinking the screen sideways through the aspect ratio
+    & &__screen {
+      width: 100%;
+      max-height: calc(100svh - 96px);
+    }
   }
 
   & &__stats dt {

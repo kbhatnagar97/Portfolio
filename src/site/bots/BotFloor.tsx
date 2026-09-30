@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { IAutomation } from '../data';
 import { gsap, reducedMotion } from '../smooth';
-import { readPalette, setView } from './crew';
-import { BotWorld } from './director';
+import type { BotWorld } from './director';
+import { routeOf, sizeOf } from './geometry';
 import '../bots.scss';
 
 // #region Pointer
@@ -25,8 +25,12 @@ export const BotFloor = ({ flow }: { flow: IAutomation }) => {
     if (!canvas || !cap || !screen || !ctx || !sctx) return;
 
     // #region Engine
+    // the engine is its own chunk, fetched when the card first nears the viewport
+    let mod: typeof import('./director') | undefined;
+    let loading = false;
     let bw: BotWorld | undefined;
     let still = reducedMotion();
+    let locked = document.documentElement.classList.contains('is-locked');
     let visible = false;
     let running = false;
     let disposed = false;
@@ -45,17 +49,27 @@ export const BotFloor = ({ flow }: { flow: IAutomation }) => {
     const samples = new Float64Array(SAMPLES * 3);
     let sn = 0;
 
-    const view = () => setView(dpr * scale, dpr * ox, dpr * oy, bw?.L.compact ? 0.6 : 1);
+    const view = () => mod?.setView(dpr * scale, dpr * ox, dpr * oy, bw?.L.compact ? 0.6 : 1);
 
+    const stations = routeOf(flow).length;
+    let ar = '';
+    // written before the engine chunk loads, so the screen has its final height before it nears the viewport
+    const aspect = () => {
+      const { W, H } = sizeOf(stations, cssW < 480);
+      const next = `${W} / ${H}`;
+      if (next === ar) return;
+      ar = next;
+      screen.style.setProperty('--bots-ar', ar);
+    };
     const fit = () => {
       cssW = screen.clientWidth;
-      cssH = screen.clientHeight;
-      if (!bw || !cssW || !cssH) return;
+      if (!cssW) return;
       const compact = cssW < 480;
-      if (bw.L.compact !== compact) bw = new BotWorld(flow, compact, readPalette(screen), cap);
+      aspect();
+      cssH = screen.clientHeight;
+      if (!bw || !mod || !cssH) return;
+      if (bw.L.compact !== compact) bw = new mod.BotWorld(flow, compact, mod.readPalette(screen), cap);
       const { W, H } = bw.L;
-      screen.style.setProperty('--bots-ar', `${W} / ${H}`);
-      screen.classList.toggle('is-compact', compact);
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = statics.width = Math.round(cssW * dpr);
       canvas.height = statics.height = Math.round(cssH * dpr);
@@ -72,9 +86,21 @@ export const BotFloor = ({ flow }: { flow: IAutomation }) => {
     };
 
     const build = () => {
+      if (!mod) return;
       cssW = screen.clientWidth;
-      bw = new BotWorld(flow, cssW < 480, readPalette(screen), cap);
+      bw = new mod.BotWorld(flow, cssW < 480, mod.readPalette(screen), cap);
       fit();
+    };
+
+    const load = () => {
+      if (loading) return;
+      loading = true;
+      import('./director').then((m) => {
+        if (disposed) return;
+        mod = m;
+        build();
+        sync();
+      });
     };
 
     const tick = () => {
@@ -96,7 +122,8 @@ export const BotFloor = ({ flow }: { flow: IAutomation }) => {
     };
 
     const sync = () => {
-      const want = visible && !document.hidden && !still && !!bw;
+      // the full screen lab covers the cards, so they rest while it is open
+      const want = visible && !document.hidden && !locked && !still && !!bw;
       if (want && !running) {
         last = 0;
         bw?.resume();
@@ -113,27 +140,40 @@ export const BotFloor = ({ flow }: { flow: IAutomation }) => {
     const io = new IntersectionObserver(
       ([e]) => {
         visible = e.isIntersecting;
-        if (visible && !bw) build();
+        if (visible) load();
         sync();
       },
       { rootMargin: '120px 0px' },
     );
     io.observe(screen);
-    const ro = new ResizeObserver(() => fit());
+    cssW = screen.clientWidth;
+    if (cssW) aspect();
+    let raf = 0;
+    // a frame later, because a new aspect ratio resizes the observed screen and WebKit reports that as a loop
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(fit);
+    });
     ro.observe(screen);
     const mq = matchMedia('(prefers-reduced-motion: reduce)');
     const onMotion = () => {
       still = mq.matches;
       if (bw) build();
+      else if (still) load();
       sync();
     };
+    const mo = new MutationObserver(() => {
+      locked = document.documentElement.classList.contains('is-locked');
+      sync();
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     mq.addEventListener('change', onMotion);
     const onVisibility = () => sync();
     document.addEventListener('visibilitychange', onVisibility);
     const onScroll = () => (lastScroll = performance.now());
     window.addEventListener('scroll', onScroll, { passive: true });
     document.fonts?.ready.then(() => !disposed && fit());
-    if (still) build();
+    if (still) load();
     // #endregion
 
     // #region Input
@@ -255,6 +295,8 @@ export const BotFloor = ({ flow }: { flow: IAutomation }) => {
       if (running) gsap.ticker.remove(tick);
       io.disconnect();
       ro.disconnect();
+      cancelAnimationFrame(raf);
+      mo.disconnect();
       mq.removeEventListener('change', onMotion);
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('scroll', onScroll);
