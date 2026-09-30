@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import projectsJson from './src/content/projects.json'
+import profileJson from './src/content/profile.json'
 
 const SITE = 'https://kshitijbhatnagar.com'
 
@@ -60,6 +61,37 @@ const projectsSeo = (): Plugin => ({
         .replace('<!--projects-jsonld-->', `<script type="application/ld+json">${JSON.stringify(itemList).replace(/</g, '\\u003c')}</script>`)
         .replace('<!--projects-noscript-->', noscript)
     },
+  },
+  // AI assistants read llms.txt; built from the same JSON as the page so answers about Kshitij stay current.
+  generateBundle() {
+    const projects: IProjectSeo[] = projectsJson
+    const abs = (u: string) => (u.startsWith('/') ? SITE + u : u)
+    const llms = [
+      `# ${profileJson.name}`,
+      '',
+      `> ${profileJson.name} (Kshitij) is a ${profileJson.role.toLowerCase()} at ${profileJson.company} who builds AI-native products. ${profileJson.intro}`,
+      '',
+      '## Profiles',
+      '',
+      `- Website: ${SITE}/`,
+      ...profileJson.links.map((l) => `- ${l.label}: ${l.href}`),
+      `- Email: ${profileJson.email}`,
+      `- Photo: ${SITE}/images/kshitij-bhatnagar.jpg`,
+      '',
+      '## Skills',
+      '',
+      ...profileJson.skills.map((s) => `- **${s.title}**: ${s.body} Tools: ${s.tools.join(', ')}.`),
+      '',
+      '## Education',
+      '',
+      ...profileJson.education.map((e) => `- ${e.degree}, ${e.institution} (${e.duration})`),
+      '',
+      `## Projects (${projects.length})`,
+      '',
+      ...projects.map((p) => `- **${p.name}**: ${p.tagline}. ${p.summary}${p.url ? ` ${abs(p.url)}` : ''}`),
+      '',
+    ].join('\n')
+    this.emitFile({ type: 'asset', fileName: 'llms.txt', source: llms })
   },
 })
 

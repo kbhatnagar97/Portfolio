@@ -39,7 +39,7 @@ const Contact = () => {
         <ul className='contact__links' data-fade>
           {PROFILE.links.map((l) => (
             <li key={l.label}>
-              <a href={l.href} target='_blank' rel='noopener noreferrer'>
+              <a href={l.href} target='_blank' rel='noopener noreferrer me'>
                 {l.label} <span aria-hidden='true'>↗</span>
               </a>
             </li>

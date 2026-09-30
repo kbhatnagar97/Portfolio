@@ -33,7 +33,7 @@ const Hero = () => {
           gsap
             .timeline({ defaults: { ease: 'expo.out' } })
             .from(split.chars, { yPercent: 60, opacity: 0, duration: 1.4, stagger: 0.035 }, 0.15)
-            .from('.hero__eyebrow, .hero__intro, .hero__actions', { y: 24, autoAlpha: 0, duration: 1.2, stagger: 0.1 }, 0.6)
+            .from('.hero__id, .hero__intro, .hero__actions', { y: 24, autoAlpha: 0, duration: 1.2, stagger: 0.1 }, 0.6)
             .from('.hero__stat', { y: 20, autoAlpha: 0, duration: 1, stagger: 0.08 }, 0.9)
             .from('.hero__hint', { autoAlpha: 0, duration: 1 }, 1.4);
           gsap.utils.toArray<HTMLElement>('.hero__count').forEach((el) => {
@@ -61,10 +61,27 @@ const Hero = () => {
   return (
     <section id='top' className='hero' ref={root} data-shape={SHAPE.orb}>
       <div className='hero__inner'>
-        <p className='hero__eyebrow'>
-          <span className='pulse' aria-hidden='true' />
-          {PROFILE.role} at {PROFILE.company}
-        </p>
+        <div className='hero__id'>
+          <img className='hero__photo' src='/images/kshitij-bhatnagar.jpg' alt='Kshitij Bhatnagar' width={320} height={320} fetchPriority='high' />
+          <div>
+            <p className='hero__eyebrow'>
+              <span className='pulse' aria-hidden='true' />
+              {PROFILE.role} at {PROFILE.company}
+            </p>
+            <ul className='hero__social' aria-label='Kshitij Bhatnagar online'>
+              {PROFILE.links.map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} target='_blank' rel='noopener noreferrer me'>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a href={`mailto:${PROFILE.email}`}>Email</a>
+              </li>
+            </ul>
+          </div>
+        </div>
         <h1 className='hero__title'>
           <span className='hero__line'>Kshitij</span>
           <span className='hero__line hero__line--serif'>Bhatnagar</span>
