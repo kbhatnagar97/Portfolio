@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { gsap, lockScroll, reducedMotion } from '../smooth';
+import { audio, debugEvent } from '../audio/engine';
+import { sfx } from '../audio/sfx';
+import { music, type IClock } from '../audio/music';
+import { hop as tempo } from '../audio/themes';
+import SoundToggle from '../audio/SoundToggle';
 import { BOT, ITEM, KIND_LABEL, NH, NW, edgeKind, edgePath, itemOf, layoutOf, type TItem, type TLayout, type TPoint } from '../flow';
 import type { IAutomation, IFlowChoice, IFlowStep } from '../data';
 import '../lab.scss';
@@ -21,6 +26,8 @@ const RANKS: [number, string][] = [
   [450, 'Architect'],
   [MAX_XP, 'Stark level'],
 ];
+const xpOf = (done: Set<TMission>) => MISSIONS.filter((m) => done.has(m.id)).reduce((n, m) => n + m.xp, 0);
+const rankOf = (xp: number) => [...RANKS].reverse().find(([min]) => xp >= min)?.[1] ?? RANKS[0][1];
 
 interface IPacket {
   id: number;
@@ -39,9 +46,11 @@ interface ILog {
 
 type TAsk = NonNullable<IFlowStep['ask']> & { node: string };
 
+type TLoop = 'scrub' | 'dragServo';
+const FLOOR: Record<TLoop, number> = { scrub: 1200, dragServo: 40 };
+
 let seq = 0;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // #region Layout mode
 // under 1100 by 780 the wide board scales node text under 11px, so tablets and small laptops read the stack
@@ -147,7 +156,7 @@ const Packet = ({ d, tone, item, onDone }: { d: string; tone: string; item: TIte
     let dist = 0;
     const tween = gsap.to(o, {
       t: 1,
-      duration: reducedMotion() ? 0.05 : 0.8,
+      duration: reducedMotion() ? 0.05 : tempo().travel,
       ease: 'power1.inOut',
       onUpdate: () => {
         const pt = p.getPointAtLength(o.t * p.getTotalLength());
@@ -156,6 +165,8 @@ const Packet = ({ d, tone, item, onDone }: { d: string; tone: string; item: TIte
           dist += Math.hypot(dx, pt.y - ly);
           const s = dx < 0 ? -1 : 1;
           if (Math.abs(dx) >= 0.01 && s !== dir) {
+            // the first flip only sets the heading at departure, it is not a turn; under reduced motion no turn is seen
+            if (dist > 4 && !reducedMotion()) sfx.play('turn');
             dir = s;
             b.setAttribute('transform', `scale(${CS * s} ${CS})`);
           }
@@ -167,7 +178,10 @@ const Packet = ({ d, tone, item, onDone }: { d: string; tone: string; item: TIte
         bd.setAttribute('transform', `translate(0 ${Math.sin(((performance.now() - t0) / 1000) * Math.PI * 6) * 1.2})`);
         b.style.setProperty('--spin', `${dist / (BOT.wheel.r * CS)}rad`);
       },
-      onComplete: onDone,
+      onComplete: () => {
+        debugEvent('visual:arrive');
+        onDone();
+      },
     });
     return () => {
       tween.kill();
@@ -245,12 +259,23 @@ const Resident = ({ down }: { down: boolean }) => {
   const sparks = useRef<(SVGLineElement | null)[]>([]);
   const bodies = useRef<IBody[]>(PARTS.map((p) => ({ x: HOME[p][0] * RS, y: HOME[p][1] * RS, px: 0, py: 0, a: 0, spin: 0, hw: EXT[p][0] * RS, hh: EXT[p][1] * RS })));
   const first = useRef(true);
+  // keyed on the value, not on first: StrictMode's replayed effect must stay silent
+  const prevDown = useRef(down);
+  const crashes = useRef({ t: -1e9, n: 0 });
 
   useEffect(() => {
     const B = bodies.current;
     const draw = () => B.forEach((b, i) => parts.current[i]?.setAttribute('transform', `translate(${b.x} ${b.y}) rotate(${(b.a * 180) / Math.PI}) scale(${RS})`));
     const wasFirst = first.current;
     first.current = false;
+    const changed = prevDown.current !== down;
+    prevDown.current = down;
+    // repeated knocks on the same bot within 3 s get quieter, down to -12 dB
+    const now = performance.now();
+    const c = crashes.current;
+    c.n = changed && now - c.t < 3000 ? c.n + 1 : 0;
+    if (changed) c.t = now;
+    const quiet = -Math.min(12, 4 * c.n);
     if (wasFirst && !down) return;
 
     if (reducedMotion() || wasFirst) {
@@ -259,10 +284,13 @@ const Resident = ({ down }: { down: boolean }) => {
         Object.assign(B[i], { x: x * RS, y: y * RS, a: (deg * Math.PI) / 180 });
       });
       draw();
+      if (changed) sfx.play(down ? 'powerDown' : 'powerUp', { dur: 0.5, quiet });
       return;
     }
 
     if (!down) {
+      const at = audio.ctx?.currentTime ?? 0;
+      const sounds = changed ? [sfx.play('reboot', { quiet }), sfx.play('snap', { at: at + 0.6, quiet }), sfx.play('visor', { at: at + 0.85, step: 0, quiet }), sfx.play('visor', { at: at + 1.01, step: 1, quiet })] : [];
       const tweens = B.map((b, i) => {
         b.a = wrap(b.a);
         const [hx, hy] = HOME[PARTS[i]];
@@ -270,7 +298,10 @@ const Resident = ({ down }: { down: boolean }) => {
       });
       const visor = parts.current[PARTS.indexOf('head')]?.querySelector('.lab__bot-visor');
       if (visor) tweens.push(gsap.fromTo(visor, { opacity: 0 }, { opacity: 1, duration: 0.08, repeat: 1, repeatDelay: 0.08, delay: 0.85 }));
-      return () => tweens.forEach((t) => t.kill());
+      return () => {
+        tweens.forEach((t) => t.kill());
+        sounds.forEach((h) => h.stop());
+      };
     }
 
     PARTS.forEach((p, i) => {
@@ -289,11 +320,26 @@ const Resident = ({ down }: { down: boolean }) => {
         { attr: { x1: cx + Math.cos(ang) * 14, y1: cy + Math.sin(ang) * 14, x2: cx + Math.cos(ang) * 30, y2: cy + Math.sin(ang) * 30 }, opacity: 0, duration: 0.25, ease: 'power2.out' },
       );
     });
+    if (changed) {
+      sfx.play('crash', { quiet });
+      music.duck('crash', -6, 0.4, 0.4);
+    }
+    const wheels = changed ? sfx.loop('wheels') : undefined;
+    const wi = [PARTS.indexOf('wheelL'), PARTS.indexOf('wheelR')];
+    const lastHit = PARTS.map(() => -1);
+    let simT = 0;
+    // only real impacts clank; a resting part touches the floor every substep at about 10 px/s
+    const hit = (i: number, v: number, wall: boolean) => {
+      if (!changed || v <= 60 || simT - lastHit[i] < 0.06) return;
+      lastHit[i] = simT;
+      sfx.play('clank', { part: PARTS[i], intensity: clamp((v - 60) / 540, 0, 1), quiet: quiet + (wall ? -6 : 0) });
+    };
     const left = -(NW - 44);
     let acc = 0;
     let life = 1.6;
     const step = () => {
-      B.forEach((b) => {
+      simT += H;
+      B.forEach((b, i) => {
         const vx = (b.x - b.px) * 0.999;
         const vy = (b.y - b.py) * 0.999 + G * H * H;
         b.px = b.x;
@@ -308,6 +354,7 @@ const Resident = ({ down }: { down: boolean }) => {
         const ex = b.hw * c + b.hh * s;
         if (b.y + ey > 0) {
           const vyn = b.y - b.py;
+          hit(i, Math.abs(vyn) / H, false);
           b.y = -ey;
           b.py = b.y + vyn * 0.35;
           // wheels roll away, everything else scrapes to a stop
@@ -323,6 +370,7 @@ const Resident = ({ down }: { down: boolean }) => {
         }
         if (b.x - ex < left || b.x + ex > 44) {
           const vxn = b.x - b.px;
+          hit(i, Math.abs(vxn) / H, true);
           b.x = clamp(b.x, left + ex, 44 - ex);
           b.px = b.x + vxn * 0.35;
         }
@@ -351,12 +399,17 @@ const Resident = ({ down }: { down: boolean }) => {
       for (let n = 0; acc >= H && n < 6; n++, acc -= H) step();
       if (acc >= H) acc = 0;
       draw();
-      if (life <= 0) gsap.ticker.remove(tick);
+      wheels?.set((Math.abs(B[wi[0]].spin) + Math.abs(B[wi[1]].spin)) / 2);
+      if (life <= 0) {
+        gsap.ticker.remove(tick);
+        wheels?.stop();
+      }
     };
     gsap.ticker.add(tick);
     return () => {
       gsap.ticker.remove(tick);
       fx.forEach((t) => t.kill());
+      wheels?.stop();
     };
   }, [down]);
 
@@ -446,9 +499,30 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   layoutRef.current = { mode, board };
   const lastUser = useRef(-1e9);
   const cam = useRef<gsap.core.Tween>(undefined);
+  const clock = useRef<IClock>(undefined);
+  const [synced, setSynced] = useState(false);
 
-  const xp = MISSIONS.filter((m) => done.has(m.id)).reduce((n, m) => n + m.xp, 0);
-  const rank = [...RANKS].reverse().find(([min]) => xp >= min)?.[1] ?? RANKS[0][1];
+  // one continuous sound per gesture; a loop left without input stops itself, so a stale one is replaced
+  const loop = useRef<{ id: TLoop; h: ReturnType<typeof sfx.loop>; t: number }>(undefined);
+  const feed = useCallback((id: TLoop, v: number, pan?: number) => {
+    const now = performance.now();
+    let l = loop.current;
+    if (!l || l.id !== id || now - l.t > 200) {
+      // below its floor a loop is silent, so a slow gesture never opens one
+      if (v < FLOOR[id]) return;
+      l?.h.stop();
+      l = loop.current = { id, h: sfx.loop(id), t: now };
+    }
+    l.t = now;
+    l.h.set(v, pan);
+  }, []);
+  const hush = () => {
+    loop.current?.h.stop();
+    loop.current = undefined;
+  };
+
+  const xp = xpOf(done);
+  const rank = rankOf(xp);
   const cleared = done.size === MISSIONS.length;
 
   // #region View
@@ -548,32 +622,48 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     const el = viewport.current;
     if (!el) return;
     // native listener: React's wheel handler is passive, and ctrl plus wheel must not zoom the whole page
+    let last = 0;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       lastUser.current = performance.now();
       cam.current?.kill();
       const r = el.getBoundingClientRect();
-      if (e.ctrlKey || e.metaKey) zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.01));
-      else setView((v) => ({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY }));
+      const dt = Math.max(e.timeStamp - last, 8);
+      last = e.timeStamp;
+      if (e.ctrlKey || e.metaKey) {
+        const f = Math.exp(-e.deltaY * 0.01);
+        sfx.zoom(viewRef.current.k, clamp(viewRef.current.k * f, 0.3, 2.2), 'wheel');
+        zoomAt(e.clientX - r.left, e.clientY - r.top, f);
+      } else {
+        feed('scrub', (Math.hypot(e.deltaX, e.deltaY) / dt) * 1000, sfx.panOf(e.clientX));
+        setView((v) => ({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY }));
+      }
     };
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, [zoomAt]);
+  }, [zoomAt, feed]);
+
+  const zoomBy = (f: number) => {
+    sfx.zoom(viewRef.current.k, clamp(viewRef.current.k * f, 0.3, 2.2), 'button');
+    zoomAt(innerWidth / 2, innerHeight / 2, f);
+  };
   // #endregion
 
   // #region Missions
   const complete = useCallback((m: TMission) => setDone((d) => (d.has(m) ? d : new Set(d).add(m))), []);
   const seen = useRef(new Set<TMission>());
   useEffect(() => {
-    const fresh = MISSIONS.find((m) => done.has(m.id) && !seen.current.has(m.id));
-    if (!fresh) return;
+    const fresh = MISSIONS.filter((m) => done.has(m.id) && !seen.current.has(m.id));
+    if (!fresh.length) return;
+    const rankBefore = rankOf(xpOf(seen.current));
     seen.current = new Set(done);
-    setToast(
-      done.size === MISSIONS.length
-        ? { id: ++seq, title: 'Full clearance. Stark level unlocked', xp: fresh.xp }
-        : { id: ++seq, title: fresh.label, xp: fresh.xp },
-    );
-  }, [done]);
+    const all = done.size === MISSIONS.length;
+    setToast(all ? { id: ++seq, title: 'Full clearance. Stark level unlocked', xp: fresh[0].xp } : { id: ++seq, title: fresh[0].label, xp: fresh[0].xp });
+    // every mission stinger opens with the coin figure, so the coin plays only when no stinger will
+    const sting = all ? 'clearance' : rankOf(xpOf(done)) !== rankBefore ? 'rankUp' : fresh.length > 1 ? 'missionBig' : 'mission';
+    if (music.stinger(sting) === undefined) sfx.play('coin');
+    if (missionsOpen) sfx.play('ratchet');
+  }, [done, missionsOpen]);
 
   useEffect(() => {
     if (!toast) return;
@@ -586,6 +676,10 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   }, [inspected, flow.nodes.length, complete]);
 
   const inspect = (id?: string) => {
+    if (id && !selected) sfx.play(inspected.has(id) ? 'toggleOn' : 'stamp');
+    else if (!id && selected) sfx.play('toggleOff');
+    else if (id && id !== selected) sfx.play('navigate');
+    if (!!id !== !!selected) music.inspector(!!id);
     setSelected(id);
     if (id) setInspected((s) => (s.has(id) ? s : new Set(s).add(id)));
   };
@@ -609,24 +703,35 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     );
   };
 
+  const panAt = (id: string) => sfx.panOf(viewRef.current.x + (posRef.current[id]?.x ?? 0) * viewRef.current.k);
+
   const travel = (from: string, to: string, tone = 'go') =>
     new Promise<void>((resolve) => {
       const id = ++seq;
+      const snd = sfx.courier({ at: clock.current?.at, fromPan: panAt(from), toPan: panAt(to), kind: byId[to].kind, tone });
       const finish = () => {
-        pending.current.delete(finish);
+        pending.current.delete(abort);
         setPackets((p) => p.filter((x) => x.id !== id));
         resolve();
       };
-      pending.current.add(finish);
+      // a courier stopped mid route must not chime on the arrival it never made
+      const abort = () => {
+        snd.cancel();
+        finish();
+      };
+      pending.current.add(abort);
       setPackets((p) => [...p, { id, from, to, tone, done: finish }]);
     });
 
-  const hop = (from: string, to: string, tone?: string) => {
+  const hop = async (from: string, to: string, tone?: string) => {
+    const c = clock.current;
     follow(to);
-    return travel(from, to, tone);
+    await travel(from, to, tone);
+    c?.skip(1.5);
   };
 
   const stop = useCallback(() => {
+    if (music.endRun() && !closing.current) sfx.play('powerDown');
     token.current++;
     pending.current.forEach((f) => f());
     answer.current?.();
@@ -638,6 +743,11 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
 
   const run = async () => {
     if (running) return;
+    sfx.play('runStart');
+    sfx.ladder.reset();
+    music.runStart();
+    music.poke();
+    const clk = (clock.current = music.clock(flow.id));
     const me = ++token.current;
     const alive = () => token.current === me;
     t0.current = performance.now();
@@ -647,6 +757,9 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     log(`Run ${runs + 1} started`, 'sys');
     let cur: string | undefined;
     let chaos = false;
+    // the first flash lands on the next beat when music plays, at once otherwise
+    await clk.start();
+    if (!alive()) return;
 
     for (const step of flow.run) {
       const node = byId[step.node];
@@ -659,10 +772,14 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           cur = node.fallback.via;
         }
         log(node.fallback.log, 'alt');
+        sfx.play('reroute', { pan: panAt(step.node) });
         continue;
       }
       if (cur) await hop(cur, step.node, edgeKind(flow, cur, step.node) === 'fallback' ? 'alt' : 'go');
-      else follow(step.node);
+      else {
+        follow(step.node);
+        sfx.play('arrive', { kind: node.kind, at: clk.at, pan: panAt(step.node) });
+      }
       if (!alive()) return;
       flash(step.node);
       log(step.log);
@@ -680,14 +797,22 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
 
       if (step.ask) {
         setAsk({ ...step.ask, node: step.node });
+        sfx.play('alert', { pan: panAt(step.node) });
+        music.decide(true);
         const choice = await new Promise<IFlowChoice | undefined>((r) => (answer.current = r));
         answer.current = undefined;
         setAsk(undefined);
         if (!alive() || !choice) return;
+        music.decide(false);
+        music.stinger(choice.tone === 'drop' ? 'no' : 'yes');
+        clk.resync();
         complete('decide');
         log(choice.log, choice.tone);
+        // the first route courier leaves when its resynced 8th is heard, so it lands with its chime
+        await clk.advance(0);
+        if (!alive()) return;
         for (const h of choice.route) {
-          await hop(cur, h.node);
+          await hop(cur, h.node, 'ok');
           if (!alive()) return;
           flash(h.node);
           log(h.log, 'ok');
@@ -695,13 +820,15 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         }
         break;
       }
-      await sleep(reducedMotion() ? 0 : 260);
+      await clk.advance(0.5);
       if (!alive()) return;
     }
 
-    await sleep(400);
+    await clk.advance(1);
     if (!alive()) return;
     log(chaos ? 'Run complete. The fallback held' : 'Run complete', 'sys');
+    if (consoleRef.current?.getClientRects().length) sfx.play('typeTick');
+    music.completeRun(chaos);
     setRuns((n) => n + 1);
     complete('run');
     if (chaos) complete('chaos');
@@ -709,6 +836,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   };
 
   const reset = () => {
+    sfx.play('reset');
     stop();
     setPos(board.pos);
     setVisited(new Set());
@@ -727,7 +855,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   // #endregion
 
   // #region Gestures
-  const gesture = useRef<{ kind: 'node' | 'pan' | 'pinch'; id?: string; sx: number; sy: number; ox: number; oy: number; moved: boolean; d0?: number; k0?: number }>(undefined);
+  const gesture = useRef<{ kind: 'node' | 'pan' | 'pinch'; id?: string; sx: number; sy: number; ox: number; oy: number; moved: boolean; d0?: number; k0?: number; lx?: number; ly?: number; lt?: number; v?: number; edge?: boolean }>(undefined);
   const pointers = useRef(new Map<number, TPoint>());
 
   const onDown = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -736,6 +864,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     e.currentTarget.setPointerCapture(e.pointerId);
     if (pointers.current.size === 2) {
+      hush();
       const [a, b] = [...pointers.current.values()];
       gesture.current = { kind: 'pinch', sx: 0, sy: 0, ox: 0, oy: 0, moved: true, d0: Math.hypot(a.x - b.x, a.y - b.y), k0: viewRef.current.k };
       return;
@@ -755,21 +884,36 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       const r = e.currentTarget.getBoundingClientRect();
       lastUser.current = performance.now();
       const factor = (g.k0! * Math.hypot(a.x - b.x, a.y - b.y)) / g.d0! / viewRef.current.k;
+      sfx.zoom(viewRef.current.k, clamp(viewRef.current.k * factor, 0.3, 2.2), 'pinch');
       zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, factor);
       return;
     }
     const dx = e.clientX - g.sx;
     const dy = e.clientY - g.sy;
     if (!g.moved && Math.hypot(dx, dy) < 5) return;
+    if (!g.moved && g.kind === 'node') sfx.play('pickup', { pan: sfx.panOf(e.clientX) });
     g.moved = true;
+    const dt = Math.max(e.timeStamp - (g.lt ?? e.timeStamp - 16), 8);
+    const inst = (Math.hypot(e.clientX - (g.lx ?? g.sx), e.clientY - (g.ly ?? g.sy)) / dt) * 1000;
+    if (Number.isFinite(inst)) g.v = (g.v ?? inst) * 0.7 + inst * 0.3;
+    Object.assign(g, { lx: e.clientX, ly: e.clientY, lt: e.timeStamp });
     if (g.kind === 'pan') {
       lastUser.current = performance.now();
+      feed('scrub', g.v ?? 0, sfx.panOf(e.clientX));
       setView((v) => ({ ...v, x: g.ox + dx, y: g.oy + dy }));
     }
     else if (g.id) {
       const k = viewRef.current.k;
       const id = g.id;
-      setPos((p) => ({ ...p, [id]: { x: clamp(g.ox + dx / k, NW / 2, board.w - NW / 2), y: clamp(g.oy + dy / k, NH / 2, board.h - NH / 2) } }));
+      const rx = g.ox + dx / k;
+      const ry = g.oy + dy / k;
+      const next = { x: clamp(rx, NW / 2, board.w - NW / 2), y: clamp(ry, NH / 2, board.h - NH / 2) };
+      // one bonk when the node first meets the board edge, armed again once it leaves
+      const edge = next.x !== rx || next.y !== ry;
+      if (edge && !g.edge) sfx.play('bonk', { intensity: 0.5, pan: sfx.panOf(e.clientX) });
+      g.edge = edge;
+      feed('dragServo', edge ? 0 : (g.v ?? 0), sfx.panOf(e.clientX));
+      setPos((p) => ({ ...p, [id]: next }));
     }
   };
 
@@ -777,19 +921,41 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     pointers.current.delete(e.pointerId);
     const g = gesture.current;
     gesture.current = undefined;
+    hush();
     if (g?.kind === 'pan' && !g.moved && e.type === 'pointerup') inspect(undefined);
     if (!g || g.kind !== 'node' || !g.id) return;
-    if (g.moved) complete('drag');
+    if (g.moved) {
+      // a cancelled or lost pointer drops silently
+      if (e.type === 'pointerup') sfx.play('dropThud', { intensity: clamp((g.v ?? 0) / 1500, 0, 1), pan: sfx.panOf(e.clientX) });
+      complete('drag');
+    }
     else inspect(selected === g.id ? undefined : g.id);
   };
 
+  const nudge = useRef({ reps: 0, bonked: false });
   const onNodeKey = (e: ReactKeyboardEvent<HTMLButtonElement>, id: string) => {
     const step = e.shiftKey ? 60 : 20;
     const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
     if (!d) return;
     e.preventDefault();
+    const n = nudge.current;
+    const p0 = posRef.current[id];
+    const stuck = clamp(p0.x + d[0], NW / 2, board.w - NW / 2) === p0.x && clamp(p0.y + d[1], NH / 2, board.h - NH / 2) === p0.y;
+    if (e.repeat) n.reps++;
+    else Object.assign(n, { reps: 0, bonked: false });
+    const pan = panAt(id);
+    if (stuck) {
+      if (!n.bonked) sfx.play('bonk', { intensity: 0.5, pan });
+      n.bonked = true;
+    } else if (!e.repeat || n.reps % 2 === 0) sfx.play(e.shiftKey ? 'nudgeHeavy' : 'nudge', { pan, quiet: e.repeat ? -8 : 0 });
     setPos((p) => ({ ...p, [id]: { x: clamp(p[id].x + d[0], NW / 2, board.w - NW / 2), y: clamp(p[id].y + d[1], NH / 2, board.h - NH / 2) } }));
     complete('drag');
+  };
+
+  const onNodeKeyUp = (e: ReactKeyboardEvent<HTMLButtonElement>, id: string) => {
+    if (!e.key.startsWith('Arrow') || !nudge.current.reps) return;
+    nudge.current.reps = 0;
+    sfx.play('dropThud', { intensity: 0.2, pan: panAt(id) });
   };
 
   // pointer capture on the board swallows mouse clicks, so this only answers the keyboard
@@ -799,9 +965,36 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   // #endregion
 
   // #region Open and close
+  const tabbed = useRef(false);
+  const hovered = useRef<{ el?: Element; t: number }>({ t: 0 });
+
+  // mouse hover on the nodes and the run button only; everything else stays quiet on purpose
+  const onHover = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse' || gesture.current) return;
+    const el = (e.target as Element).closest('[data-node], .lab__run:not(:disabled)');
+    if (!el || (e.relatedTarget instanceof Node && el.contains(e.relatedTarget))) return;
+    const now = performance.now();
+    if (el === hovered.current.el && now - hovered.current.t < 400) return;
+    hovered.current = { el, t: now };
+    sfx.play('hover', { pan: sfx.panOf(e.clientX) });
+  };
+
+  const onFocusIn = () => {
+    if (tabbed.current) sfx.play('focusTick');
+    tabbed.current = false;
+  };
+
+  const toggleMissions = () => {
+    sfx.play(missionsOpen ? 'toggleOff' : 'toggleOn');
+    setMissionsOpen(!missionsOpen);
+  };
+
   const close = useCallback(() => {
     if (closing.current) return;
     closing.current = true;
+    // the close sound first, so the fade it rides on never swallows it
+    sfx.play(reducedMotion() ? 'toggleOff' : 'irisClose', { pan: sfx.panOf(origin.current.x) });
+    audio.close(reducedMotion() ? 0.15 : 0.6);
     stop();
     const el = root.current;
     if (!el || reducedMotion()) return onClose();
@@ -811,6 +1004,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   }, [onClose, stop]);
 
   useLayoutEffect(() => {
+    audio.open(flow.id);
     const opener = document.activeElement as HTMLElement | null;
     const r = opener?.getBoundingClientRect();
     // Safari never focuses a clicked button, so activeElement can be the body far above the viewport
@@ -820,8 +1014,12 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
 
     const el = root.current;
     let ctx: gsap.Context | undefined;
+    let boot: ReturnType<typeof sfx.boot> | undefined;
+    // CSS loops restart on the music's first downbeat, 1.2 s in, or at once when nothing plays
+    const sync = setTimeout(() => setSynced(true), el && !reducedMotion() && audio.mode === 'all' ? 1200 : 0);
     if (el && !reducedMotion()) {
       const { x, y } = origin.current;
+      boot = sfx.boot({ nodes: flow.nodes.length, edges: flow.edges.length, originPan: sfx.panOf(x), startPerf: performance.now() });
       ctx = gsap.context(() => {
         gsap
           .timeline()
@@ -834,22 +1032,29 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           .fromTo('.lab__node', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.6)', stagger: 0.05, clearProps: 'opacity,scale,transform' }, 1.05)
           .from('.lab__bar, .lab__dock', { opacity: 0, y: (i) => (i ? 24 : -24), duration: 0.6, ease: 'power3.out' }, 1.2);
       }, el);
-    }
+    } else music.start(flow.id, { fadeIn: 0.8 });
     return () => {
+      clearTimeout(sync);
+      boot?.stop();
+      audio.close(0);
       ctx?.revert();
       lockScroll(false);
       opener?.focus({ preventScroll: true });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the lab remounts per flow (keyed), so this runs once per open
   }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
+      music.poke();
+      if ((e.key === 'm' || e.key === 'M') && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey) audio.cycle();
       if (e.key === 'Escape') {
         if (selected) inspect(undefined);
-        else if (missionsOpen) setMissionsOpen(false);
+        else if (missionsOpen) toggleMissions();
         else close();
       }
+      tabbed.current = e.key === 'Tab';
       if (e.key === ' ' && tag !== 'BUTTON' && tag !== 'A') {
         e.preventDefault();
         run();
@@ -872,6 +1077,14 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   });
 
   useEffect(() => () => stop(), [stop]);
+
+  useEffect(() => {
+    music.setLayer('chaos', offline.size > 0);
+  }, [offline]);
+
+  useEffect(() => {
+    music.setLayer('traffic', packets.length >= 2);
+  }, [packets.length]);
 
   useEffect(() => () => void cam.current?.kill(), []);
 
@@ -929,6 +1142,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           aria-pressed={selected === n.id}
           onClick={(e) => onNodeClick(e, n.id)}
           onKeyDown={(e) => onNodeKey(e, n.id)}
+          onKeyUp={(e) => onNodeKeyUp(e, n.id)}
         >
           <span className='lab__node-kind'>
             <span className='lab__led' aria-hidden='true' />
@@ -960,7 +1174,14 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           <div className='lab__chaos'>
             <p className='lab__mono'>Chaos test</p>
             <p>{node.fallback.via ? `If this goes down, ${byId[node.fallback.via].label} takes over.` : 'If this goes down, the run skips it and still publishes.'}</p>
-            <button type='button' className={`lab__btn ${offline.has(node.id) ? 'is-on' : ''}`} onClick={() => toggleOffline(node.id)}>
+            <button
+              type='button'
+              className={`lab__btn ${offline.has(node.id) ? 'is-on' : ''}`}
+              onClick={() => {
+                sfx.play('click');
+                toggleOffline(node.id);
+              }}
+            >
               {offline.has(node.id) ? 'Bring it back online' : 'Knock it offline'}
             </button>
           </div>
@@ -1004,24 +1225,40 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   const renderDock = () => (
     <div ref={dock} className='lab__dock'>
       <div className='lab__controls'>
-        <button type='button' className='lab__run' onClick={run} disabled={running}>
+        <button type='button' className='lab__run' onClick={() => void run()} disabled={running}>
           <span className='lab__run-core' aria-hidden='true' />
           {running ? 'Running' : runs ? 'Run it again' : 'Run the pipeline'}
         </button>
         <div className='lab__tools' role='group' aria-label='Board'>
-          <button type='button' className='lab__icon' onClick={() => zoomAt(innerWidth / 2, innerHeight / 2, 1 / 1.25)} aria-label='Zoom out'>
+          <button type='button' className='lab__icon' onClick={() => zoomBy(1 / 1.25)} aria-label='Zoom out'>
             −
           </button>
-          <button type='button' className='lab__icon lab__icon--wide' onClick={fit}>
+          <button
+            type='button'
+            className='lab__icon lab__icon--wide'
+            onClick={() => {
+              sfx.play('fit');
+              fit();
+            }}
+          >
             Fit
           </button>
-          <button type='button' className='lab__icon' onClick={() => zoomAt(innerWidth / 2, innerHeight / 2, 1.25)} aria-label='Zoom in'>
+          <button type='button' className='lab__icon' onClick={() => zoomBy(1.25)} aria-label='Zoom in'>
             +
           </button>
           <button type='button' className='lab__icon lab__icon--wide' onClick={reset}>
             Reset
           </button>
-          <button type='button' className='lab__icon lab__icon--wide lab__logbtn' aria-expanded={logOpen} aria-controls='lab-log' onClick={() => setLogOpen((o) => !o)}>
+          <button
+            type='button'
+            className='lab__icon lab__icon--wide lab__logbtn'
+            aria-expanded={logOpen}
+            aria-controls='lab-log'
+            onClick={() => {
+              sfx.play(logOpen ? 'toggleOff' : 'toggleOn');
+              setLogOpen(!logOpen);
+            }}
+          >
             Log
           </button>
         </div>
@@ -1033,7 +1270,16 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           <p id='lab-ask'>{ask.prompt}</p>
           <div>
             {ask.choices.map((c, i) => (
-              <button key={c.label} type='button' className={`lab__btn ${i === 0 ? 'is-primary' : ''}`} onClick={() => answer.current?.(c)} autoFocus={i === 0}>
+              <button
+                key={c.label}
+                type='button'
+                className={`lab__btn ${i === 0 ? 'is-primary' : ''}`}
+                onClick={() => {
+                  sfx.play('click', { step: i === 0 ? 1 : c.tone === 'drop' ? -1 : 0 });
+                  answer.current?.(c);
+                }}
+                autoFocus={i === 0}
+              >
                 {c.label}
               </button>
             ))}
@@ -1055,11 +1301,17 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   return createPortal(
     <div
       ref={root}
-      className={`lab lab--${mode} ${compact ? 'lab--compact' : ''} ${cleared ? 'is-cleared' : ''} ${running ? 'is-running' : ''}`}
+      className={`lab lab--${mode} ${compact ? 'lab--compact' : ''} ${cleared ? 'is-cleared' : ''} ${running ? 'is-running' : ''} ${synced ? 'is-synced' : ''}`}
       role='dialog'
       aria-modal='true'
       aria-labelledby='lab-title'
-      style={{ '--accent': flow.accent, '--gx': `${view.x}px`, '--gy': `${view.y}px`, '--gs': `${40 * view.k}px`, '--k': view.k } as CSSProperties}
+      style={{ '--accent': flow.accent, '--gx': `${view.x}px`, '--gy': `${view.y}px`, '--gs': `${40 * view.k}px`, '--k': view.k, '--beat': `${tempo(flow.id).spb}s` } as CSSProperties}
+      onPointerOver={onHover}
+      onPointerDownCapture={() => {
+        tabbed.current = false;
+        music.poke();
+      }}
+      onFocus={onFocusIn}
     >
       <div className='lab__grid' aria-hidden='true' />
       <svg className='lab__reactor' viewBox='-200 -200 400 400' aria-hidden='true'>
@@ -1071,7 +1323,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       </svg>
       <div className='lab__scan' aria-hidden='true' />
 
-      <div ref={viewport} className='lab__viewport' onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
+      <div ref={viewport} className='lab__viewport' onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} onLostPointerCapture={onUp}>
         <div className='lab__stage' style={{ width: board.w, height: board.h, transform: `translate(${view.x}px, ${view.y}px) scale(${view.k})` }}>
           <svg className='lab__wires' width={board.w} height={board.h} aria-hidden='true'>
             {renderEdges()}
@@ -1101,12 +1353,13 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           ))}
         </dl>
         <div className='lab__actions'>
-          <button type='button' className='lab__chip' aria-expanded={missionsOpen} aria-controls='lab-missions' onClick={() => setMissionsOpen((o) => !o)}>
+          <SoundToggle />
+          <button type='button' className='lab__chip' aria-expanded={missionsOpen} aria-controls='lab-missions' onClick={toggleMissions}>
             Missions {done.size}/{MISSIONS.length} <span>{xp} XP</span>
           </button>
           {flow.writeup && (
-            <a className='lab__chip lab__chip--link' href={flow.writeup} target='_blank' rel='noopener noreferrer'>
-              Write-up <span aria-hidden='true'>↗</span>
+            <a className='lab__chip lab__chip--link' href={flow.writeup} target='_blank' rel='noopener noreferrer' onClick={() => sfx.play('click')}>
+              <span className='lab__chip-text'>Write-up</span> <span aria-hidden='true'>↗</span>
             </a>
           )}
           <button type='button' className='lab__icon lab__close' onClick={close} aria-label='Close workflow lab'>

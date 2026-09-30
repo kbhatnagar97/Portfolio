@@ -912,11 +912,58 @@
   font-size: 26px;
 }
 
+// the one control that stops the music: a full 44px target on every layout
+.lab__sound {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
 @media (pointer: coarse) {
   .lab__chip,
   .lab__icon {
     min-width: 44px;
     min-height: 44px;
+  }
+}
+
+// on the narrowest phones the Write-up chip keeps only its arrow, so the sound button never pushes the header onto another row
+@mixin chip-arrow-only {
+  .lab__chip.lab__chip--link {
+    justify-content: center;
+    min-width: 44px;
+    padding: 0;
+    font-size: 16px;
+  }
+
+  .lab__chip-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (width < 380px) {
+  .lab--compact {
+    @include chip-arrow-only;
+  }
+}
+
+@media (width < 600px) {
+  .lab--strip {
+    @include chip-arrow-only;
   }
 }
 
@@ -1609,6 +1656,43 @@
   .lab__node-kind,
   .lab__node-sub {
     font-size: 17px;
+  }
+}
+// #endregion
+
+// #region Beat lock
+// loops the music sonifies run on its beat, held still until its first downbeat so they start in phase with bar 1
+.lab {
+  .lab__reactor .r5 {
+    animation-duration: calc(var(--beat, 0.5s) * 8);
+  }
+
+  .lab__edge-flow,
+  .lab__node.is-asking {
+    animation-duration: calc(var(--beat, 0.5s) * 2);
+  }
+
+  .lab__scan {
+    animation-duration: calc(var(--beat, 0.5s) * 16);
+  }
+
+  .lab__resident .lab__bot-visor {
+    animation-duration: calc(var(--beat, 0.5s) * 8);
+  }
+
+  .lab__led--live {
+    animation-duration: calc(var(--beat, 0.5s) * 4);
+  }
+
+  &:not(.is-synced) {
+    .lab__reactor .r5,
+    .lab__edge-flow,
+    .lab__node.is-asking,
+    .lab__scan,
+    .lab__resident .lab__bot-visor,
+    .lab__led--live {
+      animation-play-state: paused;
+    }
   }
 }
 // #endregion
