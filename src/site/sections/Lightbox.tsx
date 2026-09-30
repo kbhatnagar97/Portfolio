@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { lockScroll } from '../smooth';
 
 export interface ILightbox {
@@ -7,7 +7,7 @@ export interface ILightbox {
   images: string[];
 }
 
-const Lightbox = ({ box, onClose }: { box: ILightbox; onClose: () => void }) => {
+const Box = ({ box, onClose }: { box: ILightbox; onClose: () => void }) => {
   const [i, setI] = useState(0);
   const close = useRef<HTMLButtonElement>(null);
   const many = box.images.length > 1;
@@ -60,5 +60,10 @@ const Lightbox = ({ box, onClose }: { box: ILightbox; onClose: () => void }) => 
     </motion.div>
   );
 };
+
+// its own chunk so framer-motion stays out of first paint; kept mounted once opened so the exit fade plays
+const Lightbox = ({ box, onClose }: { box?: ILightbox; onClose: () => void }) => (
+  <AnimatePresence>{box && <Box key='lightbox' box={box} onClose={onClose} />}</AnimatePresence>
+);
 
 export default Lightbox;

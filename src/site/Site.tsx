@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { startSmoothScroll, ScrollTrigger } from './smooth';
-import { automationById, projectById } from './data';
+import { automationById, projectById, projectBySlug } from './data';
 import { useReveals } from './motion';
 import Nav from './sections/Nav';
 import Hero from './sections/Hero';
@@ -11,7 +10,6 @@ import Automations from './sections/Automations';
 import Journey from './sections/Journey';
 import Process from './sections/Process';
 import Contact from './sections/Contact';
-import ProjectModal from './sections/ProjectModal';
 import { unlockEarly } from './audio/early';
 import './site.scss';
 
@@ -20,18 +18,32 @@ const Scene = lazy(() => import('./scene/Scene'));
 const loadLab = () => import('./sections/WorkflowLab');
 type TLabProps = Parameters<Awaited<ReturnType<typeof loadLab>>['default']>[0];
 const WorkflowLab = lazy((): Promise<{ default: ComponentType<TLabProps> }> => loadLab().catch(() => ({ default: () => null })));
+// framer-motion only ships with the modal and lightbox, so it is fetched on idle instead of blocking first paint
+const loadModal = () => import('./sections/ModalLayer');
+type TModalProps = Parameters<Awaited<ReturnType<typeof loadModal>>['default']>[0];
+const ModalLayer = lazy((): Promise<{ default: ComponentType<TModalProps> }> => loadModal().catch(() => ({ default: () => null })));
 
 const Site = () => {
   const [openId, setOpenId] = useState<string>();
+  const [modalOn, setModalOn] = useState(false);
   const [labId, setLabId] = useState<string>();
   const [sceneReady, setSceneReady] = useState(false);
   useReveals();
+
+  const project = openId ? projectById(openId) : undefined;
+  const flow = labId ? automationById(labId) : undefined;
+  // automations open their interactive board instead of the story modal; the lab's sound unlocks inside this click
+  const open = (id: string) => (automationById(id) ? (unlockEarly(), setLabId(id)) : (setModalOn(true), setOpenId(id)));
 
   useEffect(() => {
     const stop = startSmoothScroll();
     // three.js loads after first paint so the text is never waiting on WebGL
     const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
-    idle(() => setSceneReady(true));
+    idle(() => {
+      setSceneReady(true);
+      void loadModal().catch(() => undefined);
+      void import('./sections/Lightbox').catch(() => undefined);
+    });
     const refresh = () => ScrollTrigger.refresh();
     document.fonts?.ready.then(refresh);
     // fetch the lab a screen before its cards come into view, so the first open is instant
@@ -51,10 +63,19 @@ const Site = () => {
     };
   }, []);
 
-  const project = openId ? projectById(openId) : undefined;
-  const flow = labId ? automationById(labId) : undefined;
-  // automations open their interactive board instead of the story modal; the lab's sound unlocks inside this click
-  const open = (id: string) => (automationById(id) ? (unlockEarly(), setLabId(id)) : setOpenId(id));
+  // /?project=<slug> is the static project pages' way back into the interactive story
+  useEffect(() => {
+    const slug = new URLSearchParams(location.search).get('project');
+    const target = slug ? projectBySlug(slug) : undefined;
+    if (!slug) return;
+    history.replaceState(history.state, '', location.pathname + location.hash);
+    if (!target) return;
+    if (automationById(target.id)) setLabId(target.id);
+    else {
+      setModalOn(true);
+      setOpenId(target.id);
+    }
+  }, []);
 
   return (
     <div className='site'>
@@ -74,9 +95,11 @@ const Site = () => {
         <Process />
         <Contact />
       </main>
-      <AnimatePresence>
-        {project && <ProjectModal key='modal' project={project} onNavigate={open} onClose={() => setOpenId(undefined)} />}
-      </AnimatePresence>
+      {modalOn && (
+        <Suspense fallback={null}>
+          <ModalLayer project={project} onNavigate={open} onClose={() => setOpenId(undefined)} />
+        </Suspense>
+      )}
       {flow && (
         <Suspense fallback={null}>
           <WorkflowLab key={flow.id} flow={flow} onClose={() => setLabId(undefined)} />

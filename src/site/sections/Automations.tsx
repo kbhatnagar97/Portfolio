@@ -1,10 +1,11 @@
 import type { CSSProperties, PointerEvent } from 'react';
-import { AUTOMATIONS, type IAutomation } from '../data';
+import { AUTOMATIONS, openInPage, projectById, type IAutomation } from '../data';
 import { SHAPE } from '../scene/shapes';
 import '../lab.scss';
 import { BotFloor } from '../bots/BotFloor';
 
 const AutomationCard = ({ flow, index, onOpen }: { flow: IAutomation; index: number; onOpen: (id: string) => void }) => {
+  const page = projectById(flow.id);
   const tilt = (e: PointerEvent<HTMLElement>) => {
     if (e.pointerType !== 'mouse') return;
     const r = e.currentTarget.getBoundingClientRect();
@@ -41,7 +42,15 @@ const AutomationCard = ({ flow, index, onOpen }: { flow: IAutomation; index: num
           <span>A{String(index + 1).padStart(2, '0')}</span>
           {flow.nodes.length} stages · {flow.edges.length} data lines
         </p>
-        <h3 id={`a-${flow.id}`}>{flow.name}</h3>
+        <h3 id={`a-${flow.id}`}>
+          {page ? (
+            <a className='acard__name' href={`/projects/${page.slug}/`} onClick={openInPage(() => onOpen(flow.id))}>
+              {flow.name}
+            </a>
+          ) : (
+            flow.name
+          )}
+        </h3>
         <p className='acard__tag'>{flow.tagline}</p>
         <dl className='acard__stats'>
           {flow.stats.map((s) => (

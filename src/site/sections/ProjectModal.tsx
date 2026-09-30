@@ -89,7 +89,7 @@ const ProjectModal = ({ project, onClose, onNavigate }: IProjectModalProps) => {
           <div className='modal__links'>
             {project.url && (
               <a className='btn btn--solid' href={project.url} target='_blank' rel='noopener noreferrer'>
-                Visit site <span aria-hidden='true'>↗</span>
+                Visit site<span className='sr-only'> {project.name}</span> <span aria-hidden='true'>↗</span>
               </a>
             )}
             {project.repo && (

@@ -148,6 +148,10 @@
     letter-spacing: -0.035em;
   }
 
+  &__name {
+    text-decoration: none;
+  }
+
   &__tag {
     font-family: var(--font-serif);
     font-style: italic;

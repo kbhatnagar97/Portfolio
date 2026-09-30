@@ -19,6 +19,7 @@
       "Firebase"
     ],
     "summary": "A live 3D Earth that puts temperature for 260 cities, GDP per capita for 193 countries and every magnitude 4.5+ earthquake on one globe, with a page behind every dot.",
+    "description": "A live 3D Earth with temperature for 260 cities, GDP per capita for 193 countries and every magnitude 4.5+ earthquake, built by Kshitij Bhatnagar.",
     "spark": "Live weather, national economics and earthquakes each sit on different sites, maps and tables. I wanted to see the whole planet at once and go from a glowing dot on a globe to the numbers behind it in a single click.",
     "build": "I built one three.js globe with three layers: Stratum for live temperature and air quality, Meridian for World Bank indicators, and Signal for USGS earthquakes and NASA natural events. A scroll story flies a day and night Earth along one continuous camera path, and every city, country and quake gets its own page, live on orbitalspace.in behind Cloudflare.",
     "architecture": [
@@ -57,6 +58,7 @@
       "Razorpay"
     ],
     "summary": "A Vedic astrology toolkit on a real sidereal ephemeris: birth chart (kundli) with shadow readings, 36-guna compatibility matching, AI palm reading and an AI astrologer you can question about your own chart.",
+    "description": "A Vedic astrology toolkit on a real sidereal ephemeris: kundli birth charts, 36-guna compatibility matching, AI palm reading and an AI astrologer.",
     "spark": "Every big astrology app I tried buried the actual calculations under generic horoscopes and dark-pattern subscriptions, and only ever told you what was great about your chart. I wanted the real maths: Lahiri ayanamsa, proper ephemeris, actual Ashtakoot scoring, plus an honest read on the blind spots, in one clean place.",
     "build": "I built a full Vedic toolkit: a sidereal birth chart on the Moshier ephemeris with plain-English decode and shadow cards, 36-guna Ashtakoot matching with dosha detection, Panchang, numerology, a Sade Sati timeline and a Knowledge Hub. An on-device TensorFlow.js scanner frames each palm before Gemini reads it, and an AI astrologer answers questions about any saved chart. Sign in, credits and Razorpay top-ups run on Firebase, live on astrolenz.com.",
     "architecture": [
@@ -95,6 +97,7 @@
       "Vercel"
     ],
     "summary": "Paste a link from YouTube, Instagram, TikTok and more, and get a timestamped transcript, a chapter timeline, study notes, flashcards, a quiz and an Ask chat that answers with cited timestamps.",
+    "description": "Paste a YouTube, Instagram or TikTok link and get a timestamped transcript, chapters, study notes, flashcards, a quiz and chat with cited timestamps.",
     "spark": "I save a lot of videos to review later but kept losing the thread of what I actually learnt from them. Typing out notes manually felt like busywork, and there was no easy way to pull the content into Claude without re-watching or describing it by hand.",
     "build": "What started as a one-field transcriber grew into VideoNote. It uses YouTube captions when it can and otherwise transcribes the audio with Whisper large v3 turbo on Groq, then writes a chapter timeline, notes, flashcards and a quiz you can question. Google sign in, prepaid Pro passes through Razorpay and a Redis usage meter all run on one Python function, live on videonote.in behind Cloudflare.",
     "architecture": [
@@ -131,6 +134,7 @@
       "transformers.js"
     ],
     "summary": "Paste a ChatGPT share link and get a clean, portable page plus exports, or let your agents pull it through an MCP server, so conversation context moves between ChatGPT, Claude, Gemini and coding agents.",
+    "description": "Paste a ChatGPT share link and get a clean, portable page and exports, or pull it through an MCP server to move context between ChatGPT, Claude and Gemini.",
     "spark": "A work network blocked a ChatGPT share link I needed, and more generally my context was trapped inside one assistant. I could not cleanly carry a conversation into Claude or an agent.",
     "build": "I built a bridge that turns any ChatGPT share into a clean page plus Markdown, JSON and 'copy-for-agent' exports, then shipped an MCP server so Claude, Cursor and other agents can bridge links and search bridged chats by meaning with an in-process embedding model and no API key. It now lives on contextbridge.in behind Cloudflare.",
     "architecture": [
@@ -275,6 +279,7 @@
       "Vercel"
     ],
     "summary": "An interactive normal distribution for process capability: drag the mean, the spread and the spec limits right on the curve and watch Pp, Ppk, PPM and yield update live.",
+    "description": "An interactive normal distribution for process capability: drag the mean, spread and spec limits and watch Pp, Ppk, PPM and yield update live.",
     "spark": "Understanding process capability from static textbook curves never clicked for me. You could not feel how the numbers actually move as the process shifts.",
     "build": "I rebuilt it as its own small app: an SVG chart where the spec limits, the mean and the shoulder of the curve are draggable handles, live Pp, Ppk, PPM and yield with a plain-language verdict, and a hero where simulated parts fall into a histogram as the process drifts, so defects visibly land outside the limits. It is one static page with no dependencies, served on this domain.",
     "architecture": [
@@ -413,6 +418,7 @@
       "YouTube API"
     ],
     "summary": "A zero cost pipeline that picks a personal finance topic, writes the script, narrates it, times word by word captions and renders a vertical Short, then uploads it to the Two Cents Daily channel.",
+    "description": "A zero cost pipeline that writes, narrates, captions and renders personal finance Shorts, then uploads them to the Two Cents Daily YouTube channel.",
     "spark": "I wanted to test whether a faceless content channel could be run end to end by AI at zero cost, instead of paying for a stack of SaaS tools to do each step.",
     "build": "I built one Python script that runs the whole studio: a local model on Ollama picks the topic and writes a hook, analogy, stats and action script, edge-tts narrates it, faster-whisper times every word, free image search fills the frames, and the render adds word by word captions and a slow Ken Burns zoom before uploading through the YouTube API.",
     "architecture": [
@@ -487,6 +493,7 @@
       "LinkedIn API"
     ],
     "summary": "A personal newsroom that watches AI labs and news sources, rates every story, drafts a LinkedIn post with a designed 4:5 card, and posts only after I tap Approve on my phone.",
+    "description": "A personal newsroom that watches AI labs and news sources, rates each story and drafts a LinkedIn post with a 4:5 card, posting only after approval.",
     "spark": "Big AI launches move fast, and by the time I had read the news, written a post and made an image, the moment had passed. I wanted to be early without handing my LinkedIn over to a bot.",
     "build": "I built a pipeline on n8n that polls 57 sources every five minutes, has TypeSafe's Jev model rate each story against four typed questions, and has Claude Opus research and draft the post in my voice with a rendered 1080×1350 card. Each draft arrives as one phone notification with Approve, Edit on Mac and Reject, and only an Approve publishes it through the LinkedIn Posts API with companies tagged automatically.",
     "architecture": [
@@ -523,6 +530,7 @@
       "ntfy"
     ],
     "summary": "A personal pipeline that polls 214 company career pages every three minutes, screens each new posting against my profile, estimates the pay, and pushes the best matches to my phone before most people have seen them.",
+    "description": "A pipeline that polls 214 company career pages every three minutes, screens each new posting, estimates the pay and pushes the best matches to a phone.",
     "spark": "Job board alerts arrive a day late, and by then a good role already has hundreds of applicants. Company career pages publish the moment a job goes live, so I wanted to read them directly and only look at the roles worth my time.",
     "build": "An n8n workflow polls the ATS feeds behind 214 career pages. TypeSafe's Jev model screens every posting with seven typed questions, Claude prices the shortlist and writes a fit and a risk line, and fixed priority rules decide what reaches the tracker and my phone. Top roles ask for a referral first and hold the application for 48 hours.",
     "architecture": [
@@ -590,6 +598,7 @@
       "RAG"
     ],
     "summary": "A private, local-first memory of my life: a spinnable 3D globe of everywhere I've been, built from wearable transcripts and photo metadata, with a chat that answers anything about my past.",
+    "description": "A private, local-first memory of Kshitij Bhatnagar's life: a 3D globe of everywhere he has been, built from wearable transcripts and photo metadata.",
     "spark": "I realised my memory of where I had been and what I had felt was scattered across photos and a wearable, and quietly slipping away. I wanted to actually see and question my own life.",
     "build": "I built a private, local-first life graph: a spinnable 3D globe of every place I've been from photo GPS and wearable transcripts, plus a local RAG chat, 'a gen-AI of my life', that answers questions about my past with real memories and photos.",
     "architecture": [
@@ -623,6 +632,7 @@
       "MCP"
     ],
     "summary": "A phone-first, self-hosted AI assistant with a custom particle-brain face, human voice, sandboxed file and network hands, and the ability to delegate hard tasks to a frontier model.",
+    "description": "A phone-first, self-hosted AI assistant with a particle-brain face, a human voice, sandboxed file and network access, and delegation to a frontier model.",
     "spark": "I was doing the same operational glue-work over and over, and wanted a private assistant that could actually act on my behalf, not another chatbot that only talks.",
     "build": "I built a self-hosted AI COO with a bespoke particle-brain face, wake-word voice and neural TTS, and sandboxed 'hands' for files and my network, a mediator that delegates the hard jobs to a frontier model, always behind human-approval gates.",
     "architecture": [
@@ -689,6 +699,7 @@
       "Firebase"
     ],
     "summary": "Event registration and QR check-in: attendees register themselves and their family and get a QR code, and staff unlock a PIN protected kiosk to scan guests in and watch live attendance.",
+    "description": "Event registration and QR check-in: attendees register their family and get a QR code, and staff scan guests in at a PIN protected kiosk.",
     "spark": "It started as the registration and check-in portal for a company Family Day, which needed families registered ahead of time and checked in quickly at the gate.",
     "build": "I built the registration flow, a QR confirmation and a staff check-in kiosk with scanning, name search and live stats, then generalised it into a reusable platform where branding, event details and the staff PIN are all configuration.",
     "architecture": [
@@ -722,6 +733,7 @@
       "Pydantic"
     ],
     "summary": "A pre-submission FAR and zoning checker for architects: pick the region, upload an IFC design, and get a pass/fail report with the cited clause and the change needed to comply.",
+    "description": "A pre-submission FAR and zoning checker for architects: upload an IFC design and get a pass/fail report citing the clause and the change needed to comply.",
     "spark": "Architects I know waste days manually cross-checking designs against dense, non-machine-readable zoning PDFs, and still risk a rejection at submission.",
     "build": "I built the compliance core first: it parses an IFC model with IfcOpenShell, computes FAR and ground coverage, and checks them against cited, versioned rule packs for residential plots. Delhi's numbers are verified against the MPD-2021 table and Gurugram's against the Haryana Building Code 2017, with Noida marked provisional because its regulations only exist as scanned PDFs. Detecting the zone from a map pin is the next step.",
     "architecture": [
@@ -785,6 +797,7 @@
       "GitHub CLI"
     ],
     "summary": "A minimal, working starter kit for background developer automations: worktree isolation, idempotency, locking and notifications, written to accompany my dev.to post.",
+    "description": "A minimal starter kit for background developer automations: worktree isolation, idempotency, locking and notifications, written for a dev.to post.",
     "spark": "Each background automation I wrote needed the same plumbing first: isolation, locking, notifications and a safe way to run twice.",
     "build": "I extracted the roughly 80 lines of shared glue into a small kit, with a read only standup drafter to start safely and a PR comment resolver that tries fixes in an isolated git worktree.",
     "architecture": [

@@ -2,10 +2,12 @@
   "name": "Kshitij Bhatnagar",
   "role": "Software Engineer",
   "company": "HashedIn by Deloitte",
+  "headline": "Software engineer and AI native product builder",
+  "location": "New Delhi, India",
   "careerStart": "2020-02",
   "intro": "I turn ideas into live products: the interface, the 3D, the AI and the infrastructure underneath. Six years of enterprise frontend by day, a studio of shipped side products by night.",
   "email": "kshitijbhatnagar97@gmail.com",
-  "photo": "/images/Profile.JPG",
+  "photo": "/images/kshitij-bhatnagar-portrait.jpg",
   "skills": [
     {
       "id": "interfaces",

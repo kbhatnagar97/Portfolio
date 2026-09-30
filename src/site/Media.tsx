@@ -21,12 +21,28 @@ const Media = ({ project, play = false, controls = false, className = '' }: IMed
     } else video.pause();
   }, [play, project.video]);
 
+  // a poster attribute cannot lazy load, so set it only near the viewport or it competes with first paint
+  useEffect(() => {
+    const video = ref.current;
+    const poster = project.poster;
+    if (!video || !poster) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        video.poster = poster;
+        io.disconnect();
+      },
+      { rootMargin: '100%' },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, [project.poster]);
+
   if (project.video) {
     return (
       <video
         ref={ref}
         className={`media ${className}`}
-        poster={project.poster}
         muted
         loop
         playsInline

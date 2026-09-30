@@ -1,0 +1,30 @@
+{
+  "location": { "city": "New Delhi", "country": "India", "countryCode": "IN" },
+  "headline": "Software engineer and AI native product builder",
+  "title": "Kshitij Bhatnagar | Software Engineer and AI Native Builder",
+  "metaDescription": "Kshitij Bhatnagar is a software engineer and AI native product builder in New Delhi, India. He ships his own products: Astrolenz, OrbitalSpace, VideoNote.",
+  "ogTitle": "Kshitij Bhatnagar, Software Engineer and AI Native Product Builder",
+  "imageAlt": "Kshitij Bhatnagar, software engineer and AI native product builder in New Delhi, India",
+  "aboutTitle": "Kshitij Bhatnagar | About, Work, Skills and Contact",
+  "aboutDescription": "Who is Kshitij Bhatnagar? A software engineer and AI native product builder in New Delhi, India: his products, skills, education, awards and contact.",
+  "identity": "Kshitij Bhatnagar is a software engineer and AI native product builder based in New Delhi, India. He designs and ships his own products end to end: the interface, 3D and data visualisation, AI agents and automation, and the infrastructure, sign in and payments underneath.",
+  "howHeWorks": "He builds by directing AI coding agents the way a lead directs a team. He frames the problem, sets the architecture and makes the trade offs, then puts agents to work exploring the code, building, testing and shipping. He works with Claude, the Model Context Protocol, local models on Ollama, Whisper and Gemini, and keeps a human in the loop, so nothing posts or spends without his approval. His process lives in reusable skills, so every project ships with strong SEO, Cloudflare security and numbers he can stand behind.",
+  "disambiguatingDescription": "Software engineer and AI native product builder from New Delhi, India, who designs and ships his own web products and AI tools.",
+  "experienceLead": "Since February 2020 he has worked at HashedIn by Deloitte, growing from intern to Software Engineer I (2020 to 2022) and Software Engineer II (2022 to present).",
+  "alternateName": ["Kshitij", "kbhatnagar97", "kbhatnagar"],
+  "extraKnowsAbout": ["AI agents", "Model Context Protocol", "Retrieval augmented generation", "Data visualization", "Frontend architecture"],
+  "awards": ["Spot Award (4 times)", "Excellence Award", "Loyalty Certificate"],
+  "alumniOf": [
+    { "type": "CollegeOrUniversity", "name": "VIT University", "alternateName": "Vellore Institute of Technology", "sameAs": "https://en.wikipedia.org/wiki/Vellore_Institute_of_Technology" },
+    { "type": "HighSchool", "name": "The Shri Ram School", "sameAs": "https://en.wikipedia.org/wiki/The_Shri_Ram_School" }
+  ],
+  "faq": [
+    { "q": "Who is Kshitij Bhatnagar?", "compose": "identity" },
+    { "q": "What does Kshitij Bhatnagar build?", "compose": "projects" },
+    { "q": "What are Kshitij Bhatnagar's skills?", "compose": "skills" },
+    { "q": "Where is Kshitij Bhatnagar based?", "a": "Kshitij Bhatnagar is based in New Delhi, India." },
+    { "q": "Where did Kshitij Bhatnagar study?", "compose": "education" },
+    { "q": "How does Kshitij Bhatnagar work with AI?", "compose": "howHeWorks" },
+    { "q": "How can I contact Kshitij Bhatnagar?", "compose": "contact" }
+  ]
+}

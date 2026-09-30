@@ -1,0 +1,14 @@
+{
+  "name": "Kshitij Bhatnagar",
+  "short_name": "Kshitij",
+  "description": "Kshitij Bhatnagar, software engineer and AI native product builder in New Delhi, India.",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#0b0a09",
+  "background_color": "#0b0a09",
+  "icons": [
+    { "src": "/icon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

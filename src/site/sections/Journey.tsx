@@ -1,11 +1,23 @@
-import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { lazy, Suspense, useState, type ComponentType } from 'react';
 import { AWARDS, EARLY, PROFILE, ROLES } from '../data';
 import { SHAPE } from '../scene/shapes';
-import Lightbox, { type ILightbox } from './Lightbox';
+import type { ILightbox } from './Lightbox';
+
+type TBoxProps = { box?: ILightbox; onClose: () => void };
+// a failed chunk load leaves the certificates unopened instead of breaking the page
+const Lightbox = lazy((): Promise<{ default: ComponentType<TBoxProps> }> => import('./Lightbox').catch(() => ({ default: () => null })));
+
+// the employer is named once, as the group label, so the page stays about the person
+const EMPLOYER = ROLES[0].COMPANY;
+const SINCE = new Date(`${PROFILE.careerStart}-01T00:00:00Z`).toLocaleString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 const Journey = () => {
   const [box, setBox] = useState<ILightbox>();
+  const [boxOn, setBoxOn] = useState(false);
+  const show = (b: ILightbox) => {
+    setBoxOn(true);
+    setBox(b);
+  };
 
   return (
     <section id='journey' className='journey' aria-labelledby='journey-title'>
@@ -19,22 +31,27 @@ const Journey = () => {
       <div className='block'>
         <h3 className='block__label'>Experience</h3>
         <ol className='timeline'>
-          {ROLES.map((r) => (
-            <li className='timeline__item' key={r.POSITION} data-fade>
-              <p className='timeline__when'>{r.DURATION}</p>
-              <div>
-                <h4>
-                  {r.POSITION} <span>· {r.COMPANY}</span>
-                </h4>
-                <p className='timeline__focus'>{r.TYPE}</p>
-                <ul className='ticks'>
-                  {r.ACHIEVEMENTS.map((a) => (
-                    <li key={a}>{a}</li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          ))}
+          <li className='timeline__group'>
+            <p className='eyebrow timeline__org' data-fade>
+              {EMPLOYER}, {SINCE} to present
+            </p>
+            <ol>
+              {ROLES.map((r) => (
+                <li className='timeline__item' key={r.POSITION} data-fade>
+                  <p className='timeline__when'>{r.DURATION}</p>
+                  <div>
+                    <h4>{r.POSITION}</h4>
+                    <p className='timeline__focus'>{r.TYPE}</p>
+                    <ul className='ticks'>
+                      {r.ACHIEVEMENTS.map((a) => (
+                        <li key={a}>{a}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </li>
           {EARLY.map((e) => (
             <li className='timeline__item timeline__item--early' key={e.COMPANY} data-fade>
               <p className='timeline__when'>{e.DURATION}</p>
@@ -44,7 +61,7 @@ const Journey = () => {
                 </h4>
                 <p className='timeline__focus'>{e.FOCUS}</p>
                 {'CERTIFICATE' in e && e.CERTIFICATE && (
-                  <button type='button' className='text-link' onClick={() => setBox({ title: `${e.COMPANY} internship`, images: [e.CERTIFICATE as string] })}>
+                  <button type='button' className='text-link' onClick={() => show({ title: `${e.COMPANY} internship`, images: [e.CERTIFICATE as string] })}>
                     View certificate
                   </button>
                 )}
@@ -59,14 +76,15 @@ const Journey = () => {
         <ul className='awards'>
           {AWARDS.map((a) => (
             <li key={a.TITLE} data-fade>
-              <button type='button' className='award' onClick={() => setBox({ title: a.TITLE, images: a.IMAGES })}>
+              <button type='button' className='award' onClick={() => show({ title: a.TITLE, images: a.IMAGES })}>
                 <span className='award__thumb'>
-                  <img src={a.IMAGES[0]} alt='' loading='lazy' decoding='async' />
+                  <img src={a.IMAGES[0]} alt={/certificate$/i.test(a.TITLE) ? a.TITLE : `${a.TITLE} certificate`} loading='lazy' decoding='async' />
                   {a.IMAGES.length > 1 && <span className='award__count'>{a.IMAGES.length}</span>}
                 </span>
                 <span className='award__title'>{a.TITLE}</span>
                 <span className='award__sub'>
-                  {a.SUBTITLE}. {a.DESCRIPTION}
+                  {a.SUBTITLE === EMPLOYER ? '' : `${a.SUBTITLE}. `}
+                  {a.DESCRIPTION}
                 </span>
               </button>
             </li>
@@ -86,7 +104,7 @@ const Journey = () => {
                 {'minor' in e && e.minor ? `, ${e.minor}` : ''}
                 {'grade' in e && e.grade ? `. ${e.grade}` : ''}
               </p>
-              <button type='button' className='text-link' onClick={() => setBox({ title: e.institution, images: e.certificates })}>
+              <button type='button' className='text-link' onClick={() => show({ title: e.institution, images: e.certificates })}>
                 View {e.certificates.length} certificates
               </button>
             </div>
@@ -117,7 +135,11 @@ const Journey = () => {
         </div>
       </div>
 
-      <AnimatePresence>{box && <Lightbox key='lightbox' box={box} onClose={() => setBox(undefined)} />}</AnimatePresence>
+      {boxOn && (
+        <Suspense fallback={null}>
+          <Lightbox box={box} onClose={() => setBox(undefined)} />
+        </Suspense>
+      )}
     </section>
   );
 };

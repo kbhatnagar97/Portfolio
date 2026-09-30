@@ -4,12 +4,14 @@ import professionalData from '../content/professional.json';
 import achievementsData from '../content/achievements.json';
 import claudeStoryData from '../content/claude-story.json';
 import automationsData from '../content/automations.json';
+import type { MouseEvent } from 'react';
 import { SHAPE, type TShapeName } from './scene/shapes';
 
 export type TProjectStatus = 'Live' | 'In progress' | 'Private' | 'Research' | 'Open source';
 
 export interface IProject {
   id: string;
+  slug: string;
   name: string;
   tagline: string;
   category: string;
@@ -75,7 +77,16 @@ export interface IAutomation {
   run: IFlowStep[];
 }
 
-export const PROJECTS = projectsData as IProject[];
+export const slugOf = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+export const PROJECTS: IProject[] = (projectsData as Omit<IProject, 'slug'>[]).map((p) => ({ ...p, slug: slugOf(p.name) }));
+export const projectBySlug = (slug: string) => PROJECTS.find((p) => p.slug === slug);
+
+// real links for crawlers and new tabs; a plain click stays in the page and opens the story
+export const openInPage = (open: () => void) => (e: MouseEvent) => {
+  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  open();
+};
 export const AUTOMATIONS = automationsData as IAutomation[];
 export const automationById = (id: string) => AUTOMATIONS.find((a) => a.id === id);
 export const PROFILE = profileData;

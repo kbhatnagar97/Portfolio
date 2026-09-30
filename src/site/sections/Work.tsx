@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
-import { gsap } from '../smooth';
-import { CATEGORIES, FEATURED, LIVE_COUNT, PROJECTS, statusLabel, type IProject } from '../data';
+import { gsap, ScrollTrigger } from '../smooth';
+import { CATEGORIES, FEATURED, LIVE_COUNT, openInPage, PROJECTS, statusLabel, type IProject } from '../data';
 import { SHAPE } from '../scene/shapes';
 import Media from '../Media';
 
@@ -48,12 +48,12 @@ const FeaturedCard = ({ project, index, onOpen }: { project: IProject; index: nu
           ))}
         </ul>
         <div className='fcard__actions'>
-          <button type='button' className='btn btn--solid' onClick={() => onOpen(project.id)}>
+          <a className='btn btn--solid' href={`/projects/${project.slug}/`} onClick={openInPage(() => onOpen(project.id))}>
             Read the story
-          </button>
+          </a>
           {project.url && (
             <a className='btn btn--ghost' href={project.url} target='_blank' rel='noopener noreferrer'>
-              Visit site <span aria-hidden='true'>↗</span>
+              Visit site<span className='sr-only'> {project.name}</span> <span aria-hidden='true'>↗</span>
             </a>
           )}
         </div>
@@ -118,18 +118,24 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
       const el = track.current;
       if (!el) return;
       const distance = () => el.scrollWidth - innerWidth;
+      // sticky instead of a GSAP pin: flipping to position fixed counts as a full screen layout shift (CLS near 1 per pin)
+      const size = () => void gsap.set(pin.current, { height: innerHeight + distance() });
+      gsap.set(pin.current, { overflow: 'clip' });
+      gsap.set(el, { position: 'sticky', top: 0 });
+      size();
+      ScrollTrigger.addEventListener('refreshInit', size);
       gsap.to(el, {
         x: () => -distance(),
         ease: 'none',
         scrollTrigger: {
           trigger: pin.current,
           start: 'top top',
-          end: () => `+=${distance()}`,
-          pin: true,
+          end: 'bottom bottom',
           scrub: 1,
           invalidateOnRefresh: true,
         },
       });
+      return () => ScrollTrigger.removeEventListener('refreshInit', size);
     });
     return () => mm.revert();
   }, []);
@@ -173,12 +179,12 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
         <ul className='index__list' onPointerLeave={() => setHover(undefined)}>
           {list.map((p) => (
             <li key={p.id}>
-              <button
-                type='button'
+              <a
                 className='row'
+                href={`/projects/${p.slug}/`}
                 style={{ '--accent': p.accent } as CSSProperties}
                 onPointerEnter={(e) => e.pointerType === 'mouse' && setHover(p)}
-                onClick={() => onOpen(p.id)}
+                onClick={openInPage(() => onOpen(p.id))}
                 aria-label={`${p.name}: ${p.tagline}. Open the story`}
               >
                 <span className='row__num'>{String(PROJECTS.indexOf(p) + 1).padStart(2, '0')}</span>
@@ -190,7 +196,7 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
                 <span className='row__arrow' aria-hidden='true'>
                   →
                 </span>
-              </button>
+              </a>
             </li>
           ))}
         </ul>
