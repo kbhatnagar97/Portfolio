@@ -504,6 +504,40 @@
     "video": "/media/linkedin-newsroom.mp4"
   },
   {
+    "id": "first-to-apply",
+    "name": "First to Apply",
+    "tagline": "New job postings screened, priced and on my phone within minutes",
+    "category": "Tools & Automation",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#22d3ee",
+    "stack": [
+      "n8n",
+      "Python",
+      "Jev",
+      "Claude",
+      "Google Sheets",
+      "ntfy"
+    ],
+    "summary": "A personal pipeline that polls 214 company career pages every three minutes, screens each new posting against my profile, estimates the pay, and pushes the best matches to my phone before most people have seen them.",
+    "spark": "Job board alerts arrive a day late, and by then a good role already has hundreds of applicants. Company career pages publish the moment a job goes live, so I wanted to read them directly and only look at the roles worth my time.",
+    "build": "An n8n workflow polls the ATS feeds behind 214 career pages. TypeSafe's Jev model screens every posting with seven typed questions, Claude prices the shortlist and writes a fit and a risk line, and fixed priority rules decide what reaches the tracker and my phone. Top roles ask for a referral first and hold the application for 48 hours.",
+    "architecture": [
+      "Jev screen with typed questions, Claude pricing that degrades gracefully",
+      "Fixed P1, P2, P3 rules so the tracker never disagrees with itself",
+      "Every step writes its result, one lock per step, no silent failures"
+    ],
+    "highlights": [
+      "214 career pages every 3 minutes",
+      "20,000+ postings seen",
+      "Every dropped job keeps its reason",
+      "Applying stays a human tap"
+    ]
+  },
+  {
     "id": "knowledge-graph",
     "name": "My Life",
     "tagline": "A gen-AI trained on my own life",

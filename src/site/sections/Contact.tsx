@@ -21,7 +21,7 @@ const Contact = () => {
   return (
     <section id='contact' className='contact' aria-labelledby='contact-title'>
       <div className='contact__inner' data-shape={SHAPE.ring}>
-        <p className='section-head__index'>05 / Contact</p>
+        <p className='section-head__index'>06 / Contact</p>
         <h2 id='contact-title' data-split>
           Have an idea worth <em>building?</em>
         </h2>

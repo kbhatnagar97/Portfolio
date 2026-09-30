@@ -10,7 +10,7 @@ const Journey = () => {
   return (
     <section id='journey' className='journey' aria-labelledby='journey-title'>
       <header className='section-head' data-shape={SHAPE.field}>
-        <p className='section-head__index'>03 / Journey</p>
+        <p className='section-head__index'>04 / Journey</p>
         <h2 id='journey-title' data-split>
           From circuits and GSM modules to enterprise frontends and AI products.
         </h2>

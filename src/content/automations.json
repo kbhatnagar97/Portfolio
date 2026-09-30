@@ -1,0 +1,155 @@
+[
+  {
+    "id": "linkedin-newsroom",
+    "name": "LinkedIn Newsroom",
+    "tagline": "Breaking AI news to an approved LinkedIn post, from my phone",
+    "cadence": "every 5 min",
+    "accent": "#d946ef",
+    "writeup": "https://claude.ai/artifact/L6PxxjnQ1JqUc9DzPF1gLc",
+    "stats": [
+      { "value": 57, "label": "sources polled" },
+      { "value": 5, "label": "minute cycle" },
+      { "value": 6, "label": "drafts a day, max" },
+      { "value": 0, "label": "posts without my tap" }
+    ],
+    "nodes": [
+      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 5 min", "at": [120, 140], "m": [0, 0], "body": "n8n starts one run at a time. A stuck run's lock expires after 90 minutes, and a health check restarts n8n if it jams or goes quiet for 25 minutes." },
+      { "id": "collect", "kind": "source", "label": "57 sources", "sub": "polled at once", "at": [370, 140], "m": [0, 1], "body": "Lab newsrooms and sitemaps, the White House and UK PM, OpenAI and Claude status pages, SDK releases, OpenRouter, Hugging Face, Techmeme, Bloomberg, CNBC, Hacker News, Reddit, Bluesky, lab YouTube channels, leak trackers and Google News for the last hour." },
+      { "id": "filter", "kind": "rule", "label": "Fresh filter", "sub": "new and under 12 h", "at": [620, 140], "m": [0, 2], "body": "Anything seen before is skipped. Stories older than 12 hours are dropped before any model sees them." },
+      { "id": "jev", "kind": "ai", "label": "Jev rates", "sub": "4 typed questions", "at": [870, 140], "m": [0, 3], "body": "TypeSafe's Jev model answers four typed questions per story: impact, interest from 1 to 10, is it a launch, and is it a duplicate of anything covered in the last 3 days. Twelve stories take under a second.", "fallback": { "via": "haiku", "log": "Jev is offline. Claude Haiku takes over and rates the run" } },
+      { "id": "haiku", "kind": "ai", "label": "Haiku backup", "sub": "only if Jev fails", "at": [870, 340], "m": [1, 3], "body": "If Jev errors, Claude Haiku rates that run on the same scale. If credit runs out, Jev pauses for an hour and comes back by itself." },
+      { "id": "rules", "kind": "rule", "label": "Fixed rules", "sub": "adjust every score", "at": [1120, 140], "m": [0, 4], "body": "Duplicates become noise. Rumours and stories over 6 hours old are capped at 7. When two outlets cover one event in a run, the better rated one stays." },
+      { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "scored 7 or less", "at": [1380, 140], "m": [1, 4], "body": "Most stories end here. Being early only matters for the few that deserve a post." },
+      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "scored 8", "at": [1380, 340], "m": [1, 5], "body": "Second tier stories wait for a nightly carousel instead of a post of their own." },
+      { "id": "budget", "kind": "rule", "label": "Daily budget", "sub": "6 drafts a day", "at": [1120, 540], "m": [0, 5], "body": "At most six drafts a day, so the feed never turns into spam." },
+      { "id": "alert", "kind": "output", "label": "Breaking alert", "sub": "over budget", "at": [1380, 540], "m": [1, 6], "body": "Over the limit, a strong story still reaches my phone as a Breaking AI news alert with the source link." },
+      { "id": "opus", "kind": "ai", "label": "Opus drafts", "sub": "researched, 200 to 280 words", "at": [870, 540], "m": [0, 6], "body": "Claude Opus finds the first publication time, verifies every number and quote, then writes a time line, the stakes, a labelled take, the strongest counter and a two sided question." },
+      { "id": "checker", "kind": "rule", "label": "Checker", "sub": "one rewrite allowed", "at": [620, 540], "m": [0, 7], "body": "Sends a draft back once for dashes, length, hashtag count, a missing take or question, bait phrases, or photos without a free licence." },
+      { "id": "render", "kind": "output", "label": "Card render", "sub": "headless Chrome", "at": [370, 540], "m": [0, 8], "body": "Builds the 4:5 card: an HD still for people posters, a seamless looping GIF where motion helps, a PNG otherwise." },
+      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [370, 740], "m": [0, 9], "body": "Every draft arrives as one phone notification with Approve, Edit on Mac and Reject. Nothing posts without my tap." },
+      { "id": "publish", "kind": "output", "label": "LinkedIn", "sub": "posted through the API", "at": [870, 740], "m": [1, 9], "body": "Posted through the LinkedIn API with companies tagged. The Posted notice lists people to tag by hand and reminds me to reply in the first hour." }
+    ],
+    "edges": [
+      ["tick", "collect"],
+      ["collect", "filter"],
+      ["filter", "jev"],
+      ["filter", "haiku", "fallback"],
+      ["jev", "rules"],
+      ["haiku", "rules", "fallback"],
+      ["rules", "drop", "drop"],
+      ["rules", "digest"],
+      ["rules", "budget"],
+      ["budget", "alert"],
+      ["budget", "opus"],
+      ["opus", "checker"],
+      ["checker", "render"],
+      ["render", "you"],
+      ["you", "publish"]
+    ],
+    "run": [
+      { "node": "tick", "log": "Tick fired. Lock acquired" },
+      { "node": "collect", "log": "57 sources polled. 41 new items" },
+      { "node": "filter", "log": "29 already seen, 3 older than 12 h. 9 go on" },
+      { "node": "jev", "log": "Jev rated 9 stories in 0.8 s" },
+      {
+        "node": "rules",
+        "log": "Top story scores 10: a new frontier model launch",
+        "branches": [
+          { "to": "drop", "log": "6 stories at 7 or less dropped" },
+          { "to": "digest", "log": "2 stories kept for the nightly digest" }
+        ]
+      },
+      { "node": "budget", "log": "Draft 3 of 6 today" },
+      { "node": "opus", "log": "Opus verified 4 numbers and 2 quotes. 247 words" },
+      { "node": "checker", "log": "Checker passed on the first try" },
+      { "node": "render", "log": "4:5 card rendered at 1080 × 1350" },
+      {
+        "node": "you",
+        "log": "Draft sent to my phone. Waiting for a tap",
+        "ask": {
+          "prompt": "A draft is on your phone. Post it?",
+          "choices": [
+            { "label": "Approve", "log": "Approved", "route": [{ "node": "publish", "log": "Posted. 3 companies tagged" }] },
+            { "label": "Edit on Mac", "log": "Opened on the Mac, tightened the take", "route": [{ "node": "publish", "log": "Edited draft posted" }] },
+            { "label": "Reject", "log": "Rejected. Nothing posts", "tone": "drop", "route": [] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "first-to-apply",
+    "name": "First to Apply",
+    "tagline": "New job postings screened, priced and on my phone within minutes",
+    "cadence": "every 3 min",
+    "accent": "#22d3ee",
+    "stats": [
+      { "value": 214, "label": "career pages" },
+      { "value": 3, "label": "minute cycle" },
+      { "value": 20208, "label": "postings seen" },
+      { "value": 7, "label": "screening questions" }
+    ],
+    "nodes": [
+      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 3 min", "at": [120, 140], "m": [0, 0], "body": "Five steps run in order. Each writes its result to disk, so a failure is visible instead of silent, and one lock per step means runs never overlap." },
+      { "id": "poll", "kind": "source", "label": "214 career pages", "sub": "about 20 s", "at": [370, 140], "m": [0, 1], "body": "Greenhouse, Lever, Ashby, SmartRecruiters, Workable and Recruitee publish a job the moment a company posts it, the earliest signal there is. Job board alerts arrive a day later at best." },
+      { "id": "jev", "kind": "ai", "label": "Jev screens", "sub": "7 questions per job", "at": [620, 140], "m": [0, 2], "body": "Jev reads the posting against my profile and answers seven typed questions: role family, seniority, eligible from India, fit from 1 to 10, hard blockers, stated pay against my band, and whether hidden text is trying to steer AI screeners." },
+      { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "reason kept", "at": [620, 380], "m": [1, 2], "body": "Every dropped job keeps its reason, so the screen can be audited and tuned." },
+      { "id": "claude", "kind": "ai", "label": "Claude prices", "sub": "8 jobs at a time", "at": [870, 140], "m": [0, 3], "body": "Claude estimates total pay at the level I would likely get, using company tiers, then writes one line on why I fit and one on the biggest risk.", "fallback": { "log": "Claude is offline. Jobs publish with Jev's verdict, pay marked not estimated yet" } },
+      { "id": "priority", "kind": "rule", "label": "Priority rules", "sub": "P1, P2, P3", "at": [1120, 140], "m": [0, 4], "body": "Fixed rules, so the tracker never disagrees with itself. P1: strong fit, in band, top tier company. P2: strong fit with a level gap or unknown pay. P3: kept as interview practice." },
+      { "id": "sheet", "kind": "output", "label": "Tracker sheet", "sub": "newest on top", "at": [1380, 140], "m": [1, 4], "body": "Every kept job lands in the tracker with its priority, fit, pay band and risk line." },
+      { "id": "phone", "kind": "output", "label": "Phone push", "sub": "P1 and P2 only", "at": [1120, 380], "m": [0, 5], "body": "Only P1 and P2 roles posted in the last 48 hours buzz my phone. A company's first check lands quietly." },
+      { "id": "you", "kind": "human", "label": "My tap", "sub": "referral or apply", "at": [870, 380], "m": [0, 6], "body": "I decide. The pipeline drafts everything, but applying stays a human tap." },
+      { "id": "referral", "kind": "output", "label": "Referral ask", "sub": "application held 48 h", "at": [870, 620], "m": [1, 7], "body": "P1 roles ask for a referral first: contact searches, a drafted note, and a one tap email draft. The application waits 48 hours for it." },
+      { "id": "apply", "kind": "output", "label": "Applied", "sub": "follow up at 4 days", "at": [620, 620], "m": [0, 7], "body": "Referred or not, the application goes in. The follow up turns amber after 4 days." }
+    ],
+    "edges": [
+      ["tick", "poll"],
+      ["poll", "jev"],
+      ["jev", "drop", "drop"],
+      ["jev", "claude"],
+      ["jev", "priority", "fallback"],
+      ["claude", "priority"],
+      ["priority", "sheet"],
+      ["priority", "phone"],
+      ["phone", "you"],
+      ["you", "referral"],
+      ["you", "apply"],
+      ["referral", "apply"]
+    ],
+    "run": [
+      { "node": "tick", "log": "Tick fired. 5 steps queued" },
+      { "node": "poll", "log": "214 pages polled. 23 new postings, 17 pass the location check" },
+      {
+        "node": "jev",
+        "log": "Jev screened 17 jobs in 6 s",
+        "branches": [{ "to": "drop", "log": "14 dropped: 6 not open to India, 5 wrong role, 3 too junior" }]
+      },
+      { "node": "claude", "log": "3 shortlisted jobs priced. Fit and risk lines written" },
+      {
+        "node": "priority",
+        "log": "1 P1, 1 P2, 1 P3",
+        "branches": [{ "to": "sheet", "log": "3 rows added to the tracker", "tone": "go" }]
+      },
+      { "node": "phone", "log": "P1 push: Senior Frontend Engineer, AI platform team, remote APAC" },
+      {
+        "node": "you",
+        "log": "Waiting for a tap",
+        "ask": {
+          "prompt": "A P1 role just landed. What now?",
+          "choices": [
+            {
+              "label": "Ask for a referral",
+              "log": "Referral note drafted",
+              "route": [
+                { "node": "referral", "log": "Application held 48 h for the referral" },
+                { "node": "apply", "log": "Referred. Applied with their link" }
+              ]
+            },
+            { "label": "Apply now", "log": "Applying now, referral asked in parallel", "route": [{ "node": "apply", "log": "Applied. Follow up turns amber in 4 days" }] },
+            { "label": "Skip", "log": "Skipped. Kept in the tracker", "tone": "drop", "route": [] }
+          ]
+        }
+      }
+    ]
+  }
+]

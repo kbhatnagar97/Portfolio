@@ -3,6 +3,7 @@ import profileData from '../content/profile.json';
 import professionalData from '../content/professional.json';
 import achievementsData from '../content/achievements.json';
 import claudeStoryData from '../content/claude-story.json';
+import automationsData from '../content/automations.json';
 import { SHAPE, type TShapeName } from './scene/shapes';
 
 export type TProjectStatus = 'Live' | 'In progress' | 'Private' | 'Research' | 'Open source';
@@ -31,7 +32,52 @@ export interface IProject {
   film?: string;
 }
 
+export type TFlowKind = 'trigger' | 'source' | 'ai' | 'rule' | 'human' | 'output' | 'drop';
+
+export interface IFlowNode {
+  id: string;
+  kind: TFlowKind;
+  label: string;
+  sub: string;
+  body: string;
+  at: [number, number];
+  m: [number, number];
+  fallback?: { via?: string; log: string };
+}
+
+export interface IFlowHop {
+  node: string;
+  log: string;
+}
+
+export interface IFlowChoice {
+  label: string;
+  log: string;
+  tone?: string;
+  route: IFlowHop[];
+}
+
+export interface IFlowStep extends IFlowHop {
+  branches?: { to: string; log: string; tone?: string }[];
+  ask?: { prompt: string; choices: IFlowChoice[] };
+}
+
+export interface IAutomation {
+  id: string;
+  name: string;
+  tagline: string;
+  cadence: string;
+  accent: string;
+  writeup?: string;
+  stats: { value: number; label: string }[];
+  nodes: IFlowNode[];
+  edges: string[][];
+  run: IFlowStep[];
+}
+
 export const PROJECTS = projectsData as IProject[];
+export const AUTOMATIONS = automationsData as IAutomation[];
+export const automationById = (id: string) => AUTOMATIONS.find((a) => a.id === id);
 export const PROFILE = profileData;
 export const ROLES = professionalData.ROLES;
 export const EARLY = professionalData.EARLY_EXPERIENCE;

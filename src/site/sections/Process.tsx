@@ -6,7 +6,7 @@ const STATS = [{ value: String(PROJECTS.length), label: 'products and experiment
 const Process = () => (
   <section id='process' className='process' aria-labelledby='process-title'>
     <header className='section-head'>
-      <p className='section-head__index'>04 / How I work</p>
+      <p className='section-head__index'>05 / How I work</p>
       <h2 id='process-title' data-split>
         {STORY.intro}
       </h2>
