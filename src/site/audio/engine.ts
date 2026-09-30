@@ -6,7 +6,7 @@ import { KEY, LOUD_KEY, adopt, hasParked, read, registerUnlock, session } from '
 
 export { applyTheme, buildBus, coarse, db, debugEvent, type IBus } from './core';
 
-export type TMode = 'all' | 'sfx' | 'off';
+export type TMode = 'all' | 'off';
 
 const write = (k: string, v: string) => {
   try {
@@ -16,7 +16,7 @@ const write = (k: string, v: string) => {
   }
 };
 // #region Lifecycle
-let mode: TMode = (['all', 'sfx', 'off'] as const).find((m) => m === read(KEY)) ?? 'all';
+let mode: TMode = (['all', 'off'] as const).find((m) => m === read(KEY)) ?? 'all';
 let ctx: AudioContext | undefined;
 let bus: IBus | undefined;
 let phase: 'shut' | 'open' | 'closing' = 'shut';
@@ -235,7 +235,7 @@ export const audio = guarded({
   open,
   close,
   setMode,
-  cycle: () => setMode(mode === 'all' ? 'sfx' : mode === 'sfx' ? 'off' : 'all'),
+  cycle: () => setMode(mode === 'all' ? 'off' : 'all'),
   get mode() {
     return mode;
   },
