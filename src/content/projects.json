@@ -538,6 +538,40 @@
     ]
   },
   {
+    "id": "inbox-triage",
+    "name": "Inbox Triage",
+    "tagline": "Every email labelled, and my phone buzzes only for the few that need me",
+    "category": "Tools & Automation",
+    "status": "Private",
+    "live": false,
+    "url": "",
+    "repo": "",
+    "year": "2026",
+    "accent": "#a3e635",
+    "stack": [
+      "Apps Script",
+      "Gmail",
+      "Google Sheets",
+      "Jev",
+      "Claude",
+      "ntfy"
+    ],
+    "summary": "A Gmail sorter that labels every email within a minute and only alerts me for clients, customers of my products, replies from companies and real people. Everything else waits for one briefing at 11:00.",
+    "spark": "Important mail from clients and customers kept drowning between bank notices, newsletters and job alerts, and filters could not tell a person from a template.",
+    "build": "Apps Script on Google picks up new mail every minute. Rules from a Sheet settle the certain cases, Jev classifies the rest against the label descriptions, and Claude on my Mac decides only what Jev is unsure about. Alerts go to my phone through ntfy with buttons that teach the sorter.",
+    "architecture": [
+      "Cheapest certain check first: Sheet rules, then Jev, then Claude",
+      "A sleeping Mac never hides a human: unsure mail from people alerts after 30 minutes",
+      "Never archives, deletes or marks mail read"
+    ],
+    "highlights": [
+      "93.1% right label on a 289 email test set",
+      "0.4% wrong alerts",
+      "One morning briefing instead of constant pings",
+      "Every tap teaches it"
+    ]
+  },
+  {
     "id": "knowledge-graph",
     "name": "My Life",
     "tagline": "A gen-AI trained on my own life",

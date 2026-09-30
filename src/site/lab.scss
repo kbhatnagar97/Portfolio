@@ -100,7 +100,8 @@
     opacity: 0.5;
     animation: lab-flow 1.4s linear infinite;
 
-    &--fallback {
+    &--fallback,
+    &--skip {
       opacity: 0.2;
     }
 
@@ -276,6 +277,25 @@
   @media (width <= 560px) {
     &__stats {
       grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  // an odd card out spans the row as a wide panel instead of leaving half the row empty
+  @media (width >= 1100px) {
+    &:nth-child(odd):last-child {
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+
+    &:nth-child(odd):last-child &__screen {
+      aspect-ratio: auto;
+      min-height: 100%;
+      border-bottom: 0;
+      border-right: 1px solid var(--holo-line);
+    }
+
+    &:nth-child(odd):last-child &__body {
+      align-content: center;
     }
   }
 }
@@ -498,6 +518,10 @@
 
   &--drop &-flow {
     stroke: var(--k-drop);
+  }
+
+  &--skip &-flow {
+    opacity: 0.18;
   }
 
   &.is-live &-base {
@@ -1063,6 +1087,7 @@
 }
 
 .lab__hint {
+  max-width: 36ch;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -1143,6 +1168,21 @@
   }
 }
 // #endregion
+
+// the approval prompt gets its own row once the dock is too narrow for three columns
+@media (width < 1280px) {
+  .lab:not(.lab--compact) {
+    .lab__dock {
+      grid-template-columns: auto minmax(0, 440px);
+      justify-content: space-between;
+    }
+
+    .lab__ask {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+  }
+}
 
 // #region Compact
 .lab--compact {

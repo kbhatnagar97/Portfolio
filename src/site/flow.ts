@@ -35,8 +35,8 @@ export const layoutOf = (flow: IAutomation, compact: boolean) => {
 export const edgePath = (a: TPoint, b: TPoint, kind?: string) => {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
-  // a fallback edge that runs along a row bows upward so it never hides under the node it skips
-  if (kind === 'fallback' && Math.abs(dy) < 40) {
+  // a bypass edge that runs along a row bows upward so it never hides under the node it skips
+  if ((kind === 'fallback' || kind === 'skip') && Math.abs(dy) < 40) {
     const lift = Math.min(160, Math.abs(dx) * 0.4);
     return `M${a.x},${a.y} C${a.x + dx * 0.2},${a.y - lift} ${b.x - dx * 0.2},${b.y - lift} ${b.x},${b.y}`;
   }

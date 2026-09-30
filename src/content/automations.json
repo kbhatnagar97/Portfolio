@@ -54,10 +54,7 @@
       {
         "node": "rules",
         "log": "Top story scores 10: a new frontier model launch",
-        "branches": [
-          { "to": "drop", "log": "6 stories at 7 or less dropped" },
-          { "to": "digest", "log": "2 stories kept for the nightly digest" }
-        ]
+        "branches": [{ "to": "drop", "log": "6 stories at 7 or less dropped" }, { "to": "digest", "log": "2 stories kept for the nightly digest" }]
       },
       { "node": "budget", "log": "Draft 3 of 6 today" },
       { "node": "opus", "log": "Opus verified 4 numbers and 2 quotes. 247 words" },
@@ -125,11 +122,7 @@
         "branches": [{ "to": "drop", "log": "14 dropped: 6 not open to India, 5 wrong role, 3 too junior" }]
       },
       { "node": "claude", "log": "3 shortlisted jobs priced. Fit and risk lines written" },
-      {
-        "node": "priority",
-        "log": "1 P1, 1 P2, 1 P3",
-        "branches": [{ "to": "sheet", "log": "3 rows added to the tracker", "tone": "go" }]
-      },
+      { "node": "priority", "log": "1 P1, 1 P2, 1 P3", "branches": [{ "to": "sheet", "log": "3 rows added to the tracker", "tone": "go" }] },
       { "node": "phone", "log": "P1 push: Senior Frontend Engineer, AI platform team, remote APAC" },
       {
         "node": "you",
@@ -145,8 +138,84 @@
                 { "node": "apply", "log": "Referred. Applied with their link" }
               ]
             },
-            { "label": "Apply now", "log": "Applying now, referral asked in parallel", "route": [{ "node": "apply", "log": "Applied. Follow up turns amber in 4 days" }] },
+            {
+              "label": "Apply now",
+              "log": "Applying now, referral asked in parallel",
+              "route": [{ "node": "apply", "log": "Applied. Follow up turns amber in 4 days" }]
+            },
             { "label": "Skip", "log": "Skipped. Kept in the tracker", "tone": "drop", "route": [] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "inbox-triage",
+    "name": "Inbox Triage",
+    "tagline": "Every email labelled, and my phone buzzes only for the few that need me",
+    "cadence": "every minute",
+    "accent": "#a3e635",
+    "stats": [
+      { "value": 1, "label": "minute to sort" },
+      { "value": 289, "label": "emails in the test set" },
+      { "value": 93.1, "label": "% labelled right" },
+      { "value": 0.4, "label": "% wrong alerts" }
+    ],
+    "nodes": [
+      { "id": "gmail", "kind": "trigger", "label": "Gmail", "sub": "every minute", "at": [120, 140], "m": [0, 0], "body": "New mail is picked up within a minute by Apps Script on Google, so it keeps working when my laptop is closed." },
+      { "id": "sheet", "kind": "rule", "label": "Sheet rules", "sub": "cheap, certain checks first", "at": [370, 140], "m": [0, 1], "body": "Rules, clients, people, my businesses and learned senders live in a Sheet. Login codes, job alerts and known bulk senders are settled here without any model." },
+      { "id": "jev", "kind": "ai", "label": "Jev classifies", "sub": "reads the label descriptions", "at": [620, 140], "m": [0, 2], "body": "Jev classifies whatever the rules could not settle against the label descriptions in the Sheet, and says how sure it is. Rewriting a description changes how mail is sorted." },
+      { "id": "claude", "kind": "ai", "label": "Claude decides", "sub": "on my Mac, unsure ones only", "at": [870, 140], "m": [0, 3], "body": "Every 15 minutes Claude takes only what Jev was unsure about, picks a label or creates a new one (at most 3 a day, each with an Undo button), then remembers the sender.", "fallback": { "via": "unsure", "log": "The Mac is asleep. After 30 minutes the email alerts as possibly important" } },
+      { "id": "unsure", "kind": "output", "label": "Unsure alert", "sub": "after 30 minutes", "at": [870, 380], "m": [1, 3], "body": "If the Mac is asleep, an unsure email from a real person still alerts after 30 minutes as possibly important, so a sleeping laptop never hides a human." },
+      { "id": "label", "kind": "rule", "label": "Gmail label", "sub": "never archives or deletes", "at": [1120, 140], "m": [0, 4], "body": "The label is applied in Gmail. Nothing is ever archived, deleted or marked read." },
+      { "id": "silent", "kind": "output", "label": "Silent labels", "sub": "bank, dev, newsletters", "at": [1380, 140], "m": [1, 4], "body": "Most mail lands quietly in its label: bank, payments, dev notifications, newsletters and promotions." },
+      { "id": "briefing", "kind": "output", "label": "11:00 briefing", "sub": "once a day", "at": [1380, 380], "m": [1, 5], "body": "One morning briefing: counts per label, threads waiting for a reply, what Claude is still deciding, and health. Senders and subjects only, never email bodies." },
+      { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "clients, customers, replies", "at": [1120, 380], "m": [0, 5], "body": "Only clients, customers of my products, replies from companies I applied to and real people buzz the phone. Overnight only the urgent ones ring." },
+      { "id": "you", "kind": "human", "label": "My tap", "sub": "open, mute or mark client", "at": [1120, 620], "m": [0, 6], "body": "Every alert has Open, Not important, Mute sender and Mark client. Each tap teaches the sorter." },
+      { "id": "learn", "kind": "rule", "label": "Learns the sender", "sub": "written back to the Sheet", "at": [620, 620], "m": [1, 6], "body": "Taps and replies become rules in the Sheet, so the next email from that sender is settled before any model runs." }
+    ],
+    "edges": [
+      ["gmail", "sheet"],
+      ["sheet", "jev"],
+      ["jev", "claude"],
+      ["jev", "label", "skip"],
+      ["jev", "unsure", "fallback"],
+      ["unsure", "label", "fallback"],
+      ["claude", "label"],
+      ["label", "silent"],
+      ["label", "briefing"],
+      ["label", "alert"],
+      ["alert", "you"],
+      ["you", "learn"],
+      ["learn", "sheet"]
+    ],
+    "run": [
+      { "node": "gmail", "log": "New email picked up in 40 s" },
+      { "node": "sheet", "log": "No rule matches. Unknown sender, looks like a real person" },
+      { "node": "jev", "log": "Jev: Clients/Work, 58% sure. Too unsure to settle" },
+      { "node": "claude", "log": "Claude read it: a client asking about a deadline" },
+      {
+        "node": "label",
+        "log": "Labelled Clients/Work. Nothing archived",
+        "branches": [
+          { "to": "silent", "log": "37 other emails labelled silently this hour", "tone": "go" },
+          { "to": "briefing", "log": "Counted for tomorrow's 11:00 briefing", "tone": "go" }
+        ]
+      },
+      { "node": "alert", "log": "Urgent alert sent to the phone" },
+      {
+        "node": "you",
+        "log": "Waiting for a tap",
+        "ask": {
+          "prompt": "A client just emailed. Your call?",
+          "choices": [
+            {
+              "label": "Mark client",
+              "log": "Marked as a client",
+              "route": [{ "node": "learn", "log": "Added to the Clients tab" }, { "node": "sheet", "log": "Their mail now always rings, no model needed" }]
+            },
+            { "label": "Open", "log": "Opened in Gmail", "route": [{ "node": "learn", "log": "Sender marked as someone who matters" }] },
+            { "label": "Mute sender", "log": "Muted", "tone": "drop", "route": [{ "node": "learn", "log": "Their next email lands silently" }] }
           ]
         }
       }
