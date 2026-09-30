@@ -535,8 +535,7 @@ dd {
 
   &__line {
     display: block;
-    // each line is the reveal mask: side padding gives italic overhang room, the 1.2 line box already holds descenders,
-    // the negative margins hand the extra space back so the title keeps its tight 0.88 rhythm
+    // the 1.2 line box and side padding hold descenders and italic overhang, negative margins keep the tight 0.88 rhythm
     line-height: 1.2;
     padding: 0.1em 0.2em 0 0.12em;
     margin: -0.26em -0.2em -0.16em -0.12em;
@@ -549,11 +548,6 @@ dd {
       color: var(--gold);
       padding-left: 0.16em;
     }
-  }
-
-  // clip only while the chars rise in; once they land nothing can slice a glyph
-  &.is-revealing &__line {
-    overflow: hidden;
   }
 
   &__intro {

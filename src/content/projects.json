@@ -469,16 +469,18 @@
     "id": "linkedin-newsroom",
     "name": "LinkedIn Newsroom",
     "tagline": "Breaking AI news to an approved post, from my phone",
-    "category": "AI & Agents",
+    "category": "Tools & Automation",
     "status": "Private",
     "live": false,
     "url": "",
     "repo": "",
+    "writeup": "https://claude.ai/artifact/L6PxxjnQ1JqUc9DzPF1gLc",
     "year": "2026",
     "accent": "#d946ef",
     "stack": [
       "n8n",
       "Python",
+      "Jev",
       "Claude",
       "Headless Chrome",
       "ntfy",
@@ -486,16 +488,16 @@
     ],
     "summary": "A personal newsroom that watches AI labs and news sources, rates every story, drafts a LinkedIn post with a designed 4:5 card, and posts only after I tap Approve on my phone.",
     "spark": "Big AI launches move fast, and by the time I had read the news, written a post and made an image, the moment had passed. I wanted to be early without handing my LinkedIn over to a bot.",
-    "build": "I built a pipeline on n8n that polls 45 sources every five minutes, has Claude Haiku rate each story, and has Claude draft the post in my voice with a rendered 1080×1350 card. Each draft arrives as one phone notification with Approve, Edit on Mac and Reject, and only an Approve publishes it through the LinkedIn Posts API with companies tagged automatically.",
+    "build": "I built a pipeline on n8n that polls 57 sources every five minutes, has TypeSafe's Jev model rate each story against four typed questions, and has Claude Opus research and draft the post in my voice with a rendered 1080×1350 card. Each draft arrives as one phone notification with Approve, Edit on Mac and Reject, and only an Approve publishes it through the LinkedIn Posts API with companies tagged automatically.",
     "architecture": [
-      "Claude Haiku gate, Claude Opus drafts, validator pass on every draft",
+      "Jev rating gate with Claude Haiku fallback, Claude Opus drafts, checker pass on every draft",
       "Approval over ntfy, no inbound tunnel",
-      "Persist before every risky step, one attempt per run"
+      "Health check restarts n8n on its own if it jams or goes quiet"
     ],
     "highlights": [
-      "45 sources polled every 5 minutes",
-      "Stories rated 1 to 10, only the best get drafted",
-      "Nightly digest carousel on busy news days",
+      "57 sources polled every 5 minutes",
+      "Stories rated 1 to 10, only 9 and 10 get their own post",
+      "Up to 6 drafts a day, nightly digest for the rest",
       "Nothing posts without my Approve"
     ],
     "poster": "/media/linkedin-newsroom.jpg",

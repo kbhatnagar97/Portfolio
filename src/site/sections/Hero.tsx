@@ -28,14 +28,11 @@ const Hero = () => {
       ctx = gsap.context(() => {
         const mm = gsap.matchMedia();
         mm.add('(prefers-reduced-motion: no-preference)', () => {
-          const el = root.current!;
-          // per-char masks slice italic overhang, so each whole line clips the rise and lets go once it lands
+          // chars fade as they rise instead of sliding under a clip mask, so no glyph is ever sliced mid-reveal
           const split = SplitText.create('.hero__line', { type: 'chars' });
-          const reveal = () => el.classList.remove('is-revealing');
-          el.classList.add('is-revealing');
           gsap
             .timeline({ defaults: { ease: 'expo.out' } })
-            .from(split.chars, { yPercent: 115, duration: 1.4, stagger: 0.035, onComplete: reveal }, 0.15)
+            .from(split.chars, { yPercent: 60, opacity: 0, duration: 1.4, stagger: 0.035 }, 0.15)
             .from('.hero__eyebrow, .hero__intro, .hero__actions', { y: 24, autoAlpha: 0, duration: 1.2, stagger: 0.1 }, 0.6)
             .from('.hero__stat', { y: 20, autoAlpha: 0, duration: 1, stagger: 0.08 }, 0.9)
             .from('.hero__hint', { autoAlpha: 0, duration: 1 }, 1.4);
@@ -47,7 +44,6 @@ const Hero = () => {
               },
             });
           });
-          return reveal;
         });
       }, root);
     });

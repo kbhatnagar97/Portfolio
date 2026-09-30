@@ -16,6 +16,7 @@ export interface IProject {
   live: boolean;
   url: string;
   repo: string;
+  writeup?: string;
   year: string;
   accent: string;
   stack: string[];

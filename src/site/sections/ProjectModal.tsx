@@ -97,7 +97,12 @@ const ProjectModal = ({ project, onClose, onNavigate }: IProjectModalProps) => {
                 Source <span aria-hidden='true'>↗</span>
               </a>
             )}
-            {!project.url && !project.repo && <p className='modal__private'>Not publicly available yet.</p>}
+            {project.writeup && (
+              <a className='btn btn--ghost' href={project.writeup} target='_blank' rel='noopener noreferrer'>
+                How it works <span aria-hidden='true'>↗</span>
+              </a>
+            )}
+            {!project.url && !project.repo && !project.writeup && <p className='modal__private'>Not publicly available yet.</p>}
           </div>
         </div>
 
