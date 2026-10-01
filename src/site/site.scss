@@ -513,59 +513,11 @@ dd {
     max-width: 880px;
   }
 
-  // only the animated parts wait for JS; the identity line and intro paint straight from the prerendered HTML
+  // only the animated parts wait for JS; the intro paints straight from the prerendered HTML
   @media (scripting: enabled) {
     &:not(.is-ready) :is(.hero__title, .hero__stats, .hero__hint) {
       opacity: 0;
     }
-  }
-
-  &__who {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 28px;
-  }
-
-  &__eyebrow {
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.5;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text);
-
-    // centred on the first line box (18px), so a wrapped headline still leads with the dot
-    .pulse {
-      flex-shrink: 0;
-      margin-top: 5px;
-    }
-  }
-
-  &__loc {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 14px;
-    color: var(--muted);
-  }
-
-  &__pin {
-    flex-shrink: 0;
-    fill: none;
-    stroke: var(--gold);
-    stroke-width: 1.4;
-  }
-
-  .pulse {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--live);
-    animation: pulse 2.4s infinite;
   }
 
   &__title {
@@ -697,10 +649,6 @@ dd {
 
   @media (width < 700px) {
     padding-top: 96px;
-
-    &__who {
-      margin-bottom: 24px;
-    }
 
     // three actions fit one row on a 390 phone instead of orphaning the last
     &__actions {

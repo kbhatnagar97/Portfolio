@@ -47,7 +47,9 @@ const Contact = () => {
         </ul>
       </div>
       <footer className='footer'>
-        <p>© {new Date().getFullYear()} {PROFILE.name}</p>
+        <p>
+          © {new Date().getFullYear()} {PROFILE.name}. {PROFILE.headline} in {PROFILE.location}.
+        </p>
         <p>Built with React, three.js, GSAP and Claude. Every particle is drawn in a shader.</p>
       </footer>
     </section>

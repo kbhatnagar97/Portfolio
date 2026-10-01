@@ -60,19 +60,6 @@ const Hero = () => {
   return (
     <section id='top' className='hero' ref={root} data-shape={SHAPE.orb}>
       <div className='hero__inner'>
-        <div className='hero__who'>
-          <p className='hero__eyebrow'>
-            <span className='pulse' aria-hidden='true' />
-            {PROFILE.headline}
-          </p>
-          <p className='hero__loc'>
-            <svg className='hero__pin' viewBox='0 0 16 16' width='12' height='12' aria-hidden='true' focusable='false'>
-              <path d='M8 14.5s4.5-4.3 4.5-8a4.5 4.5 0 0 0-9 0c0 3.7 4.5 8 4.5 8Z' />
-              <circle cx='8' cy='6.5' r='1.6' />
-            </svg>
-            {PROFILE.location}
-          </p>
-        </div>
         <h1 className='hero__title'>
           <span className='hero__line'>Kshitij</span>{' '}
           <span className='hero__line hero__line--serif'>Bhatnagar</span>
