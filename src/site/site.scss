@@ -513,41 +513,18 @@ dd {
     max-width: 880px;
   }
 
-  // only the animated parts wait for JS; identity, links and intro paint straight from the prerendered HTML
+  // only the animated parts wait for JS; the identity line and intro paint straight from the prerendered HTML
   @media (scripting: enabled) {
     &:not(.is-ready) :is(.hero__title, .hero__stats, .hero__hint) {
       opacity: 0;
     }
   }
 
-  &__id {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    column-gap: 22px;
-    row-gap: 14px;
-    align-items: center;
-    margin-bottom: 28px;
-  }
-
-  &__photo {
-    grid-row: 1 / 3;
-    width: clamp(96px, 9vw, 120px);
-    height: auto;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: 45% 30%;
-    border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
-    padding: 3px;
-    background: color-mix(in srgb, var(--gold) 8%, transparent);
-  }
-
   &__who {
-    align-self: end;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    margin-bottom: 28px;
   }
 
   &__eyebrow {
@@ -581,57 +558,6 @@ dd {
     fill: none;
     stroke: var(--gold);
     stroke-width: 1.4;
-  }
-
-  // capped so the row wraps beside the photo instead of running into the particle orb on the right
-  &__social {
-    align-self: start;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    max-width: 420px;
-    list-style: none;
-
-    a {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      min-height: 34px;
-      padding: 0 13px 0 11px;
-      border: 1px solid var(--line-strong);
-      border-radius: 999px;
-      // near opaque so particles never draw through the labels
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      backdrop-filter: blur(6px);
-      color: var(--text);
-      font-size: 13.5px;
-      text-decoration: none;
-      white-space: nowrap;
-      transition:
-        color 0.3s var(--ease),
-        border-color 0.3s var(--ease),
-        background 0.3s var(--ease);
-
-      &:hover,
-      &:focus-visible {
-        color: var(--gold);
-        border-color: var(--gold);
-        background: color-mix(in srgb, var(--gold) 8%, var(--bg));
-      }
-
-      &:focus-visible {
-        border-radius: 999px;
-      }
-    }
-  }
-
-  &__glyph {
-    flex-shrink: 0;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.3;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 
   .pulse {
@@ -772,28 +698,8 @@ dd {
   @media (width < 700px) {
     padding-top: 96px;
 
-    &__id {
-      column-gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    &__photo {
-      grid-row: 1;
-    }
-
     &__who {
-      align-self: center;
-    }
-
-    &__social {
-      grid-column: 1 / -1;
-      gap: 6px;
-
-      a {
-        min-height: 32px;
-        padding: 0 11px 0 9px;
-        font-size: 13px;
-      }
+      margin-bottom: 24px;
     }
 
     // three actions fit one row on a 390 phone instead of orphaning the last
