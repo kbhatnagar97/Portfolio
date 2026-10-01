@@ -148,7 +148,7 @@
       "MCP server for Claude, Cursor and more",
       "Semantic search, no API key"
     ],
-    "featured": true,
+    "featured": false,
     "poster": "/media/context-bridge.jpg",
     "video": "/media/context-bridge.mp4"
   },
@@ -185,7 +185,7 @@
       "Installable PWA, SEO-first",
       "Delhi-NCR first, metros next"
     ],
-    "featured": true,
+    "featured": false,
     "poster": "/media/hapnin.jpg",
     "video": "/media/hapnin.mp4"
   },
@@ -222,7 +222,7 @@
       "24/7 paper trader on Google Cloud",
       "Never fakes returns, honest by design"
     ],
-    "featured": true,
+    "featured": false,
     "poster": "/media/moneymap.jpg",
     "video": "/media/moneymap.mp4"
   },

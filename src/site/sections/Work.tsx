@@ -153,7 +153,7 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
         <div className='featured__track' ref={track}>
           <div className='featured__intro'>
             <p className='eyebrow'>Featured</p>
-            <p className='featured__lead'>Six products people can use today. Each opens into the full story: why it exists, how it is built, what it does.</p>
+            <p className='featured__lead'>Three live products people pay for. Each opens into the full story: why it exists, how it is built, what it does.</p>
             <p className='featured__hint' aria-hidden='true'>
               Keep scrolling <span>→</span>
             </p>
