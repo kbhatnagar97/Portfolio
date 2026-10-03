@@ -47,12 +47,7 @@ const paths = () =>
     dish: new Path2D('M-3.5-1.5q3.5 3 7 0'),
     satchel: new Path2D('M-13-3h5v6h-5z'),
     lid: new Path2D('M-11 0l3.67-3 3.67 3 3.67-3 3.67 3 3.67-3 3.67 3'),
-    item: {
-      story: new Path2D(ITEM.story.d),
-      job: new Path2D(ITEM.job.d),
-      mail: new Path2D(ITEM.mail.d),
-      crate: new Path2D(ITEM.crate.d),
-    },
+    item: Object.fromEntries(Object.entries(ITEM).map(([k, v]) => [k, new Path2D(v.d)])) as Record<TItem, Path2D>,
   });
 const DASH = [1.5, 1.5];
 const SOLID: number[] = [];

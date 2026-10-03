@@ -2,7 +2,7 @@ import { useEffect, useRef, type MouseEvent } from 'react';
 import { gsap, SplitText, scrollToHash } from '../smooth';
 import { useMagnetic } from '../motion';
 import { AWARDS, LIVE_COUNT, PROFILE, PROJECTS, YEARS_EXPERIENCE } from '../data';
-import { SHAPE } from '../scene/shapes';
+import { SHAPE } from '../scene/waypoints';
 
 const AWARD_COUNT = AWARDS.filter((a) => /award/i.test(a.TITLE)).reduce((n, a) => n + a.IMAGES.length, 0);
 

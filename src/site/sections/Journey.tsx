@@ -1,11 +1,10 @@
-import { lazy, Suspense, useState, type ComponentType } from 'react';
+import { Suspense, useState } from 'react';
 import { AWARDS, EARLY, PROFILE, ROLES } from '../data';
-import { SHAPE } from '../scene/shapes';
+import { SHAPE } from '../scene/waypoints';
+import { lazyOrNothing } from '../lazy';
 import type { ILightbox } from './Lightbox';
 
-type TBoxProps = { box?: ILightbox; onClose: () => void };
-// a failed chunk load leaves the certificates unopened instead of breaking the page
-const Lightbox = lazy((): Promise<{ default: ComponentType<TBoxProps> }> => import('./Lightbox').catch(() => ({ default: () => null })));
+const Lightbox = lazyOrNothing(() => import('./Lightbox'));
 
 // the employer is named once, as the group label, so the page stays about the person
 const EMPLOYER = ROLES[0].COMPANY;

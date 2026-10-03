@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from 'react';
 import { gsap, SplitText } from './smooth';
 
-const fine = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
+export const finePointer = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 // Line mask reveals for [data-split] headings and a soft rise for [data-fade] blocks.
 export const useReveals = () => {
@@ -41,7 +41,7 @@ export const useReveals = () => {
 export const useMagnetic = (ref: RefObject<HTMLElement | null>, strength = 0.35) => {
   useEffect(() => {
     const el = ref.current;
-    if (!el || !fine()) return;
+    if (!el || !finePointer()) return;
     const x = gsap.quickTo(el, 'x', { duration: 0.6, ease: 'elastic.out(1, 0.4)' });
     const y = gsap.quickTo(el, 'y', { duration: 0.6, ease: 'elastic.out(1, 0.4)' });
     const move = (e: PointerEvent) => {

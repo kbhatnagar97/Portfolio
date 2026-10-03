@@ -1,4 +1,4 @@
-import type { IAutomation, IFlowStep } from '../data';
+import type { ICrew, IFlowStep } from '../data';
 import { itemOf } from '../flow';
 import { PROP_SCALE, floorOf, layoutFor, type TLayout } from './geometry';
 import {
@@ -35,7 +35,7 @@ const countOf = (log: string) => (/^\d/.test(log) ? parseInt(log, 10) : 1);
 
 export class BotWorld {
   // #region State
-  flow: IAutomation;
+  flow: ICrew;
   L: TLayout;
   w: TWorld;
   C: TPalette;
@@ -101,7 +101,7 @@ export class BotWorld {
   landed = false;
   // #endregion
 
-  constructor(flow: IAutomation, compact: boolean, C: TPalette, cap: HTMLElement) {
+  constructor(flow: ICrew, compact: boolean, C: TPalette, cap: HTMLElement) {
     this.flow = flow;
     this.C = C;
     this.cap = cap;

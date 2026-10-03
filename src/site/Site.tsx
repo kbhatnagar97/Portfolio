@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { startSmoothScroll, ScrollTrigger } from './smooth';
 import { automationById, projectById, projectBySlug } from './data';
 import { useReveals } from './motion';
+import { lazyOrNothing } from './lazy';
 import Nav from './sections/Nav';
 import Hero from './sections/Hero';
 import Skills from './sections/Skills';
@@ -13,15 +14,13 @@ import Contact from './sections/Contact';
 import { unlockEarly } from './audio/early';
 import './site.scss';
 
-const Scene = lazy(() => import('./scene/Scene'));
-// the lab and its audio engine stay out of the main chunk; a failed load leaves the page working
+const Scene = lazyOrNothing(() => import('./scene/Scene'));
+// the lab and its audio engine stay out of the main chunk
 const loadLab = () => import('./sections/WorkflowLab');
-type TLabProps = Parameters<Awaited<ReturnType<typeof loadLab>>['default']>[0];
-const WorkflowLab = lazy((): Promise<{ default: ComponentType<TLabProps> }> => loadLab().catch(() => ({ default: () => null })));
+const WorkflowLab = lazyOrNothing(loadLab);
 // framer-motion only ships with the modal and lightbox, so it is fetched on idle instead of blocking first paint
 const loadModal = () => import('./sections/ModalLayer');
-type TModalProps = Parameters<Awaited<ReturnType<typeof loadModal>>['default']>[0];
-const ModalLayer = lazy((): Promise<{ default: ComponentType<TModalProps> }> => loadModal().catch(() => ({ default: () => null })));
+const ModalLayer = lazyOrNothing(loadModal);
 
 const Site = () => {
   const [openId, setOpenId] = useState<string>();
@@ -102,7 +101,7 @@ const Site = () => {
       )}
       {flow && (
         <Suspense fallback={null}>
-          <WorkflowLab key={flow.id} flow={flow} onClose={() => setLabId(undefined)} />
+          <WorkflowLab key={flow.id} id={flow.id} onClose={() => setLabId(undefined)} />
         </Suspense>
       )}
     </div>

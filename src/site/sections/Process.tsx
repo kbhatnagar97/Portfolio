@@ -1,5 +1,5 @@
 import { LIVE_COUNT, PROJECTS, STORY } from '../data';
-import { SHAPE } from '../scene/shapes';
+import { SHAPE } from '../scene/waypoints';
 
 const STATS = [{ value: String(PROJECTS.length), label: 'products and experiments' }, { value: String(LIVE_COUNT), label: 'live on the web' }, ...STORY.stats];
 

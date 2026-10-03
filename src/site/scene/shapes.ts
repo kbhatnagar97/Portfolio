@@ -1,16 +1,4 @@
-// Procedural point clouds the particles morph between. Every shape has exactly `n` points.
-export const SHAPE = {
-  orb: 0,
-  interface: 1,
-  globe: 2,
-  network: 3,
-  stack: 4,
-  field: 5,
-  ring: 6,
-} as const;
-
-export type TShapeName = keyof typeof SHAPE;
-
+// Procedural point clouds the particles morph between, in SHAPE id order (waypoints.ts). Every shape has exactly `n` points.
 type TVec = [number, number, number];
 type TSegment = [TVec, TVec];
 

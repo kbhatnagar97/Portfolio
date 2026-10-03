@@ -220,5 +220,223 @@
         }
       }
     ]
+  },
+  {
+    "id": "claude-watchdog",
+    "name": "Claude Watchdog",
+    "tagline": "Keeps watch over every Claude Code chat on my Mac and taps me only when one needs me",
+    "cadence": "every minute",
+    "accent": "#ec4899",
+    "stats": [
+      { "value": 60, "label": "second scan" },
+      { "value": 4, "label": "Claude Code hooks" },
+      { "value": 2, "label": "nudges before my phone, max" },
+      { "value": 0, "label": "pushes or deploys it triggers" }
+    ],
+    "nodes": [
+      { "id": "scan", "kind": "trigger", "label": "Minute scan", "sub": "every chat on the Mac", "at": [120, 140], "m": [0, 0], "body": "A LaunchAgent runs one scan a minute across every Claude Code chat on this Mac: the chats themselves, their workflows, background agents and background shells." },
+      { "id": "hooks", "kind": "source", "label": "Hook notes", "sub": "stop, fail, ask, end", "at": [370, 140], "m": [1, 0], "body": "Four Claude Code hooks leave a note for the next scan: every finished turn, every API failure, every permission prompt or question, and every chat that closes." },
+      { "id": "heartbeat", "kind": "rule", "label": "Self check", "sub": "says so if scans stop", "at": [370, 540], "m": [0, 2], "body": "A watcher that dies quietly is worse than none. If no scan has run for 10 minutes, the next finished turn sends an alert that the watchdog is not scanning, with the command that starts it again." },
+      { "id": "detect", "kind": "rule", "label": "Trouble finder", "sub": "waiting, stuck, silent", "at": [620, 140], "m": [1, 1], "body": "Spots chats waiting on me, chats stopped by an API error or a usage limit, stalled or failed workflows, silent background agents and shells, chats busy for a long time with no output, and questions left unanswered. Dev servers and deliberate waits are left alone." },
+      { "id": "done", "kind": "output", "label": "Done notes", "sub": "long work finished", "at": [620, 340], "m": [0, 1], "body": "Long work that finishes, a turn, a workflow, an agent or a background task over 10 minutes, gets a short Done note with the chat's own summary, so I never sit waiting on something already finished." },
+      { "id": "risky", "kind": "rule", "label": "Risk filter", "sub": "git, ssh, deploy: to me", "at": [870, 140], "m": [1, 2], "body": "A stuck background task that touches git, ssh, a push or a deploy skips the nudge and comes straight to me. A machine never decides those." },
+      { "id": "nudge", "kind": "ai", "label": "Haiku nudge", "sub": "only if the chat is idle", "at": [1120, 140], "m": [1, 3], "body": "If the chat that owns the problem is idle, a throwaway Claude Haiku that can only send one message nudges it first, at most twice, 10 minutes apart. The nudge never asks a chat to commit, push, deploy, stop or rerun anything.", "fallback": { "log": "Haiku could not deliver the nudge, so the alert goes to my phone at once" } },
+      { "id": "chat", "kind": "ai", "label": "Owning chat", "sub": "gets the first try", "at": [1380, 140], "m": [0, 4], "body": "The chat that started the work has the context, so it gets the first chance to fix it. A chat in the middle of a turn is never interrupted." },
+      { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "with exact steps", "at": [1120, 340], "m": [0, 3], "body": "Then my phone and my Mac get one alert: what is stuck, for how long, whether a nudge was tried, and numbered steps to fix it." },
+      { "id": "me", "kind": "human", "label": "My call", "sub": "open, snooze or ignore", "at": [1120, 540], "m": [1, 4], "body": "I decide what happens next. The watchdog never touches the work itself." },
+      { "id": "vscode", "kind": "output", "label": "VS Code", "sub": "comes forward when idle", "at": [1380, 540], "m": [1, 5], "body": "VS Code comes to the front only after a minute without keyboard or mouse input, so it never steals keystrokes meant for another window." },
+      { "id": "snooze", "kind": "rule", "label": "Snooze", "sub": "one command on the Mac", "at": [870, 540], "m": [0, 5], "body": "When a wait is expected, one command on the Mac snoozes that item for a set time, or for good. Every nudge tells the chat how to snooze it too." },
+      { "id": "remind", "kind": "output", "label": "One reminder", "sub": "then silence", "at": [1120, 740], "m": [1, 6], "body": "If I do nothing, one reminder follows 30 minutes later. Then it stays quiet, so it never turns into noise." }
+    ],
+    "edges": [
+      ["scan", "hooks"],
+      ["hooks", "detect"],
+      ["hooks", "heartbeat"],
+      ["heartbeat", "alert"],
+      ["detect", "done"],
+      ["detect", "risky"],
+      ["risky", "nudge"],
+      ["risky", "alert", "skip"],
+      ["nudge", "chat"],
+      ["nudge", "alert"],
+      ["chat", "alert"],
+      ["alert", "me"],
+      ["me", "vscode"],
+      ["me", "snooze"],
+      ["me", "remind"]
+    ],
+    "run": [
+      { "node": "scan", "log": "Minute scan: 6 chats, 2 workflows, 3 background shells" },
+      {
+        "node": "hooks",
+        "log": "Hook notes read: every turn, failure, prompt and closed chat since the last scan",
+        "card": "Hook notes read since the last scan",
+        "branches": [{ "to": "heartbeat", "log": "Scans are running, so the watchdog is healthy", "tone": "go" }]
+      },
+      {
+        "node": "detect",
+        "log": "A workflow has been silent for 20 minutes. Stalled",
+        "branches": [{ "to": "done", "log": "A 14 minute agent finished elsewhere. Done note sent" }]
+      },
+      { "node": "risky", "log": "No git, ssh or deploy in it, so its own chat gets a nudge first", "card": "No git, ssh or deploy: its chat gets a nudge" },
+      {
+        "node": "nudge",
+        "log": "The chat is idle. Haiku posts a nudge: look into it, change nothing risky",
+        "card": "Chat idle. Haiku posts one careful nudge",
+        "branches": [{ "to": "chat", "log": "Two nudges, 10 minutes apart. Still no progress", "tone": "go" }]
+      },
+      { "node": "alert", "log": "Phone alert: what is stuck, for how long, and numbered steps to fix it", "card": "Phone alert with numbered steps to fix it" },
+      {
+        "node": "me",
+        "log": "Waiting for a tap",
+        "ask": {
+          "prompt": "A workflow is stuck. Your call?",
+          "choices": [
+            { "label": "Open the chat", "log": "Opening it", "route": [{ "node": "vscode", "log": "VS Code comes forward once I stop typing" }] },
+            { "label": "Snooze from the Mac", "log": "Snoozed for an hour with one command", "route": [{ "node": "snooze", "log": "Quiet for an hour, then it watches again" }] },
+            { "label": "Ignore", "log": "Ignored for now", "tone": "drop", "route": [{ "node": "remind", "log": "One reminder 30 minutes later, then silence" }] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "trading-lab",
+    "name": "Self-Improving Trading Lab",
+    "tagline": "A paper money research lab that improves itself and is built to make fooling itself hard",
+    "cadence": "daily, on my Mac",
+    "status": "Being built",
+    "note": "Paper money only. The daily runner is built and passed its dry run; stages marked planned come next. Most ideas fail, and nothing here promises returns.",
+    "accent": "#e879f9",
+    "stats": [
+      { "value": 20, "label": "counted ideas a week, max" },
+      { "value": 6, "label": "kinds of strategy" },
+      { "value": 3, "label": "months on paper before a change" },
+      { "value": 1, "label": "finding a day, at least" }
+    ],
+    "nodes": [
+      { "id": "clock", "kind": "trigger", "label": "Daily run", "sub": "7 pm, or the next wake", "at": [120, 140], "m": [0, 0], "body": "n8n checks every 30 minutes and starts the day's research from 7 pm, or at the first wake after a missed evening. A run that fails names the failed step on my phone and tries once more; after two failures it waits for tomorrow." },
+      { "id": "headsup", "kind": "human", "label": "Heads up", "sub": "10 min early, by phone", "at": [370, 140], "m": [1, 0], "planned": true, "body": "Built today: a start notice that says what will be tested. Planned: ten minutes before a run my phone asks first, with Delay 1 hour, Start now and Skip today. A delay says research resumes in an hour, then asks again." },
+      { "id": "guard", "kind": "rule", "label": "Safe compute", "sub": "on charger, 2 cores free", "at": [620, 140], "m": [1, 1], "planned": true, "body": "Planned: heavy tests run only on charger power, use every core but two at low priority, ease off when macOS reports heat pressure, and keep the Mac awake only while the run lasts. Built today: every run measures its own time, CPU time and peak memory." },
+      { "id": "atlas", "kind": "source", "label": "Research atlas", "sub": "everything ever tried", "at": [870, 140], "m": [0, 1], "body": "Memory comes first. The atlas records every idea, paper, study and finding with its outcome, and the trial log refuses a retuned copy of an old idea before it counts. Planned: a knowledge base rebuilt every run and handed to Claude, where each pattern carries a confidence label: spotted, promising, confirmed or proven live. Only a proven live pattern may change the strategy, and the knowledge base never carries sealed numbers." },
+      { "id": "scout", "kind": "source", "label": "Paper scout", "sub": "untrusted, checked", "at": [1120, 140], "m": [0, 2], "body": "Claude searches the web for newly published papers. Their text is treated as untrusted data: checked against a strict schema, stripped to plain text, and shown to the idea writer only inside a fenced data block. Each paper's claim is tested once on Indian data, so it ends up replicated or refuted." },
+      { "id": "claude", "kind": "ai", "label": "Claude proposes", "sub": "reason written first", "at": [1370, 140], "m": [1, 2], "body": "Claude reads the atlas and the new papers with every tool switched off, then proposes a few ideas, each with its economic reason and the direction it expects written down before any test. It never sees stock names or any result after the seal, and it never grades its own ideas.", "fallback": { "log": "Claude is unavailable, so the run stops here and nothing is counted. My phone hears which step failed, and it tries again once, 30 minutes later", "then": "end" } },
+      { "id": "menu", "kind": "rule", "label": "Strategy menu", "sub": "six kinds, fixed menus", "at": [1620, 140], "m": [1, 3], "body": "Ideas come from fixed menus across six kinds: stock factors; market timing from the rupee, the dollar, crude oil, bond yields and fear gauges; sector rotation; calendar windows around Union Budgets, RBI policy days, elections, festivals and F&O expiry; risk overlays; and position sizing, including a satellite of riskier bets capped at a fifth of the money. Planned: an adaptive weights family, where the rule that changes factor weights is the idea under test, never weights tuned by hand." },
+      { "id": "registry", "kind": "rule", "label": "Trial register", "sub": "counted before testing", "at": [1620, 340], "m": [0, 3], "body": "Every idea is registered and counted before it is tested, so a failure still counts against the lab and raises the bar for every later result. At most 4 counted ideas a weekday, 20 a week and 500 a year. Descriptive studies are labelled as such and are never counted or promoted." },
+      { "id": "split", "kind": "rule", "label": "Fair test", "sub": "buy-only, after costs", "at": [1370, 340], "m": [0, 4], "body": "Each idea is tested on frozen history from before the seal, with purged cross validation, and judged by a score that is discounted for every trial run so far. It also runs as a buy-only portfolio a person could hold, after costs, against the benchmark on the same days, and only an idea that beats the benchmark can ever be promoted. Planned: discovery on the older years, 1995 to 2014, and confirmation on 2015 up to the seal." },
+      { "id": "failed", "kind": "drop", "label": "Failed ideas", "sub": "logged, never retried", "at": [1370, 540], "m": [1, 4], "body": "Most ideas fail. Each failure stays in the atlas with the test it missed, so it is never tried again, and it will appear on the research page with the rest of the findings." },
+      { "id": "checks", "kind": "rule", "label": "Cheat checks", "sub": "leak audit, canary", "at": [1120, 340], "m": [0, 5], "body": "A result that looks too good to be true is held for a manual audit. Once a month a deliberately leaky idea runs through every check and must be caught, or the lab switches itself off. Planned: placebo dates and random markets, where a real edge must vanish, plus bootstraps and cost scenarios." },
+      { "id": "halt", "kind": "drop", "label": "Audit hold", "sub": "too good to be true", "at": [1120, 540], "m": [1, 5], "body": "A result that looks too good to be true stops that idea for a manual audit instead of moving on. In research that is almost always a bug or a leak, not a discovery. If the monthly leaky idea ever slips through, the whole lab stops itself." },
+      { "id": "seal", "kind": "rule", "label": "Sealed period", "sub": "pass or fail only", "at": [870, 340], "m": [0, 6], "body": "Everything after 2 October 2026 is sealed. Only the promotion rules may query it, in the cloud, and they get back pass or fail with no numbers. Sealed data never reaches the laptop. The sealed tests start to mean something from about October 2027, as the period fills." },
+      { "id": "ladder", "kind": "rule", "label": "History ladder", "sub": "5 rungs, then 3 months", "at": [620, 340], "m": [1, 6], "planned": true, "body": "Planned: before anything may change the live strategy it climbs a long history ladder: about 30 years of Indian stocks, the Sensex since 1979 for timing rules, Indian factor data from IIM Ahmedabad, US data back to 1926 and emerging markets since 1990. Each rung must show the idea's mechanism holds; on Indian data it must beat the current strategy on return and on worst loss, after costs. Built today: at least three months in the paper tier before a candidate is put to me." },
+      { "id": "report", "kind": "output", "label": "Phone updates", "sub": "start, finish, failure", "at": [370, 340], "m": [1, 7], "body": "A start notice, then a finish notice: how long the run took, CPU time, peak memory, what was tried and found, papers replicated or refuted, the trials used this week, and the new research version against the previous one. A failed run names the step that failed. Planned: an announcement for every change to a strategy or to the lab's own workflow." },
+      { "id": "weekly", "kind": "ai", "label": "Weekly round", "sub": "improves the lab itself", "at": [120, 340], "m": [0, 7], "planned": true, "body": "Planned: once a week a deeper Claude round works on the lab itself: its tests, its menus, its own workflow, anything outside the locked rulebook. Each round must advance at least one idea from my own ideas inbox and log its reasoning, and it keeps an innovation radar that files new papers, code and models as watch, trial, adopt or reject." },
+      { "id": "auditor", "kind": "ai", "label": "Auditor agent", "sub": "reviews every change", "at": [120, 540], "m": [0, 8], "planned": true, "body": "Planned: a separate auditor agent reviews every change the AI makes to the lab before it ships. The proposer never approves its own work, and nothing ships without the audit." },
+      { "id": "rulebook", "kind": "rule", "label": "Locked rulebook", "sub": "the AI cannot edit it", "at": [370, 540], "m": [1, 8], "planned": true, "body": "Built today: the trial log is create-only and the seal is enforced in code. Planned: the trial log, the seal, the gates, the caps and the promotion rules locked together and checked against a fingerprint on every run. Everything else the AI may improve, and every change is announced." },
+      { "id": "exams", "kind": "rule", "label": "Exams", "sub": "forecasts, keep or sell", "at": [620, 540], "m": [1, 9], "planned": true, "body": "Planned: two standing exams of the lab's judgment. A weekly forecast tournament scores its probability calls for accuracy and calibration. A keep or sell exam runs thousands of realistic starting portfolios through history and grades which holdings it keeps and which it sells, after costs and tax." },
+      { "id": "verdict", "kind": "human", "label": "Approval", "sub": "Approve or Reject tap", "at": [870, 540], "m": [0, 9], "body": "A candidate reaches me only after it passed every research gate, the buy-only test and the sealed period, and spent at least three months in the paper tier. I tap Approve or Reject, and the first answer stands. An approval waits for the monthly review, so the live strategy changes at most once a month; the cloud step that applies it there is still being built. Planned: a candidate that also clears the history ladder goes live by itself, with 24 hours for me to undo it." },
+      { "id": "engine", "kind": "trigger", "label": "Paper engine", "sub": "every market day", "at": [1620, 740], "m": [0, 10], "body": "The live strategy trades paper money in the cloud every market day, on real prices with real costs. No real money is involved. A small AI filter reads company filings for red flags, and a flagged stock is left out. Planned: on trading days my phone hears only about exceptions." },
+      { "id": "daychecks", "kind": "rule", "label": "Day checks", "sub": "9:05, 12:30, risk only", "at": [1370, 740], "m": [1, 10], "planned": true, "body": "Planned: at 9:05, before the bell, only risk rules that have already been tested may act, and no new ideas. At 12:30 a risk-only check runs; the strategy itself never changes midday." },
+      { "id": "news", "kind": "source", "label": "News desk", "sub": "every 30 min, frozen", "at": [1120, 740], "m": [1, 11], "planned": true, "body": "Planned: headlines and filings captured every 30 minutes from feeds the lab may legally use, each with its time and company. The AI filter scores each item when it arrives and the score is frozen, never rescored with hindsight. News shadow books compete forward from day one, and my phone hears about news only when it changes something." },
+      { "id": "plan", "kind": "rule", "label": "Closing plan", "sub": "15:45, triggers preset", "at": [870, 740], "m": [0, 11], "planned": true, "body": "Planned: at 15:45, after the close, the numbers rank the market and tomorrow's plan is written: a watch list with triggers set in advance, and news features over 1, 5 and 21 days for each stock. The live strategy applies only news rules that have passed the same tests." },
+      { "id": "desk", "kind": "ai", "label": "Judgment desk", "sub": "AI calls, shadow only", "at": [620, 740], "m": [0, 12], "planned": true, "body": "Planned: an AI judgment desk reads the day and makes its own calls, but only on a shadow portfolio. It earns any authority only if its record beats the rules going forward. Its judgment is never backtested, because the model already knows how history ended.", "fallback": { "log": "The desk is offline. The rules run the day alone, as they always do" } },
+      { "id": "shadow", "kind": "output", "label": "Shadow books", "sub": "scored forward", "at": [370, 740], "m": [1, 12], "body": "Ideas that pass the research gates run as paper books in the cloud, scored against the live strategy on the same days from then on. Planned: the judgment desk and the news books join this contest, and nothing they do touches the live strategy until their record says so." },
+      { "id": "findings", "kind": "output", "label": "Findings", "sub": "at least one a day", "at": [120, 740], "m": [1, 13], "body": "Every run writes at least one finding: a test result, a paper verdict, a study or a data note, with no stock names and no sealed numbers. Failures are kept with the rest, and they will be published when the research page launches." }
+    ],
+    "edges": [
+      ["clock", "headsup"],
+      ["headsup", "guard"],
+      ["guard", "atlas"],
+      ["atlas", "scout"],
+      ["scout", "claude"],
+      ["claude", "menu"],
+      ["menu", "registry"],
+      ["registry", "split"],
+      ["split", "failed", "drop"],
+      ["split", "checks"],
+      ["checks", "halt", "drop"],
+      ["checks", "seal"],
+      ["seal", "ladder"],
+      ["ladder", "report"],
+      ["report", "atlas", "skip"],
+      ["report", "weekly"],
+      ["weekly", "auditor"],
+      ["auditor", "rulebook"],
+      ["rulebook", "report"],
+      ["rulebook", "exams"],
+      ["exams", "verdict"],
+      ["verdict", "engine"],
+      ["engine", "daychecks"],
+      ["daychecks", "news"],
+      ["news", "plan"],
+      ["plan", "desk"],
+      ["desk", "shadow"],
+      ["shadow", "findings"]
+    ],
+    "run": [
+      { "node": "clock", "log": "7 pm on a weekday. A research run is due" },
+      {
+        "node": "headsup",
+        "log": "Heads up sent to my phone, 10 minutes early",
+        "ask": {
+          "prompt": "Research starts in 10 minutes. Your call?",
+          "choices": [
+            { "label": "Start now", "log": "Starting now", "then": "next", "route": [] },
+            { "label": "Delay 1 hour", "log": "Delayed. Research resumes in an hour, and the heads up comes again", "then": "again", "route": [] },
+            { "label": "Skip today", "log": "Skipped today. Nothing runs and nothing is counted", "tone": "drop", "route": [] }
+          ]
+        }
+      },
+      { "node": "guard", "log": "On charger. All cores but two at low priority, Mac awake for this run only" },
+      { "node": "atlas", "log": "Atlas loaded: every idea, paper and finding so far" },
+      { "node": "scout", "log": "3 new papers filed as untrusted cards. Schema checks passed" },
+      { "node": "claude", "log": "4 ideas proposed, each with its reason and direction written first", "card": "4 ideas, each with its reason written first" },
+      { "node": "menu", "log": "Kinds today: rupee and crude timing, sector rotation, a policy day window, a risk overlay" },
+      { "node": "registry", "log": "4 ideas registered and counted before any test" },
+      {
+        "node": "split",
+        "log": "1 of 4 holds as a buy-only portfolio after costs",
+        "branches": [{ "to": "failed", "log": "3 ideas failed. Logged, never retried" }]
+      },
+      {
+        "node": "checks",
+        "log": "The survivor passes the leak audit",
+        "branches": [{ "to": "halt", "log": "Monthly leaky control caught and held" }]
+      },
+      { "node": "seal", "log": "The survivor joins the paper tier. The seal answers pass or fail later", "card": "The survivor joins the paper tier" },
+      { "node": "ladder", "log": "Next: 5 rungs of history before it may change anything" },
+      {
+        "node": "report",
+        "log": "Finish notice: time, CPU, peak memory, findings and the new research version",
+        "card": "Finish notice sent to my phone",
+        "branches": [{ "to": "atlas", "log": "Atlas updated, so nothing repeats tomorrow", "tone": "go" }]
+      },
+      { "node": "weekly", "log": "Sunday, so the weekly round runs: one owner idea advanced, the radar updated, one lab change proposed" },
+      { "node": "auditor", "log": "A separate auditor reviews the change and passes it" },
+      {
+        "node": "rulebook",
+        "log": "Rulebook untouched: it still matches its fingerprint",
+        "branches": [{ "to": "report", "log": "Lab change announced on my phone", "tone": "go" }]
+      },
+      { "node": "exams", "log": "This week's forecasts scored for calibration, and the keep or sell exam graded" },
+      {
+        "node": "verdict",
+        "log": "Monthly review: one candidate awaits my answer",
+        "ask": {
+          "prompt": "Drill: a candidate passed every gate. Approve it?",
+          "choices": [
+            { "label": "Reject", "log": "Rejected. The first answer stands", "tone": "drop", "then": "next", "route": [{ "node": "engine", "log": "The paper engine keeps the current strategy" }] },
+            { "label": "Approve", "log": "Approved. Held for the monthly review", "then": "next", "route": [{ "node": "engine", "log": "The engine will switch to it at the monthly review" }] }
+          ]
+        }
+      },
+      { "node": "daychecks", "log": "Next market day: tested risk rules only at 9:05, a risk-only check at 12:30" },
+      { "node": "news", "log": "News desk: 41 headlines and filings scored as they arrived, then frozen" },
+      { "node": "plan", "log": "15:45: tomorrow's watch list with preset triggers" },
+      { "node": "desk", "log": "The judgment desk makes 2 calls, on its shadow portfolio only" },
+      { "node": "shadow", "log": "Paper books scored against the live strategy, same days" },
+      { "node": "findings", "log": "Today's findings kept for the research page, failures included" }
+    ],
+    "crew": ["clock", "atlas", "claude", "registry", "split", "checks", "seal", "report", "verdict"]
   }
 ]

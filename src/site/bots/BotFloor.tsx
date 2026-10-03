@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { IAutomation } from '../data';
+import type { ICrew } from '../data';
 import { gsap, reducedMotion } from '../smooth';
 import type { BotWorld } from './director';
 import { routeOf, sizeOf } from './geometry';
@@ -11,7 +11,7 @@ const SAMPLES = 5;
 // #endregion
 
 // A small physics crew acting out the workflow; the canvas is decorative, the Launch button is the keyboard path.
-export const BotFloor = ({ flow }: { flow: IAutomation }) => {
+export const BotFloor = ({ flow }: { flow: ICrew }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const capRef = useRef<HTMLParagraphElement>(null);
 

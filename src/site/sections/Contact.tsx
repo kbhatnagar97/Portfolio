@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useMagnetic } from '../motion';
 import { PROFILE } from '../data';
-import { SHAPE } from '../scene/shapes';
+import { SHAPE } from '../scene/waypoints';
 
 const Contact = () => {
   const [copied, setCopied] = useState(false);

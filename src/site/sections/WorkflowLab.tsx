@@ -7,7 +7,9 @@ import { music, type IClock } from '../audio/music';
 import { hop as tempo } from '../audio/themes';
 import SoundToggle from '../audio/SoundToggle';
 import { BOT, ITEM, KIND_LABEL, NH, NW, edgeKind, edgePath, itemOf, layoutOf, type TItem, type TLayout, type TPoint } from '../flow';
-import type { IAutomation, IFlowChoice, IFlowStep } from '../data';
+import { isLive, ledClass, runLabel, type IAutomation, type IFlowChoice, type IFlowStep } from '../data';
+// the full boards (node bodies, positions, the whole run) load with this chunk; the section cards ship a summary
+import flowsData from '../../content/automations.json';
 import '../lab.scss';
 
 const MISSIONS = [
@@ -18,6 +20,10 @@ const MISSIONS = [
   { id: 'inspect', label: 'Inspect every stage', xp: 150 },
 ] as const;
 type TMission = (typeof MISSIONS)[number]['id'];
+// a big board asks for at most this many inspections, so its top rank is as reachable as on a small one
+const INSPECT_GOAL = 15;
+const goalOf = (stages: number) => Math.min(INSPECT_GOAL, stages);
+const missionLabel = (m: (typeof MISSIONS)[number], stages: number) => (m.id === 'inspect' && goalOf(stages) < stages ? `Inspect ${goalOf(stages)} stages` : m.label);
 const MAX_XP = MISSIONS.reduce((n, m) => n + m.xp, 0);
 const RANKS: [number, string][] = [
   [0, 'Visitor'],
@@ -53,15 +59,30 @@ let seq = 0;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 // #region Layout mode
-// under 1100 by 780 the wide board scales node text under 11px, so tablets and small laptops read the stack
-const Q_COMPACT = '(max-width: 1100px), (max-height: 780px)';
+// horizontal room the wide board keeps clear of its nodes, in px
+const SIDE = 112;
+// the wide board's kind and sub text grow to at most 17 board units, so a scale under 11 / 17 puts them under 11px
+const MIN_K = 11 / 17;
+const Q_SHORT = '(max-height: 780px)';
 const Q_STRIP = '(max-height: 560px) and (orientation: landscape)';
 const subscribeMode = (cb: () => void) => {
-  const qs = [Q_COMPACT, Q_STRIP].map((q) => matchMedia(q));
+  const qs = [Q_SHORT, Q_STRIP].map((q) => matchMedia(q));
   qs.forEach((q) => q.addEventListener('change', cb));
-  return () => qs.forEach((q) => q.removeEventListener('change', cb));
+  addEventListener('resize', cb);
+  return () => {
+    qs.forEach((q) => q.removeEventListener('change', cb));
+    removeEventListener('resize', cb);
+  };
 };
-const modeNow = (): TLayout => (matchMedia(Q_STRIP).matches ? 'strip' : matchMedia(Q_COMPACT).matches ? 'stack' : 'wide');
+// under 1100px every board is too small to read, and a board wider than the standard one needs more room before it fits
+const modeNow = (span: number): TLayout => {
+  if (matchMedia(Q_STRIP).matches) return 'strip';
+  return matchMedia(Q_SHORT).matches || innerWidth <= 1100 || (innerWidth - SIDE) / span < MIN_K ? 'stack' : 'wide';
+};
+const nodeSpan = (flow: IAutomation) => {
+  const xs = flow.nodes.map((n) => n.at[0]);
+  return Math.max(...xs) - Math.min(...xs) + NW;
+};
 // #endregion
 
 // #region Bot
@@ -446,7 +467,7 @@ const Resident = ({ down }: { down: boolean }) => {
 };
 // #endregion
 
-const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void }) => {
+const Lab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void }) => {
   const root = useRef<HTMLDivElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const closing = useRef(false);
@@ -455,7 +476,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   const dock = useRef<HTMLDivElement>(null);
   const sheet = useRef<HTMLElement>(null);
   const askRef = useRef<HTMLDivElement>(null);
-  const mode = useSyncExternalStore(subscribeMode, modeNow);
+  const span = useMemo(() => nodeSpan(flow), [flow]);
+  const mode = useSyncExternalStore(subscribeMode, () => modeNow(span));
   const compact = mode !== 'wide';
   const board = useMemo(() => layoutOf(flow, mode), [flow, mode]);
   const byId = useMemo(() => Object.fromEntries(flow.nodes.map((n) => [n.id, n])), [flow]);
@@ -521,6 +543,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     loop.current = undefined;
   };
 
+  const stages = flow.nodes.length;
+  const inspectGoal = goalOf(stages);
   const xp = xpOf(done);
   const rank = rankOf(xp);
   const cleared = done.size === MISSIONS.length;
@@ -540,10 +564,10 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       const x1 = Math.max(...ps.map((p) => p.x)) + NW / 2;
       const y0 = Math.min(...ps.map((p) => p.y)) - NH / 2 - 56;
       const y1 = Math.max(...ps.map((p) => p.y)) + NH / 2;
-      const aw = w - 112;
+      const aw = w - SIDE;
       const ah = top - 96 - 12;
       const k = Math.min(aw / (x1 - x0), ah / (y1 - y0), 1.1);
-      setView({ k, x: 56 + (aw - (x1 - x0) * k) / 2 - x0 * k, y: 96 + Math.max(0, (ah - (y1 - y0) * k) / 2) - y0 * k });
+      setView({ k, x: SIDE / 2 + (aw - (x1 - x0) * k) / 2 - x0 * k, y: 96 + Math.max(0, (ah - (y1 - y0) * k) / 2) - y0 * k });
       return;
     }
     // measured, because the bar wraps and the dock grows with the ask on small screens
@@ -658,12 +682,12 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     const rankBefore = rankOf(xpOf(seen.current));
     seen.current = new Set(done);
     const all = done.size === MISSIONS.length;
-    setToast(all ? { id: ++seq, title: 'Full clearance. Stark level unlocked', xp: fresh[0].xp } : { id: ++seq, title: fresh[0].label, xp: fresh[0].xp });
+    setToast(all ? { id: ++seq, title: 'Full clearance. Stark level unlocked', xp: fresh[0].xp } : { id: ++seq, title: missionLabel(fresh[0], stages), xp: fresh[0].xp });
     // every mission stinger opens with the coin figure, so the coin plays only when no stinger will
     const sting = all ? 'clearance' : rankOf(xpOf(done)) !== rankBefore ? 'rankUp' : fresh.length > 1 ? 'missionBig' : 'mission';
     if (music.stinger(sting) === undefined) sfx.play('coin');
     if (missionsOpen) sfx.play('ratchet');
-  }, [done, missionsOpen]);
+  }, [done, missionsOpen, stages]);
 
   useEffect(() => {
     if (!toast) return;
@@ -672,8 +696,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   }, [toast]);
 
   useEffect(() => {
-    if (inspected.size === flow.nodes.length) complete('inspect');
-  }, [inspected, flow.nodes.length, complete]);
+    if (inspected.size >= inspectGoal) complete('inspect');
+  }, [inspected, inspectGoal, complete]);
 
   const inspect = (id?: string) => {
     if (id && !selected) sfx.play(inspected.has(id) ? 'toggleOn' : 'stamp');
@@ -688,6 +712,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
   // #region Engine
   const log = (text: string, tone?: string) =>
     setLogs((l) => [...l.slice(-60), { id: ++seq, t: ((performance.now() - t0.current) / 1000).toFixed(2).padStart(5, '0'), text, tone }]);
+  // a line written by or about a stage that is designed but not built yet says so
+  const lineOf = (text: string, ...ids: string[]) => (ids.some((id) => byId[id].planned) ? `Planned · ${text}` : text);
 
   const flash = (id: string) => {
     setVisited((v) => new Set(v).add(id));
@@ -754,9 +780,11 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     setRunning(true);
     setVisited(new Set());
     setLogs([]);
-    log(`Run ${runs + 1} started`, 'sys');
+    // a flow that is not live yet plays an example of how a run will go, never a record of a real one
+    log(`${isLive(flow) ? 'Run' : 'Sample run'} ${runs + 1} started`, 'sys');
     let cur: string | undefined;
     let chaos = false;
+    let stopped = false;
     // the first flash lands on the next beat when music plays, at once otherwise
     await clk.start();
     if (!alive()) return;
@@ -773,7 +801,9 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         }
         log(node.fallback.log, 'alt');
         sfx.play('reroute', { pan: panAt(step.node) });
-        continue;
+        if (node.fallback.then !== 'end') continue;
+        stopped = true;
+        break;
       }
       if (cur) await hop(cur, step.node, edgeKind(flow, cur, step.node) === 'fallback' ? 'alt' : 'go');
       else {
@@ -782,7 +812,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       }
       if (!alive()) return;
       flash(step.node);
-      log(step.log);
+      log(lineOf(step.log, step.node));
       const from = step.node;
       step.branches?.forEach((b) => {
         // a branch with no tone keeps its item (a digest, a tray) unless it goes to the discard node
@@ -790,35 +820,42 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         travel(from, b.to, tone).then(() => {
           if (!alive()) return;
           flash(b.to);
-          log(b.log, tone);
+          log(lineOf(b.log, from, b.to), tone);
         });
       });
       cur = step.node;
 
       if (step.ask) {
-        setAsk({ ...step.ask, node: step.node });
-        sfx.play('alert', { pan: panAt(step.node) });
-        music.decide(true);
-        const choice = await new Promise<IFlowChoice | undefined>((r) => (answer.current = r));
-        answer.current = undefined;
-        setAsk(undefined);
-        if (!alive() || !choice) return;
-        music.decide(false);
-        music.stinger(choice.tone === 'drop' ? 'no' : 'yes');
-        clk.resync();
-        complete('decide');
-        log(choice.log, choice.tone);
-        // the first route courier leaves when its resynced 8th is heard, so it lands with its chime
-        await clk.advance(0);
-        if (!alive()) return;
-        for (const h of choice.route) {
-          await hop(cur, h.node, 'ok');
+        let choice: IFlowChoice | undefined;
+        do {
+          setAsk({ ...step.ask, node: step.node });
+          sfx.play('alert', { pan: panAt(step.node) });
+          music.decide(true);
+          choice = await new Promise<IFlowChoice | undefined>((r) => (answer.current = r));
+          answer.current = undefined;
+          setAsk(undefined);
+          // the answered buttons unmount; a run that carries on keeps keyboard focus inside the lab
+          requestAnimationFrame(() => {
+            if (document.activeElement === document.body) root.current?.focus({ preventScroll: true });
+          });
+          if (!alive() || !choice) return;
+          music.decide(false);
+          music.stinger(choice.tone === 'drop' ? 'no' : 'yes');
+          clk.resync();
+          complete('decide');
+          log(lineOf(choice.log, step.node), choice.tone);
+          // the first route courier leaves when its resynced 8th is heard, so it lands with its chime
+          await clk.advance(0);
           if (!alive()) return;
-          flash(h.node);
-          log(h.log, 'ok');
-          cur = h.node;
-        }
-        break;
+          for (const h of choice.route) {
+            await hop(cur, h.node, 'ok');
+            if (!alive()) return;
+            flash(h.node);
+            log(lineOf(h.log, step.node, h.node), 'ok');
+            cur = h.node;
+          }
+        } while (choice.then === 'again');
+        if (choice.then !== 'next') break;
       }
       await clk.advance(0.5);
       if (!alive()) return;
@@ -826,7 +863,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
 
     await clk.advance(1);
     if (!alive()) return;
-    log(chaos ? 'Run complete. The fallback held' : 'Run complete', 'sys');
+    log(stopped ? 'Run stopped safely. The fallback held' : chaos ? 'Run complete. The fallback held' : 'Run complete', 'sys');
     if (consoleRef.current?.getClientRects().length) sfx.play('typeTick');
     music.completeRun(chaos);
     setRuns((n) => n + 1);
@@ -1108,7 +1145,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
 
   const renderEdges = () =>
     flow.edges.map(([a, b, kind]) => {
-      const d = edgePath(pos[a], pos[b], kind);
+      const d = edgePath(pos[a], pos[b], mode, kind);
       const dead = offline.has(a) || offline.has(b);
       const live = visited.has(a) && visited.has(b);
       return (
@@ -1128,6 +1165,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         offline.has(n.id) && 'is-offline',
         selected === n.id && 'is-selected',
         ask?.node === n.id && 'is-asking',
+        n.planned && 'is-planned',
       ]
         .filter(Boolean)
         .join(' ');
@@ -1138,7 +1176,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           data-node={n.id}
           className={`lab__node lab__node--${n.kind} ${state}`}
           style={{ left: p.x - NW / 2, top: p.y - NH / 2, width: NW, height: NH }}
-          aria-label={`${n.label}, ${KIND_LABEL[n.kind]}. ${n.sub}.${offline.has(n.id) ? ' Offline.' : ''} Enter to inspect, arrow keys to move.`}
+          aria-label={`${n.label}, ${KIND_LABEL[n.kind]}${n.planned ? ', planned' : ''}. ${n.sub}.${offline.has(n.id) ? ' Offline.' : ''} Enter to inspect, arrow keys to move.`}
           aria-pressed={selected === n.id}
           onClick={(e) => onNodeClick(e, n.id)}
           onKeyDown={(e) => onNodeKey(e, n.id)}
@@ -1146,7 +1184,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         >
           <span className='lab__node-kind'>
             <span className='lab__led' aria-hidden='true' />
-            {String(i + 1).padStart(2, '0')} · {KIND_LABEL[n.kind]}
+            {String(i + 1).padStart(2, '0')} · {n.planned ? 'Planned' : KIND_LABEL[n.kind]}
           </span>
           <span className='lab__node-label'>{n.label}</span>
           <span className='lab__node-sub'>{offline.has(n.id) ? 'Offline' : n.sub}</span>
@@ -1162,6 +1200,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         <header>
           <p className='lab__mono'>
             Stage {flow.nodes.indexOf(node) + 1} of {flow.nodes.length} · {KIND_LABEL[node.kind]}
+            {node.planned && ' · Planned, not built yet'}
           </p>
           <button type='button' className='lab__icon' onClick={() => inspect(undefined)} aria-label='Close details'>
             ×
@@ -1173,7 +1212,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         {node.fallback && (
           <div className='lab__chaos'>
             <p className='lab__mono'>Chaos test</p>
-            <p>{node.fallback.via ? `If this goes down, ${byId[node.fallback.via].label} takes over.` : 'If this goes down, the run skips it and still publishes.'}</p>
+            <p>If this goes down: {node.fallback.log}.</p>
             <button
               type='button'
               className={`lab__btn ${offline.has(node.id) ? 'is-on' : ''}`}
@@ -1211,8 +1250,8 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           <li key={m.id} className={done.has(m.id) ? 'is-done' : ''}>
             <span className='lab__tick' aria-hidden='true' />
             <span>
-              {m.label}
-              {m.id === 'inspect' && !done.has(m.id) && ` (${inspected.size}/${flow.nodes.length})`}
+              {missionLabel(m, stages)}
+              {m.id === 'inspect' && !done.has(m.id) && ` (${inspected.size}/${inspectGoal})`}
               {m.id === 'chaos' && !done.has(m.id) && aiNodes.length > 0 && `: try ${aiNodes.map((n) => n.label).join(' or ')}`}
             </span>
             <span className='lab__mono'>{done.has(m.id) ? 'Done' : `+${m.xp}`}</span>
@@ -1266,7 +1305,10 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       </div>
       {ask && (
         <div ref={askRef} className='lab__ask' role='alertdialog' aria-labelledby='lab-ask'>
-          <p className='lab__mono'>Incoming · {byId[ask.node].label}</p>
+          <p className='lab__mono'>
+            Incoming · {byId[ask.node].label}
+            {byId[ask.node].planned && ' · Planned'}
+          </p>
           <p id='lab-ask'>{ask.prompt}</p>
           <div>
             {ask.choices.map((c, i) => (
@@ -1287,7 +1329,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
         </div>
       )}
       <div ref={consoleRef} id='lab-log' className={`lab__console ${logOpen ? 'is-open' : ''}`} role='log' aria-live='polite' aria-label='Run log' data-lenis-prevent>
-        {logs.length === 0 && <p className='lab__console-idle'>Standing by. Hit run and watch the data move.</p>}
+        {logs.length === 0 && <p className='lab__console-idle'>{isLive(flow) ? 'Standing by. Hit run and watch the data move.' : 'Standing by. Hit run for a sample of how a run will go; dashed stages are planned.'}</p>}
         {logs.map((l) => (
           <p key={l.id} className={l.tone ? `is-${l.tone}` : ''}>
             <span>T+{l.t}</span>
@@ -1305,6 +1347,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       role='dialog'
       aria-modal='true'
       aria-labelledby='lab-title'
+      tabIndex={-1}
       style={{ '--accent': flow.accent, '--gx': `${view.x}px`, '--gy': `${view.y}px`, '--gs': `${40 * view.k}px`, '--k': view.k, '--beat': `${tempo(flow.id).spb}s` } as CSSProperties}
       onPointerOver={onHover}
       onPointerDownCapture={() => {
@@ -1331,7 +1374,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
           {renderNodes()}
           <svg className='lab__wires' width={board.w} height={board.h} aria-hidden='true'>
             {packets.map((p) => (
-              <Packet key={p.id} d={edgePath(pos[p.from], pos[p.to], edgeKind(flow, p.from, p.to))} tone={p.tone} item={item} onDone={p.done} />
+              <Packet key={p.id} d={edgePath(pos[p.from], pos[p.to], mode, edgeKind(flow, p.from, p.to))} tone={p.tone} item={item} onDone={p.done} />
             ))}
           </svg>
         </div>
@@ -1340,7 +1383,7 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
       <header ref={bar} className='lab__bar'>
         <div className='lab__title'>
           <p className='lab__mono'>
-            <span className='lab__led lab__led--live' aria-hidden='true' /> Workflow lab · live {flow.cadence}
+            <span className={ledClass(flow)} aria-hidden='true' /> Workflow lab · {isLive(flow) ? `live ${flow.cadence}` : runLabel(flow)}
           </p>
           <h2 id='lab-title'>{flow.name}</h2>
         </div>
@@ -1391,6 +1434,13 @@ const WorkflowLab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void
     document.body,
   );
   // #endregion
+};
+
+const FLOWS = flowsData as IAutomation[];
+// Site keeps only the card summary, so the lab looks its board up here, inside its own chunk
+const WorkflowLab = ({ id, onClose }: { id: string; onClose: () => void }) => {
+  const flow = FLOWS.find((f) => f.id === id);
+  return flow ? <Lab flow={flow} onClose={onClose} /> : null;
 };
 
 export default WorkflowLab;

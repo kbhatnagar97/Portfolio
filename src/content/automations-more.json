@@ -1,0 +1,25 @@
+[
+  {
+    "name": "n8n Server",
+    "does": "Keeps the n8n server my workflows run on healthy, and restarts it when a run jams or it goes quiet",
+    "cadence": "always on"
+  },
+  {
+    "name": "Two Cents Daily",
+    "does": "Writes, narrates and renders a personal finance Short, then uploads it to the Two Cents Daily channel",
+    "cadence": "on demand",
+    "project": "youtube-growth-bot"
+  },
+  {
+    "name": "DevTo Daily",
+    "does": "Drafts and illustrates my dev.to articles and publishes them through the API, never before I approve one",
+    "cadence": "daily",
+    "project": "devto-growth"
+  },
+  {
+    "name": "My Life sync",
+    "does": "Rebuilds my private life globe from wearable transcripts and photo locations",
+    "cadence": "on demand",
+    "project": "knowledge-graph"
+  }
+]

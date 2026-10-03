@@ -1,10 +1,10 @@
-import type { IAutomation, IFlowNode } from '../data';
+import type { ICrew, TCrewNode } from '../data';
 
 // #region Types
 export type TFloor = { y: number; g0: number; g1: number };
-export type TStation = { i: number; node: IFlowNode; f: number; x: number; y: number; dir: 1 | -1 };
+export type TStation = { i: number; node: TCrewNode; f: number; x: number; y: number; dir: 1 | -1 };
 export type TPropKind = 'shredder' | 'tray' | 'bench';
-export type TProp = { kind: TPropKind; node: IFlowNode; st: number; x: number; y: number; f: number; dir: 1 | -1; shown: number };
+export type TProp = { kind: TPropKind; node: TCrewNode; st: number; x: number; y: number; f: number; dir: 1 | -1; shown: number };
 
 export type TLayout = {
   compact: boolean;
@@ -26,7 +26,7 @@ export const PROP_SCALE = 0.8;
 export const HATCH = 22;
 
 // The run's main line, then the first choice's hops; a revisit (inbox learn to sheet) stays one station.
-export const routeOf = (flow: IAutomation) => {
+export const routeOf = (flow: ICrew) => {
   const ids = flow.run.map((s) => s.node);
   flow.run[flow.run.length - 1].ask?.choices[0].route.forEach((h) => ids.push(h.node));
   return ids.filter((id, i) => ids.indexOf(id) === i);
@@ -40,7 +40,7 @@ export const sizeOf = (N: number, compact: boolean) => {
   return { W: compact ? 320 : 480, H: compact ? F * 100 + 86 : 280, F };
 };
 
-export const layoutFor = (flow: IAutomation, compact: boolean): TLayout => {
+export const layoutFor = (flow: ICrew, compact: boolean): TLayout => {
   const route = routeOf(flow);
   const N = route.length;
   const { W, H, F } = sizeOf(N, compact);

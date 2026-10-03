@@ -1,7 +1,9 @@
 import { Component, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { buildShapes, SHAPE } from './shapes';
+import { buildShapes } from './shapes';
+import { SHAPE } from './waypoints';
+import { reducedMotion } from '../smooth';
 import { sceneState } from './state';
 
 const vertexShader = /* glsl */ `
@@ -206,7 +208,7 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
 }
 
 const Scene = () => {
-  const reduced = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)').matches, []);
+  const reduced = useMemo(reducedMotion, []);
   const count = useMemo(() => (innerWidth < 768 || (navigator.hardwareConcurrency ?? 8) <= 4 ? 7000 : 16000), []);
 
   useEffect(() => {

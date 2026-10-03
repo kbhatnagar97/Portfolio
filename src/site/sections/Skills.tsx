@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
-import { openInPage, PROFILE, projectById, shapeOf } from '../data';
+import { PROFILE, projectById, storyLink } from '../data';
+import { shapeOf } from '../scene/waypoints';
 
 const Skills = ({ onOpen }: { onOpen: (id: string) => void }) => (
   <section id='skills' className='skills' aria-labelledby='skills-title'>
@@ -39,7 +40,7 @@ const Skills = ({ onOpen }: { onOpen: (id: string) => void }) => (
             {skill.projects.map((id) => {
               const p = projectById(id);
               return p ? (
-                <a key={id} className='link-pill' href={`/projects/${p.slug}/`} onClick={openInPage(() => onOpen(id))} style={{ '--accent': p.accent } as CSSProperties}>
+                <a key={id} className='link-pill' {...storyLink(p, onOpen)} style={{ '--accent': p.accent } as CSSProperties}>
                   {p.name}
                 </a>
               ) : null;

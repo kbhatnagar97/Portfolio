@@ -1105,12 +1105,56 @@ const llms = (full: boolean, today: string) => {
 }
 // #endregion
 
+// #region Automation cards
+// The section cards ship only what a card shows and its bot crew acts out; node bodies, board positions, edges and the
+// full run stay in automations.json, which only the lazy lab chunk imports.
+const CARDS_ID = 'virtual:automation-cards'
+const cardOf = (a: (typeof automationsJson)[number]) => {
+  const crewIds: string[] | undefined = 'crew' in a ? a.crew : undefined
+  const kept = crewIds ? a.run.filter((s) => crewIds.includes(s.node)) : a.run
+  if (crewIds && kept.length !== crewIds.length) throw new Error(`automation-cards: ${a.id} crew names a step the run does not have`)
+  return {
+    id: a.id,
+    name: a.name,
+    tagline: a.tagline,
+    cadence: a.cadence,
+    accent: a.accent,
+    status: 'status' in a ? a.status : undefined,
+    note: 'note' in a ? a.note : undefined,
+    writeup: 'writeup' in a ? a.writeup : undefined,
+    stats: a.stats,
+    stages: a.nodes.length,
+    lines: a.edges.length,
+    crew: {
+      id: a.id,
+      // a fallback that ends the run has no card version, so the crew never acts out a crash it would then ignore
+      nodes: a.nodes.map((n) => {
+        const fb = 'fallback' in n ? n.fallback : undefined
+        return { id: n.id, kind: n.kind, label: n.label, fallback: fb && !('then' in fb) ? fb : undefined }
+      }),
+      // the crew has room for one human call, so only its last step keeps its ask
+      run: kept.map((s, i) => ({
+        node: s.node,
+        log: 'card' in s && s.card ? s.card : s.log,
+        branches: 'branches' in s ? s.branches : undefined,
+        ask: i === kept.length - 1 && 'ask' in s ? s.ask : undefined,
+      })),
+    },
+  }
+}
+const automationCards = (): Plugin => ({
+  name: 'automation-cards',
+  resolveId: (id) => (id === CARDS_ID ? `\0${CARDS_ID}` : undefined),
+  load: (id) => (id === `\0${CARDS_ID}` ? `export default ${JSON.stringify(automationsJson.map(cardOf))}` : undefined),
+})
+// #endregion
+
 // React clears this markup and paints the same DOM, so crawlers and no-JS readers get the real page, not a copy.
 const prerender = async (root: string) => {
   const server = await createServer({
     root,
     configFile: false,
-    plugins: [react()],
+    plugins: [react(), automationCards()],
     appType: 'custom',
     mode: 'production',
     logLevel: 'error',
@@ -1184,6 +1228,6 @@ const siteSeo = (): Plugin => {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), siteSeo()],
+  plugins: [react(), automationCards(), siteSeo()],
   build: { rollupOptions: { input: { index: 'index.html', play: 'src/play/main.ts' } } },
 })

@@ -1,8 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import { gsap, ScrollTrigger } from '../smooth';
-import { CATEGORIES, FEATURED, LIVE_COUNT, openInPage, PROJECTS, statusLabel, type IProject } from '../data';
-import { SHAPE } from '../scene/shapes';
+import { finePointer } from '../motion';
+import { CATEGORIES, FEATURED, LIVE_COUNT, PROJECTS, statusLabel, storyLink, type IProject } from '../data';
+import { SHAPE } from '../scene/waypoints';
 import Media from '../Media';
+
+const FILTERS = [
+  { id: 'All', count: PROJECTS.length },
+  { id: 'Live', count: LIVE_COUNT },
+  ...CATEGORIES.map((c) => ({ id: c, count: PROJECTS.filter((p) => p.category === c).length })),
+];
 
 const statusClass = (p: IProject) => `status status--${statusLabel(p).toLowerCase().replace(/\s+/g, '-')}`;
 
@@ -48,7 +55,7 @@ const FeaturedCard = ({ project, index, onOpen }: { project: IProject; index: nu
           ))}
         </ul>
         <div className='fcard__actions'>
-          <a className='btn btn--solid' href={`/projects/${project.slug}/`} onClick={openInPage(() => onOpen(project.id))}>
+          <a className='btn btn--solid' {...storyLink(project, onOpen)}>
             Read the story
           </a>
           {project.url && (
@@ -72,7 +79,7 @@ const Preview = ({ project }: { project?: IProject }) => {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (!el || !finePointer()) return;
     const x = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' });
     const y = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3.out' });
     const move = (e: globalThis.PointerEvent) => {
@@ -100,15 +107,6 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
   const [hover, setHover] = useState<IProject>();
   const pin = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
-
-  const filters = useMemo(
-    () => [
-      { id: 'All', count: PROJECTS.length },
-      { id: 'Live', count: LIVE_COUNT },
-      ...CATEGORIES.map((c) => ({ id: c, count: PROJECTS.filter((p) => p.category === c).length })),
-    ],
-    [],
-  );
 
   const list = PROJECTS.filter((p) => filter === 'All' || (filter === 'Live' ? p.live : p.category === filter));
 
@@ -168,7 +166,7 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
         <div className='index__head'>
           <h3 data-split>Every project</h3>
           <div className='filters' role='group' aria-label='Filter projects'>
-            {filters.map((f) => (
+            {FILTERS.map((f) => (
               <button key={f.id} type='button' className={`filter ${filter === f.id ? 'is-active' : ''}`} aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
                 {f.id} <span>{f.count}</span>
               </button>
@@ -181,10 +179,9 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
             <li key={p.id}>
               <a
                 className='row'
-                href={`/projects/${p.slug}/`}
+                {...storyLink(p, onOpen)}
                 style={{ '--accent': p.accent } as CSSProperties}
                 onPointerEnter={(e) => e.pointerType === 'mouse' && setHover(p)}
-                onClick={openInPage(() => onOpen(p.id))}
                 aria-label={`${p.name}: ${p.tagline}. Open the story`}
               >
                 <span className='row__num'>{String(PROJECTS.indexOf(p) + 1).padStart(2, '0')}</span>

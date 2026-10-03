@@ -36,6 +36,119 @@
     margin: 0 auto;
     padding: 0 var(--gutter) clamp(40px, 8vh, 96px);
   }
+
+  &__index {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--gutter) clamp(64px, 12vh, 140px);
+
+    h3 {
+      max-width: 26ch;
+      margin: 14px 0 28px;
+      font-size: clamp(26px, 3vw, 40px);
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+  }
+
+  &__lines {
+    border-top: 1px solid var(--line);
+  }
+
+  &__line {
+    display: grid;
+    // the cadence column fits "DAILY, ON MY MAC" on one line
+    grid-template-columns: minmax(150px, 0.9fr) minmax(0, 2fr) 136px 104px;
+    align-items: baseline;
+    gap: 18px;
+    padding: 16px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  &__name {
+    justify-self: start;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-align: left;
+    text-decoration: none;
+    transition: color 0.3s var(--ease);
+  }
+
+  // only the names that open something react, so a plain line never looks clickable
+  a.autos__name:hover,
+  button.autos__name:hover {
+    color: var(--holo);
+  }
+
+  &__does {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  &__cadence,
+  &__shown {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  &__cadence {
+    color: var(--faint);
+  }
+
+  &__status {
+    display: block;
+    color: var(--muted);
+  }
+
+  &__shown {
+    justify-self: end;
+    color: var(--holo);
+    white-space: nowrap;
+  }
+
+  @media (width < 900px) {
+    &__line {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'name cadence'
+        'does does';
+      gap: 6px 12px;
+      padding: 16px 4px;
+    }
+
+    &__name {
+      grid-area: name;
+    }
+
+    &__cadence {
+      grid-area: cadence;
+      text-align: right;
+    }
+
+    &__does {
+      grid-area: does;
+      font-size: 14px;
+    }
+
+    // only a line with a board gets the third row, so plain lines keep even spacing
+    &__line--lab {
+      grid-template-areas:
+        'name cadence'
+        'does does'
+        'shown shown';
+    }
+
+    &__shown {
+      grid-area: shown;
+      justify-self: start;
+    }
+  }
 }
 
 .acard {
@@ -160,6 +273,13 @@
     color: color-mix(in srgb, var(--accent) 55%, var(--text));
   }
 
+  &__note {
+    max-width: 52ch;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
   &__stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -274,6 +394,11 @@
   color: var(--text);
   font-family: var(--font-sans);
   touch-action: none;
+
+  // the lab takes focus only as a resting place after an answered ask; the controls carry their own rings
+  &:focus {
+    outline: none;
+  }
 
   &__grid {
     position: absolute;
@@ -396,6 +521,11 @@
     &--live {
       color: var(--live);
       animation: pulse 2.4s infinite;
+    }
+
+    // a workflow that is not running yet shows a steady neutral light: never the live pulse, never the human gold
+    &--soon {
+      color: var(--muted);
     }
   }
 
@@ -772,6 +902,11 @@
 
   &.is-asking {
     animation: lab-ask 1.1s ease-in-out infinite;
+  }
+
+  // designed, not built yet: the outline is dashed and the kind line says Planned
+  &.is-planned {
+    border-style: dashed;
   }
 
   &.is-offline {
