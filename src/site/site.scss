@@ -301,15 +301,27 @@ dd {
   align-items: center;
   gap: 24px;
   padding: 18px var(--gutter);
-  transition:
-    background 0.4s var(--ease),
-    padding 0.4s var(--ease);
+  transition: padding 0.4s var(--ease);
 
-  &--scrolled {
-    padding-block: 12px;
+  // the frost lives on a layer, not the header: a backdrop-filter on the header would trap the fixed menu sheet inside its height
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: rgba(11, 10, 9, 0.72);
     backdrop-filter: blur(14px) saturate(1.2);
     border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+
+  &--scrolled {
+    padding-block: 12px;
+
+    &::before {
+      opacity: 1;
+    }
   }
 
   &__progress {
