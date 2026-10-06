@@ -6,6 +6,7 @@
     "cadence": "every 5 min",
     "accent": "#d946ef",
     "writeup": "https://claude.ai/artifact/L6PxxjnQ1JqUc9DzPF1gLc",
+    "loop": "Next tick in 5 min",
     "stats": [
       { "value": 57, "label": "sources polled" },
       { "value": 5, "label": "minute cycle" },
@@ -13,22 +14,22 @@
       { "value": 0, "label": "posts without my tap" }
     ],
     "nodes": [
-      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 5 min", "at": [120, 140], "m": [0, 0], "body": "n8n fires every 5 minutes on India time and starts the pipeline in the background. A run lock stops overlapping runs, and a crashed run's lock expires after 90 minutes. A health check every 5 minutes restarts n8n if it jams, a queued run is stuck for 15 minutes, or the draft run goes quiet for 25 minutes, waiting 15 minutes between restarts." },
+      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 5 min", "at": [120, 140], "m": [0, 0], "body": "n8n fires every 5 minutes on India time and starts the pipeline in the background. A run lock stops overlapping runs, and a crashed run's lock expires after 90 minutes. A health check every 5 minutes restarts n8n if it jams, a queued run is stuck for 15 minutes, or the draft run goes quiet for 25 minutes, waiting 15 minutes between restarts. Each run also warns me on my phone when the LinkedIn sign in is 5 days from expiring." },
       { "id": "collect", "kind": "source", "label": "57 sources", "sub": "polled at once", "at": [370, 140], "m": [0, 1], "body": "Lab newsrooms and sitemaps, the White House and UK PM, OpenAI and Claude status pages, SDK releases, OpenRouter, Hugging Face, Techmeme, Bloomberg, CNBC, Hacker News, Reddit, Bluesky, YouTube channels from labs, the White House and CNBC, a leak tracker and Google News for the last hour. Each request gets 15 seconds and the whole sweep 50 seconds, and a broken feed only adds an error line. Sitemaps and model lists report only entries new since the last poll, and more than 25 at once counts as a site restructure, not news." },
       { "id": "filter", "kind": "rule", "label": "Fresh filter", "sub": "new and under 12 h", "at": [620, 140], "m": [0, 2], "body": "Each link is cleaned of tracking tags before it is compared, so a story seen before is skipped and the earliest sighting wins. Stories older than 12 hours are dropped before any model sees them, and a date-only story passes only if it is from today or yesterday. A story counts as seen only after its rating is stored." },
-      { "id": "jev", "kind": "ai", "label": "Jev rates", "sub": "5 typed questions", "at": [870, 140], "m": [0, 3], "body": "TypeSafe's Jev model answers 5 typed questions per story: impact, interest from 1 to 10, is it a launch, is it a duplicate of what I covered in the last 3 days or have queued, and how much it helps my readers from 1 to 10. It rates 6 stories at a time in parallel and retries up to 4 times when the service is busy or failing.", "fallback": { "via": "haiku", "log": "Jev is offline. Claude Haiku takes over and rates the run" } },
-      { "id": "haiku", "kind": "ai", "label": "Haiku backup", "sub": "only if Jev fails", "at": [870, 340], "m": [1, 3], "body": "If Jev errors, Claude Haiku rates that run in batches of 35 on the same rules. If Jev runs out of credit, it pauses for 1 hour and tries again, so adding credit switches it back on by itself. Unrated stories carry over to the next run, and if rating fails for over 30 minutes my phone gets one alert." },
+      { "id": "jev", "kind": "ai", "label": "Jev rates", "sub": "5 typed questions", "at": [870, 140], "m": [0, 3], "body": "TypeSafe's Jev model answers 5 typed questions per story: impact, interest from 1 to 10, is it a launch, is it a duplicate of what I covered in the last 3 days or have queued, and how much it helps my readers from 1 to 10. It rates 6 stories at a time in parallel and tries up to 4 times when the service is busy or failing.", "fallback": { "via": "haiku", "log": "Jev is offline. Claude Haiku takes over and rates the run" } },
+      { "id": "haiku", "kind": "ai", "label": "Haiku backup", "sub": "only if Jev fails", "at": [870, 340], "m": [1, 3], "body": "If Jev errors, Claude Haiku rates that run in batches of 35 with the same freshness, leak and duplicate caps, but without the reader benefit score. If Jev runs out of credit, it pauses for 1 hour and tries again, so adding credit switches it back on by itself. Unrated stories carry over to the next run, and if rating fails for over 30 minutes my phone gets one alert." },
       { "id": "rules", "kind": "rule", "label": "Fixed rules", "sub": "adjust every score", "at": [1120, 140], "m": [0, 4], "body": "The rating is the higher of interest and the average of interest and reader benefit, plus 1 because Jev scores run about 1 below Haiku. Low reader benefit caps a story at 8, while leaks, stories over 6 hours old and date-only items are capped at 7, and duplicates become noise. When several stories in a run score 9 or more, one Claude Haiku check drops any that repeat the top story." },
       { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "scored 7 or less", "at": [1380, 140], "m": [1, 4], "body": "Most stories end here. Being early only matters for the few that deserve a post." },
-      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "8 and up, 2 to 5 stories", "at": [1380, 540], "m": [1, 5], "body": "Stories rated 8 or more are held for a nightly carousel built once between 21:00 and 03:00 India time. It needs 2 to 5 stories from the last 24 hours, one per event, laid out as a cover plus one 4:5 page per story. Opus writes 120 to 200 words with a benefit line per story, and the carousel reaches my phone with the same 3 buttons." },
-      { "id": "budget", "kind": "rule", "label": "Daily budget", "sub": "9 or 10, 6 drafts a day", "at": [1120, 540], "m": [0, 5], "body": "Only stories rated 9 or 10 are queued for their own post. At most 6 drafts per India day and 1 draft attempt per run, so the feed never turns into spam. A queued story is drafted only while it is under 5.25 hours old." },
+      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "8 and up, 2 to 5 stories", "at": [1380, 540], "m": [1, 5], "body": "Stories rated 8 or more are held for a nightly carousel built once between 21:00 and 03:00 India time. It needs 2 to 5 stories from the last 24 hours, one per event, laid out as a cover plus one 4:5 page per story. Opus writes 120 to 200 words with a benefit line per story, and the carousel reaches my phone with the same 3 buttons. Its pages pass the same checker, layout check and render." },
+      { "id": "budget", "kind": "rule", "label": "Daily budget", "sub": "9 or 10, 6 drafts a day", "at": [1120, 540], "m": [0, 5], "body": "Only stories rated 9 or 10 are queued for their own post. At most 6 drafts per India day and 1 draft attempt per run, so the feed never turns into spam. A queued story is drafted only while it is under 5.25 hours old. A draft that fails gets one more try on a later run." },
       { "id": "alert", "kind": "output", "label": "Breaking alert", "sub": "over budget", "at": [1120, 740], "m": [1, 6], "body": "Over the limit, each queued story still reaches my phone once as a Breaking AI news alert with its rating and a Read source button. No Opus draft is made, so it adds no Opus cost." },
-      { "id": "opus", "kind": "ai", "label": "Opus drafts", "sub": "researched, 200 to 280 words", "at": [870, 540], "m": [0, 6], "body": "Claude Opus finds the first publication time and verifies every number and quote, keeping anything unverified out of the post. It puts reader benefit first with a For you line, then my take, the strongest counter and a question that names both sides. The post opens with how long ago the news broke, or on the news itself once it is over 8 hours old. It also writes the card as HTML from one of the templates." },
+      { "id": "opus", "kind": "ai", "label": "Opus drafts", "sub": "researched, 200 to 280 words", "at": [870, 540], "m": [0, 6], "body": "Claude Opus finds the first publication time and verifies every number and quote, keeping anything unverified out of the post. It puts reader benefit first with a For you line, then my take, the strongest counter and a question that names both sides. The post opens with how long ago the news broke, or on the news itself once it is over 8 hours old, and the card is HTML from one of the templates. If research shows the news first broke over 6 hours ago, the draft is archived before it reaches my phone.", "fallback": { "log": "Opus draft failed. My phone gets an alert and the story waits in the queue for one more try on a later run", "then": "end" } },
       { "id": "checker", "kind": "rule", "label": "Checker", "sub": "one fix pass", "at": [620, 540], "m": [0, 7], "body": "Checks every draft for dashes, a missing age opener, length, hashtag count, bait or AI tell phrases, and a missing For you line, take or closing question. It also flags emoji in the card, a missing photo or licence credit, and motion on a photo poster. Opus gets one fix pass, and anything left reaches my phone as rule warnings." },
       { "id": "layout", "kind": "rule", "label": "Layout check", "sub": "Chrome audit, one fix", "at": [370, 540], "m": [0, 8], "body": "A headless Chrome audit checks the finished frame for text off the canvas or within 16 px of an edge, clipped or overlapping text, text under 14 px, and contrast under 4.5:1, or 3:1 for text 24 px and up. Opus fixes what it finds once, keeping 48 px margins. The frame is checked again, and anything left goes into the draft warning." },
       { "id": "render", "kind": "output", "label": "Card render", "sub": "headless Chrome", "at": [370, 740], "m": [0, 9], "body": "Builds the 4:5 card at 1080 × 1350 from 7 templates, never the same design twice in a row, except the plain fallback. Motion only points the eye: everything reads in frame 1, eased over 3 to 6 seconds, and loops only when natural. If motion hides content, Opus rewrites it once before the card falls back to a still. Stills and people posters with a free licence photo go out as 2x HD JPEGs, moving cards as GIFs." },
-      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [620, 740], "m": [0, 10], "body": "Every draft arrives as one phone notification with the card that will post (a smaller copy when the GIF is large), tags in bold, when and where the news first broke, and any rule warnings. The buttons are Approve, Edit (type it) and Reject, and a typed change goes to Claude Opus, which sends back the next version. Approve refuses a story already posted or a single story over 6 hours old, and a draft with no answer for 48 hours expires. Nothing posts without my tap." },
-      { "id": "publish", "kind": "output", "label": "LinkedIn", "sub": "posted through the API", "at": [870, 740], "m": [1, 10], "body": "Posted through the LinkedIn API as one image or GIF, or a multi-image post for the digest, with each company tagged once at its first mention. Nothing posts unless every upload succeeds, and a failed step sends the draft back to my phone for one more Approve. If the post is not confirmed within 15 minutes, my phone asks whether it is already live. The Posted notice lists people to tag by hand and reminds me to reply in the first hour." }
+      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [620, 740], "m": [0, 10], "body": "Every draft arrives as one phone notification with the card that will post (a smaller copy when the GIF is large), tags in bold, when and where the news first broke, and any rule warnings. The buttons are Approve, Edit (type it) and Reject. A typed change goes to Claude Opus with the draft I was sent last. A news draft then goes back through the checker and, when the card changed, the layout check and render, before it returns as the next version with the same 3 buttons, one edit at a time. If Claude cannot be reached, my phone says so and the earlier version stays. Approve refuses a story already posted or a single story over 6 hours old, a draft with no answer for 48 hours expires, and nothing posts without my tap." },
+      { "id": "publish", "kind": "output", "label": "LinkedIn", "sub": "posted through the API", "at": [870, 740], "m": [1, 10], "body": "Posted through the LinkedIn API as one image or GIF, a multi-image post for the digest, or a document post when I hand it a PDF, with each company tagged once at its first mention. Nothing posts unless every upload succeeds, and a failed step sends the draft back to my phone, and every Approve tries again. If the post is not confirmed within 15 minutes, my phone asks whether it is already live. The Posted notice lists people to tag by hand and reminds me to reply in the first hour.", "fallback": { "via": "you", "log": "LinkedIn upload failed. Nothing posted, and the draft is back on my phone so Approve can try again" } }
     ],
     "edges": [
       ["tick", "collect"],
@@ -46,8 +47,10 @@
       ["checker", "layout"],
       ["layout", "render"],
       ["render", "you"],
+      ["you", "opus"],
       ["you", "publish"],
-      ["digest", "you", "skip"]
+      ["digest", "you", "skip"],
+      ["publish", "you", "fallback"]
     ],
     "run": [
       { "node": "tick", "log": "Tick fired. Lock acquired" },
@@ -71,9 +74,20 @@
         "ask": {
           "prompt": "A draft is on your phone. Post it?",
           "choices": [
-            { "label": "Approve", "log": "Approved", "route": [{ "node": "publish", "log": "Posted. 3 companies tagged" }] },
-            { "label": "Edit (type it)", "log": "Typed a change. Claude sent back version 2", "route": [{ "node": "publish", "log": "Approved version 2. Posted" }] },
-            { "label": "Reject", "log": "Rejected. Nothing posts", "tone": "drop", "route": [] }
+            { "label": "Approve", "log": "Approved. Fresh and never posted before", "route": [{ "node": "publish", "log": "Posted. 3 companies tagged" }] },
+            {
+              "label": "Edit (type it)",
+              "log": "Typed a change on my phone. Connecting to Claude",
+              "route": [
+                { "node": "opus", "log": "Opus is working on the changes" },
+                { "node": "checker", "log": "Checker ran again on the edited draft. Clean" },
+                { "node": "layout", "log": "The card changed, so the layout check ran again. Clean" },
+                { "node": "render", "log": "Card rendered again" },
+                { "node": "you", "log": "The new version is on my phone with the same 3 buttons" }
+              ],
+              "then": "again"
+            },
+            { "label": "Reject", "log": "Rejected and archived. Nothing posts", "tone": "drop", "route": [] }
           ]
         }
       }
@@ -86,74 +100,92 @@
     "tagline": "New job postings screened, priced and on my phone within minutes",
     "cadence": "every 3 min",
     "accent": "#22d3ee",
+    "loop": "Next tick in 3 min",
     "stats": [
       { "value": 214, "label": "career pages" },
       { "value": 3, "label": "minute cycle" },
-      { "value": 20208, "label": "postings seen" },
+      { "value": 22717, "label": "postings seen" },
       { "value": 7, "label": "screening questions" }
     ],
     "nodes": [
-      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 3 min", "at": [120, 140], "m": [0, 0], "body": "Five steps run in order. Each writes its result to disk, so a failure is visible instead of silent, and one lock per step means runs never overlap." },
-      { "id": "poll", "kind": "source", "label": "214 career pages", "sub": "about 20 s", "at": [370, 140], "m": [0, 1], "body": "Greenhouse, Lever, Ashby, SmartRecruiters, Workable and Recruitee publish a job the moment a company posts it, the earliest signal there is. Job board alerts arrive a day later at best." },
-      { "id": "jev", "kind": "ai", "label": "Jev screens", "sub": "7 questions per job", "at": [620, 140], "m": [0, 2], "body": "Jev reads the posting against my profile and answers seven typed questions: role family, seniority, eligible from India, fit from 1 to 10, hard blockers, stated pay against my band, and whether hidden text is trying to steer AI screeners." },
-      { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "reason kept", "at": [620, 380], "m": [1, 2], "body": "Every dropped job keeps its reason, so the screen can be audited and tuned." },
-      { "id": "claude", "kind": "ai", "label": "Claude prices", "sub": "8 jobs at a time", "at": [870, 140], "m": [0, 3], "body": "Claude estimates total pay at the level I would likely get, using company tiers, then writes one line on why I fit and one on the biggest risk.", "fallback": { "log": "Claude is offline. Jobs publish with Jev's verdict, pay marked not estimated yet" } },
-      { "id": "priority", "kind": "rule", "label": "Priority rules", "sub": "P1, P2, P3", "at": [1120, 140], "m": [0, 4], "body": "Fixed rules, so the tracker never disagrees with itself. P1: strong fit, in band, top tier company. P2: strong fit with a level gap or unknown pay. P3: kept as interview practice." },
-      { "id": "sheet", "kind": "output", "label": "Tracker sheet", "sub": "newest on top", "at": [1380, 140], "m": [1, 4], "body": "Every kept job lands in the tracker with its priority, fit, pay band and risk line." },
-      { "id": "phone", "kind": "output", "label": "Phone push", "sub": "P1 and P2 only", "at": [1120, 380], "m": [0, 5], "body": "Only P1 and P2 roles posted in the last 48 hours buzz my phone. A company's first check lands quietly." },
-      { "id": "you", "kind": "human", "label": "My tap", "sub": "referral or apply", "at": [870, 380], "m": [0, 6], "body": "I decide. The pipeline drafts everything, but applying stays a human tap." },
-      { "id": "referral", "kind": "output", "label": "Referral ask", "sub": "application held 48 h", "at": [870, 620], "m": [1, 7], "body": "P1 roles ask for a referral first: contact searches, a drafted note, and a one tap email draft. The application waits 48 hours for it." },
-      { "id": "apply", "kind": "output", "label": "Applied", "sub": "follow up at 4 days", "at": [620, 620], "m": [0, 7], "body": "Referred or not, the application goes in. The follow up turns amber after 4 days." }
+      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 3 min", "at": [120, 140], "m": [0, 0], "body": "Five steps run in order: poll, screen, price, referrals and report. Each writes its result to disk and a failed step never blocks the next, so a failure is visible instead of silent. One lock per step skips a step still running from the last tick." },
+      { "id": "poll", "kind": "source", "label": "214 career pages", "sub": "6 job APIs, 12 at a time", "at": [370, 140], "m": [0, 1], "body": "Greenhouse, Lever, Ashby, SmartRecruiters, Workable and Recruitee publish a job the moment a company posts it, the earliest signal there is. 12 pages are read at a time with 20 seconds each, plus the Hacker News hiring thread once an hour. Only postings never seen before move on, and a page that fails shows its error in the Sources tab." },
+      { "id": "prefilter", "kind": "rule", "label": "Title and place", "sub": "88% stop here", "at": [620, 140], "m": [0, 2], "body": "Obvious misses stop before any model sees them: sales, recruiting, design, junior, mobile and manager titles, and places outside India, APAC or anywhere unless the job is remote with no country named. Hacker News posts get only the title check, because Jev reads their free text locations. About 88% of postings stop here." },
+      { "id": "jev", "kind": "ai", "label": "Jev screens", "sub": "7 questions per job", "at": [870, 140], "m": [0, 3], "body": "Jev reads the posting against my profile and answers 7 typed questions: role family, seniority, eligible from India, fit from 1 to 10, hard blockers, stated pay against my band, and whether hidden text is trying to steer AI screeners. It takes up to 150 queued jobs a tick, 8 at a time, and tries a busy service up to 4 times, backing off between tries. Fixed code, not the model, turns the answers into keep or drop.", "fallback": { "log": "Jev failed 4 tries. These 8 jobs go back in the queue and the next tick screens them again, while this tick still releases holds and updates the sheet", "then": "end" } },
+      { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "reason kept", "at": [870, 340], "m": [1, 3], "body": "Every dropped job keeps its reason, so the screen can be audited and tuned." },
+      { "id": "claude", "kind": "ai", "label": "Claude prices", "sub": "Sonnet, 8 jobs a batch", "at": [1120, 140], "m": [0, 4], "body": "Claude Sonnet estimates total pay at the level I would likely get, using company tiers, then writes one line on why I fit and one on the biggest risk. It prices up to 3 batches of 8 a tick and drops a job it finds closed to India or a weak fit.", "fallback": { "log": "Claude is offline. Jobs publish with Jev's verdict, pay marked not estimated yet" } },
+      { "id": "priority", "kind": "rule", "label": "Priority rules", "sub": "P1, P2, P3", "at": [1370, 140], "m": [0, 5], "body": "Fixed rules, so the tracker never disagrees with itself. P1: fit 70+, in band, top tier company, or an AI or forward deployed role there with pay unknown. P2: fit 70+ with a level gap, unknown or near band pay, or fit 55+ in band. Roles outside remote or my preferred cities, and services firms, stay P3 as interview practice." },
+      { "id": "sheet", "kind": "output", "label": "Tracker sheet", "sub": "newest on top", "at": [1370, 340], "m": [1, 5], "body": "Every kept job lands in the Jobs tab with its priority, fit, pay band and risk line, P1 and remote first. The Activity tab logs every step and the Sources tab shows each career page's health." },
+      { "id": "referral", "kind": "ai", "label": "Referral drafts", "sub": "P1 and P2, Claude Sonnet", "at": [1120, 340], "m": [0, 6], "body": "For every P1 and P2 role, Claude Sonnet drafts a LinkedIn connection note and a short message with the details a referrer types into their form. The Referrals tab row also links 4 LinkedIn people searches: my network, college alumni, former colleagues and the hiring team. A P1 waits 48 hours for the referral, a P2 asks while I apply, and if drafting fails the row still lands with its searches. I send every message myself." },
+      { "id": "phone", "kind": "output", "label": "Phone push", "sub": "P1 and P2 only", "at": [1120, 540], "m": [0, 7], "body": "Only P1 and P2 roles posted in the last 48 hours buzz my phone, and a company's first check lands quietly. One job gets its own push, a P1 with Find referrer, Draft and Job buttons, a P2 with Apply and Sheet, and several in one tick become one summary." },
+      { "id": "digest", "kind": "trigger", "label": "Twice daily digest", "sub": "10:00 and 21:00", "at": [1370, 540], "m": [1, 7], "body": "A second schedule refreshes my track resumes and copies them to Drive so Gmail on my phone can attach them, then sends one digest: new jobs by priority, jobs waiting for my tap, referral asks to send, follow ups due and the queue size." },
+      { "id": "you", "kind": "human", "label": "My tap", "sub": "referrer, wait or apply", "at": [870, 540], "m": [0, 8], "body": "I decide. The pipeline drafts everything, but finding the referrer, sending the message and applying stay with me. I update the Referrals tab, and the next tick picks up what changed. A P2 push has an Apply button, so I apply right away and send the drafted referral ask alongside." },
+      { "id": "hold", "kind": "rule", "label": "48 h hold", "sub": "checked every tick", "at": [620, 540], "m": [1, 8], "body": "Many companies credit a referral only if it comes before the application, so a P1 waits. Every tick reads the Referrals tab and releases the job when I mark it Referred, Applied or Declined, or when 48 hours pass. A release buzzes my phone with apply now and the referral link if there is one, and a job I already applied to is released quietly." },
+      { "id": "email", "kind": "output", "label": "Referral email", "sub": "one tap Gmail draft", "at": [870, 740], "m": [0, 9], "body": "If I type a person with a first and last name but no email into the Referrals tab, the next tick looks the email up on free tiers and writes it back, or I type the email myself. Once the email is in, my phone gets a one tap Gmail draft with the message and the referral details filled in. I attach the resume, press Send and mark the row Asked with the date, and its follow up turns amber after 4 days if there is no reply." },
+      { "id": "apply", "kind": "output", "label": "Applied", "sub": "by hand, never automatic", "at": [620, 740], "m": [1, 9], "body": "The pipeline never submits an application. I get here from a P2 push, or from a P1 release whose apply now push carries the referral link when there is one, and I apply myself." }
     ],
     "edges": [
       ["tick", "poll"],
-      ["poll", "jev"],
+      ["poll", "prefilter"],
+      ["prefilter", "jev"],
+      ["prefilter", "drop", "drop"],
       ["jev", "drop", "drop"],
       ["jev", "claude"],
       ["jev", "priority", "fallback"],
+      ["claude", "drop", "drop"],
       ["claude", "priority"],
       ["priority", "sheet"],
-      ["priority", "phone"],
+      ["priority", "referral"],
+      ["referral", "phone"],
       ["phone", "you"],
-      ["you", "referral"],
+      ["you", "email"],
+      ["email", "hold"],
+      ["you", "hold"],
+      ["hold", "you", "skip"],
+      ["hold", "apply"],
       ["you", "apply"],
-      ["referral", "apply"]
+      ["digest", "phone"]
     ],
     "run": [
       { "node": "tick", "log": "Tick fired. 5 steps queued" },
-      { "node": "poll", "log": "214 pages polled. 23 new postings, 17 pass the location check" },
-      {
-        "node": "jev",
-        "log": "Jev screened 17 jobs in 6 s",
-        "branches": [{ "to": "drop", "log": "14 dropped: 6 not open to India, 5 wrong role, 3 too junior" }]
-      },
-      { "node": "claude", "log": "3 shortlisted jobs priced. Fit and risk lines written" },
-      { "node": "priority", "log": "1 P1, 1 P2, 1 P3", "branches": [{ "to": "sheet", "log": "3 rows added to the tracker", "tone": "go" }] },
-      { "node": "phone", "log": "P1 push: Senior Frontend Engineer, AI platform team, remote APAC" },
+      { "node": "poll", "log": "214 pages polled. 64 new postings" },
+      { "node": "prefilter", "log": "8 go to Jev", "branches": [{ "to": "drop", "log": "56 stopped by title or place" }] },
+      { "node": "jev", "log": "Jev screened 8 jobs in 3 s", "branches": [{ "to": "drop", "log": "6 dropped: 3 not open to India, 2 wrong role, 1 too junior" }] },
+      { "node": "claude", "log": "2 shortlisted jobs priced. Fit and risk lines written", "card": "2 jobs priced, fit and risk written" },
+      { "node": "priority", "log": "1 P1, 1 P3", "branches": [{ "to": "sheet", "log": "2 rows added to the tracker", "tone": "go" }] },
+      { "node": "referral", "log": "Referral note and message drafted for the P1" },
+      { "node": "phone", "log": "P1 push: Senior Frontend Engineer, remote APAC. Held 48 h for a referral", "card": "P1 push, held 48 h for a referral" },
       {
         "node": "you",
-        "log": "Waiting for a tap",
+        "log": "Waiting for my tap",
         "ask": {
-          "prompt": "A P1 role just landed. What now?",
+          "prompt": "A P1 role is held 48 h for a referral. What now?",
           "choices": [
             {
-              "label": "Ask for a referral",
-              "log": "Referral note drafted",
+              "label": "Find referrer",
+              "log": "Found someone on LinkedIn and typed their name in the Referrals tab",
               "route": [
-                { "node": "referral", "log": "Application held 48 h for the referral" },
-                { "node": "apply", "log": "Referred. Applied with their link" }
+                { "node": "email", "log": "Next tick: one tap Gmail draft on my phone. Sent it, marked Asked" },
+                { "node": "hold", "log": "Each tick checks the tab. They referred me, I marked Referred, apply now push with the link" },
+                { "node": "apply", "log": "Applied by hand with the referral link" }
               ]
             },
             {
-              "label": "Apply now",
-              "log": "Applying now, referral asked in parallel",
-              "route": [{ "node": "apply", "log": "Applied. Follow up turns amber in 4 days" }]
+              "label": "Wait a tick",
+              "log": "Nothing changed in the Referrals tab",
+              "then": "again",
+              "route": [{ "node": "hold", "log": "Next tick: still held, no push before 48 h" }, { "node": "you", "log": "Back with me to act on" }]
             },
-            { "label": "Skip", "log": "Skipped. Kept in the tracker", "tone": "drop", "route": [] }
+            {
+              "label": "Let 48 h pass",
+              "log": "No referral came through",
+              "route": [{ "node": "hold", "log": "48 h up. Apply now push, no referral yet" }, { "node": "apply", "log": "Applied by hand, still early" }]
+            }
           ]
         }
       }
-    ]
+    ],
+    "crew": ["tick", "poll", "prefilter", "jev", "claude", "priority", "phone", "you"]
   },
   {
     "id": "inbox-triage",
@@ -161,67 +193,98 @@
     "tagline": "Every email labelled, and my phone buzzes only for the few that need me",
     "cadence": "every minute",
     "accent": "#a3e635",
+    "loop": "Next run in 1 minute",
     "stats": [
       { "value": 1, "label": "minute to sort" },
       { "value": 289, "label": "emails in the test set" },
-      { "value": 93.1, "label": "% labelled right" },
-      { "value": 0.4, "label": "% wrong alerts" }
+      { "value": 93.1, "label": "% labelled right, simulated Jev" },
+      { "value": 0.4, "label": "% wrong alerts, simulated Jev" }
     ],
     "nodes": [
-      { "id": "gmail", "kind": "trigger", "label": "Gmail", "sub": "every minute", "at": [120, 140], "m": [0, 0], "body": "New mail is picked up within a minute by Apps Script on Google, so it keeps working when my laptop is closed." },
-      { "id": "sheet", "kind": "rule", "label": "Sheet rules", "sub": "cheap, certain checks first", "at": [370, 140], "m": [0, 1], "body": "Rules, clients, people, my businesses and learned senders live in a Sheet. Login codes, job alerts and known bulk senders are settled here without any model." },
-      { "id": "jev", "kind": "ai", "label": "Jev classifies", "sub": "reads the label descriptions", "at": [620, 140], "m": [0, 2], "body": "Jev classifies whatever the rules could not settle against the label descriptions in the Sheet, and says how sure it is. Rewriting a description changes how mail is sorted." },
-      { "id": "claude", "kind": "ai", "label": "Claude decides", "sub": "on my Mac, unsure ones only", "at": [870, 140], "m": [0, 3], "body": "Every 15 minutes Claude takes only what Jev was unsure about, picks a label or creates a new one (at most 3 a day, each with an Undo button), then remembers the sender.", "fallback": { "via": "unsure", "log": "The Mac is asleep. After 30 minutes the email alerts as possibly important" } },
-      { "id": "unsure", "kind": "output", "label": "Unsure alert", "sub": "after 30 minutes", "at": [870, 380], "m": [1, 3], "body": "If the Mac is asleep, an unsure email from a real person still alerts after 30 minutes as possibly important, so a sleeping laptop never hides a human." },
-      { "id": "label", "kind": "rule", "label": "Gmail label", "sub": "never archives or deletes", "at": [1120, 140], "m": [0, 4], "body": "The label is applied in Gmail. Nothing is ever archived, deleted or marked read." },
-      { "id": "silent", "kind": "output", "label": "Silent labels", "sub": "bank, dev, newsletters", "at": [1380, 140], "m": [1, 4], "body": "Most mail lands quietly in its label: bank, payments, dev notifications, newsletters and promotions." },
-      { "id": "briefing", "kind": "output", "label": "11:00 briefing", "sub": "once a day", "at": [1380, 380], "m": [1, 5], "body": "One morning briefing: counts per label, threads waiting for a reply, what Claude is still deciding, and health. Senders and subjects only, never email bodies." },
-      { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "clients, customers, replies", "at": [1120, 380], "m": [0, 5], "body": "Only clients, customers of my products, replies from companies I applied to and real people buzz the phone. Overnight only the urgent ones ring." },
-      { "id": "you", "kind": "human", "label": "My tap", "sub": "open, mute or mark client", "at": [1120, 620], "m": [0, 6], "body": "Every alert has Open, Not important, Mute sender and Mark client. Each tap teaches the sorter." },
-      { "id": "learn", "kind": "rule", "label": "Learns the sender", "sub": "written back to the Sheet", "at": [620, 620], "m": [1, 6], "body": "Taps and replies become rules in the Sheet, so the next email from that sender is settled before any model runs." }
+      { "id": "gmail", "kind": "trigger", "label": "Gmail", "sub": "every minute", "at": [120, 140], "m": [0, 0], "body": "Apps Script on Google checks for new mail every minute, up to 15 emails a run, so it keeps working when my laptop is closed. An email that cannot be decided yet keeps its place and is tried again on the next run. It also picks up any reply my job hunt automation flags as missed, and pushes it once if it is under 3 days old. If the runs stop for 20 minutes, my Mac alerts my phone." },
+      { "id": "backfill", "kind": "source", "label": "Old mail", "sub": "every 5 min until done", "at": [120, 340], "m": [1, 0], "body": "The whole mailbox, about 30,900 threads, is sorted in the background sender by sender: rules and learned senders first, then Jev, then Claude. It uses at most 35 minutes a day, so live mail keeps its quota. Old mail never pushes one by one, only one summary when it is done." },
+      { "id": "sheet", "kind": "rule", "label": "Sheet rules", "sub": "certain cases, no model", "at": [370, 140], "m": [0, 1], "body": "My own rules, mutes, clients, people, my businesses and learned bulk senders live in a Google Sheet, and the first match wins. Security codes, job alerts and known bulk senders are settled here without a model. Contact forms from my sites and mail from clients and people I know ring at once, unless their row says otherwise, and a client company's newsletters are filed without a push. Mail written straight to a business address is checked by Jev first, so cold pitches and phishing stay quiet." },
+      { "id": "jev", "kind": "ai", "label": "Jev classifies", "sub": "under 60% goes to Claude", "at": [620, 140], "m": [1, 1], "body": "TypeSafe's Jev model reads each remaining email against the label descriptions in the Sheet and answers typed questions: which label, written for me or templated, asks for a reply, a real deadline, phishing. Under 60% sure, or too close between 2 labels, the email goes to Claude's queue. Phishing and text aimed at software are held for Claude without an early alert.", "fallback": { "log": "Jev is down, so the rules settle what they can and the rest goes to Claude's queue. An hourly probe switches Jev back on" } },
+      { "id": "queue", "kind": "rule", "label": "Claude's queue", "sub": "pending, 30 min timer", "at": [870, 140], "m": [1, 2], "body": "An unsure email is queued in the Sheet and hidden as pending, never archived. For mail from a real person a 30 minute timer starts. Answers the check rejects come back here." },
+      { "id": "unsure", "kind": "output", "label": "Unsure alert", "sub": "after 30 minutes", "at": [1120, 340], "m": [0, 2], "body": "If my Mac is asleep, an unsure email from a real person still reaches my phone after 30 minutes as Unsure, possibly important, with the same buttons. It stays pending until Claude decides, and that later answer never pushes it twice." },
+      { "id": "claude", "kind": "ai", "label": "Claude decides", "sub": "on my Mac, every 15 min", "at": [1120, 140], "m": [1, 3], "body": "While my Mac is awake, a background job hands Claude up to 30 queued emails at a time and keeps pulling, up to 5 batches a run, with no tools and the email text marked as untrusted data. Claude picks a label or proposes a new one, and marks an email important only when a person wrote to me personally. If a run fails, its emails return to the queue after 20 minutes and are tried again, and 2 failures in a row alert my phone. A usage limit pauses it until the reset with one push.", "fallback": { "via": "unsure", "log": "The Mac is asleep. After 30 minutes the email reaches my phone as Unsure, possibly important, and waits for Claude", "then": "end" } },
+      { "id": "guard", "kind": "rule", "label": "Answer check", "sub": "re-checked, up to 5 tries", "at": [1370, 140], "m": [0, 3], "body": "Apps Script re-checks every answer before acting on it. A new label must be at most 2 levels deep, never under Jobs and never urgent, with at most 3 a day, and it reaches my phone with an Undo button. An answer it cannot use goes back to the queue, up to 5 tries, before the email files under Other. An answer that needs a 4th new label that day waits and is tried again tomorrow. Only mail a person wrote can ring, and Claude's answers teach it bulk senders, never people." },
+      { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "once per email", "at": [870, 340], "m": [0, 4], "body": "Clients, customers writing to my businesses, replies from companies I applied to, recruiters writing to me, collaborations, people I know and notices with a real deadline reach my phone exactly once. Replies in one thread within 30 minutes merge into one push, and a sender I do not know rings at most 3 times a day. From 23:00 to 07:00 normal pushes are silent, while client work mail, job replies and my businesses' contact forms stay loud. If a push fails it is retried on later runs, up to 30 times, after checking it did not already arrive." },
+      { "id": "label", "kind": "rule", "label": "Gmail label", "sub": "never archives or deletes", "at": [620, 340], "m": [1, 4], "body": "The label goes on once the push is settled, and Claude's answers land on the next minute's run. Nothing is ever archived, deleted, marked read or sent." },
+      { "id": "silent", "kind": "output", "label": "Silent labels", "sub": "bank, dev, newsletters", "at": [870, 540], "m": [1, 5], "body": "Most mail lands quietly in its label: bank, payments, dev notifications, newsletters, promotions and job alerts." },
+      { "id": "briefing", "kind": "output", "label": "11:00 briefing", "sub": "once a day", "at": [120, 540], "m": [1, 6], "body": "One push at 11:00: counts since yesterday, threads still waiting for my reply oldest first, people whose mail was filed quietly, what Claude is still deciding, new labels and health. Senders and subjects only, never email bodies, and it is retried every 5 minutes, up to 30 times, never sent twice. On Mondays it adds how many missed alerts I tagged." },
+      { "id": "you", "kind": "human", "label": "My tap", "sub": "client, not important, mute", "at": [620, 540], "m": [0, 5], "body": "Each push has Not important, Mute sender and Mark client, and tapping it opens the thread. On a client's push Mark client becomes Open label, and Mute sender is left off for my businesses' contact forms, job replies and recruiter mail. No tap is needed: the email is already labelled." },
+      { "id": "learn", "kind": "rule", "label": "Learns from me", "sub": "written back to the Sheet", "at": [370, 340], "m": [0, 6], "body": "Mark client adds a Clients row and moves their past mail to Clients/Work, and Mute sender adds a silent rule. Not important and my Should notify tag only suggest a change, which waits in the Sheet for my approval, as do people I email. The next email from a client then rings without waiting for Jev's verdict, and Jev only picks which client label fits." }
     ],
     "edges": [
       ["gmail", "sheet"],
+      ["backfill", "sheet"],
       ["sheet", "jev"],
-      ["jev", "claude"],
+      ["sheet", "queue", "fallback"],
+      ["sheet", "label", "skip"],
+      ["sheet", "alert", "skip"],
+      ["jev", "queue"],
       ["jev", "label", "skip"],
-      ["jev", "unsure", "fallback"],
-      ["unsure", "label", "fallback"],
-      ["claude", "label"],
+      ["jev", "alert", "skip"],
+      ["queue", "claude"],
+      ["queue", "unsure", "fallback"],
+      ["unsure", "you", "fallback"],
+      ["claude", "guard"],
+      ["guard", "queue", "fallback"],
+      ["guard", "alert"],
+      ["guard", "label", "skip"],
+      ["alert", "label"],
       ["label", "silent"],
       ["label", "briefing"],
-      ["label", "alert"],
-      ["alert", "you"],
+      ["label", "you"],
       ["you", "learn"],
       ["learn", "sheet"]
     ],
     "run": [
       { "node": "gmail", "log": "New email picked up in 40 s" },
-      { "node": "sheet", "log": "No rule matches. Unknown sender, looks like a real person" },
-      { "node": "jev", "log": "Jev: Clients/Work, 58% sure. Too unsure to settle" },
-      { "node": "claude", "log": "Claude read it: a client asking about a deadline" },
+      { "node": "sheet", "log": "No rule, client or person matches. Looks like a real person", "card": "No match. Looks like a real person" },
+      { "node": "jev", "log": "Jev: Collaborations 52%, Clients/Work 41%. Too unsure to settle", "card": "Collaborations 52%. Too unsure to settle" },
+      { "node": "queue", "log": "Queued for Claude and hidden as pending. 30 minute timer started", "card": "Queued for Claude. 30 min timer started" },
+      { "node": "claude", "log": "Claude proposed a new label under Jobs", "card": "Proposed a label under Jobs" },
+      { "node": "guard", "log": "Rejected: Jobs is reserved. Back to the queue, try 1 of 5", "card": "Rejected. Back to the queue, try 1 of 5" },
+      { "node": "queue", "log": "Back in Claude's queue. The 30 minute timer keeps running", "card": "Back in the queue, timer still running" },
+      { "node": "claude", "log": "Second pass: a founder proposing a paid project. Collaborations, important", "card": "A founder's paid project: Collaborations" },
+      { "node": "guard", "log": "Answer checked: a known label, written by a person. Push allowed", "card": "Known label, written by a person" },
+      { "node": "alert", "log": "Normal priority push sent with 3 buttons" },
       {
         "node": "label",
-        "log": "Labelled Clients/Work. Nothing archived",
+        "log": "Labelled Collaborations on the next run. Nothing archived",
+        "card": "Labelled Collaborations. Nothing archived",
         "branches": [
           { "to": "silent", "log": "37 other emails labelled silently this hour", "tone": "go" },
-          { "to": "briefing", "log": "Counted for tomorrow's 11:00 briefing", "tone": "go" }
+          { "to": "briefing", "log": "Listed in the 11:00 briefing until I reply, up to 7 days", "tone": "go" }
         ]
       },
-      { "node": "alert", "log": "Urgent alert sent to the phone" },
       {
         "node": "you",
         "log": "Waiting for a tap",
         "ask": {
-          "prompt": "A client just emailed. Your call?",
+          "prompt": "A new person wants to work with you. Your call?",
           "choices": [
             {
               "label": "Mark client",
               "log": "Marked as a client",
-              "route": [{ "node": "learn", "log": "Added to the Clients tab" }, { "node": "sheet", "log": "Their mail now always rings, no model needed" }]
+              "route": [
+                { "node": "learn", "log": "Clients row added. This email and their past mail move to Clients/Work" },
+                { "node": "sheet", "log": "Their next email rings as a client. Jev only picks Work, Billing or Appreciation" }
+              ]
             },
-            { "label": "Open", "log": "Opened in Gmail", "route": [{ "node": "learn", "log": "Sender marked as someone who matters" }] },
-            { "label": "Mute sender", "log": "Muted", "tone": "drop", "route": [{ "node": "learn", "log": "Their next email lands silently" }] }
+            {
+              "label": "Not important",
+              "log": "Noted in the Feedback tab",
+              "route": [{ "node": "learn", "log": "A mute suggestion waits in the Sheet for my approval" }]
+            },
+            {
+              "label": "Mute sender",
+              "log": "Muted",
+              "tone": "drop",
+              "route": [{ "node": "learn", "log": "Silent rule added to the Rules tab, undo it there" }, { "node": "sheet", "log": "Their mail is still labelled, and the rules and Jev never push it" }]
+            }
           ]
         }
       }
@@ -230,77 +293,108 @@
   {
     "id": "claude-watchdog",
     "name": "Claude Watchdog",
-    "tagline": "Keeps watch over every Claude Code chat on my Mac and taps me only when one needs me",
+    "tagline": "Watches every Claude Code chat on my Mac and taps me when one needs me or long work ends",
     "cadence": "every minute",
     "accent": "#ec4899",
+    "loop": "Next scan in 1 minute",
     "stats": [
       { "value": 60, "label": "second scan" },
       { "value": 4, "label": "Claude Code hooks" },
-      { "value": 2, "label": "nudges before my phone, max" },
+      { "value": 2, "label": "nudges per stuck item, max" },
       { "value": 0, "label": "pushes or deploys it triggers" }
     ],
     "nodes": [
-      { "id": "scan", "kind": "trigger", "label": "Minute scan", "sub": "every chat on the Mac", "at": [120, 140], "m": [0, 0], "body": "A LaunchAgent runs one scan a minute across every Claude Code chat on this Mac: the chats themselves, their workflows, background agents and background shells." },
-      { "id": "hooks", "kind": "source", "label": "Hook notes", "sub": "stop, fail, ask, end", "at": [370, 140], "m": [1, 0], "body": "Four Claude Code hooks leave a note for the next scan: every finished turn, every API failure, every permission prompt or question, and every chat that closes." },
-      { "id": "heartbeat", "kind": "rule", "label": "Self check", "sub": "says so if scans stop", "at": [370, 540], "m": [0, 2], "body": "A watcher that dies quietly is worse than none. If no scan has run for 10 minutes, the next finished turn sends an alert that the watchdog is not scanning, with the command that starts it again." },
-      { "id": "detect", "kind": "rule", "label": "Trouble finder", "sub": "waiting, stuck, silent", "at": [620, 140], "m": [1, 1], "body": "Spots chats waiting on me, chats stopped by an API error or a usage limit, stalled or failed workflows, silent background agents and shells, chats busy for a long time with no output, and questions left unanswered. Dev servers and deliberate waits are left alone." },
-      { "id": "done", "kind": "output", "label": "Done notes", "sub": "long work finished", "at": [620, 340], "m": [0, 1], "body": "Long work that finishes, a turn, a workflow, an agent or a background task over 10 minutes, gets a short Done note with the chat's own summary, so I never sit waiting on something already finished." },
-      { "id": "risky", "kind": "rule", "label": "Risk filter", "sub": "git, ssh, deploy: to me", "at": [870, 140], "m": [1, 2], "body": "A stuck background task that touches git, ssh, a push or a deploy skips the nudge and comes straight to me. A machine never decides those." },
-      { "id": "nudge", "kind": "ai", "label": "Haiku nudge", "sub": "only if the chat is idle", "at": [1120, 140], "m": [1, 3], "body": "If the chat that owns the problem is idle, a throwaway Claude Haiku that can only send one message nudges it first, at most twice, 10 minutes apart. The nudge never asks a chat to commit, push, deploy, stop or rerun anything.", "fallback": { "log": "Haiku could not deliver the nudge, so the alert goes to my phone at once" } },
-      { "id": "chat", "kind": "ai", "label": "Owning chat", "sub": "gets the first try", "at": [1380, 140], "m": [0, 4], "body": "The chat that started the work has the context, so it gets the first chance to fix it. A chat in the middle of a turn is never interrupted." },
-      { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "with exact steps", "at": [1120, 340], "m": [0, 3], "body": "Then my phone and my Mac get one alert: what is stuck, for how long, whether a nudge was tried, and numbered steps to fix it." },
-      { "id": "me", "kind": "human", "label": "My call", "sub": "open, snooze or ignore", "at": [1120, 540], "m": [1, 4], "body": "I decide what happens next. The watchdog never touches the work itself." },
-      { "id": "vscode", "kind": "output", "label": "VS Code", "sub": "comes forward when idle", "at": [1380, 540], "m": [1, 5], "body": "VS Code comes to the front only after a minute without keyboard or mouse input, so it never steals keystrokes meant for another window." },
-      { "id": "snooze", "kind": "rule", "label": "Snooze", "sub": "one command on the Mac", "at": [870, 540], "m": [0, 5], "body": "When a wait is expected, one command on the Mac snoozes that item for a set time, or for good. Every nudge tells the chat how to snooze it too." },
-      { "id": "remind", "kind": "output", "label": "One reminder", "sub": "then silence", "at": [1120, 740], "m": [1, 6], "body": "If I do nothing, one reminder follows 30 minutes later. Then it stays quiet, so it never turns into noise." }
+      { "id": "scan", "kind": "trigger", "label": "Minute scan", "sub": "every chat on the Mac", "at": [120, 140], "m": [0, 0], "body": "A LaunchAgent runs one scan a minute across every Claude Code chat on this Mac: the chats themselves, their workflows, background agents, background shells and Cowork handoffs. After the Mac wakes from sleep, every timer starts fresh, so nothing looks stuck just because the lid was shut." },
+      { "id": "hooks", "kind": "source", "label": "Hook notes", "sub": "stop, fail, ask, end", "at": [370, 140], "m": [1, 0], "body": "Four Claude Code hooks fire inside the chats: every finished turn, every API failure, every permission prompt or question, and every chat that closes. They leave notes for the next scan, and a turn that ran 10 minutes or more gets its Done note straight away." },
+      { "id": "heartbeat", "kind": "rule", "label": "Self check", "sub": "says so if scans stop", "at": [370, 540], "m": [0, 2], "body": "A watcher that dies quietly is worse than none. If no scan has run for 10 minutes, the next finished turn sends an alert, at most once an hour, that the watchdog is not scanning, with the command that starts it again." },
+      { "id": "detect", "kind": "rule", "label": "Trouble finder", "sub": "waiting, stuck, silent", "at": [620, 140], "m": [1, 1], "body": "Spots chats waiting on my Allow or answer for 2 minutes, workflows and background agents silent for 20 minutes, background shells silent for 30, chats busy for 40 minutes with no output, Cowork handoffs silent for 45 minutes, chats stopped by an API error or a usage limit, failed workflows, and questions left unanswered for 5 minutes. A chat waiting on me, a chat stuck busy, an unanswered question, a usage limit, a login or billing error and a third failure come straight to me, since a nudge cannot help. Dev servers and deliberate waits are left alone." },
+      { "id": "done", "kind": "output", "label": "Done notes", "sub": "long work finished", "at": [620, 340], "m": [0, 1], "body": "Long work that finishes, a turn, a workflow, an agent or a background task over 10 minutes, gets a short Done note with the chat's own summary. It waits up to 3 minutes for that summary, so I never sit waiting on something already finished." },
+      { "id": "risky", "kind": "rule", "label": "Nudge gate", "sub": "idle chat, nothing risky", "at": [870, 140], "m": [1, 2], "body": "A nudge goes out only if the owning chat is idle, not waiting on me, and its 2 nudges are not used up. A chat busy mid turn gets 10 minutes to go idle, then the item comes to me instead. A stuck shell command that touches git, ssh, scp, rsync, a push or a deploy skips the nudge and comes straight to me. A snoozed item passes as healthy until its snooze ends." },
+      { "id": "nudge", "kind": "ai", "label": "Haiku nudge", "sub": "only if the chat is idle", "at": [1120, 140], "m": [1, 3], "body": "A throwaway Claude Haiku that can only send one message posts a nudge into the owning chat, at most twice per item, once for a Cowork handoff, 10 minutes apart. It also asks a chat stopped by a passing API error to continue, up to 2 retries, and asks a chat whose workflow failed to diagnose and resume it. The nudge never asks a chat to commit, push, deploy, stop or rerun anything. If a stall, retry or failure nudge is not confirmed as delivered, for example it only queues for approval in that chat, its alert goes to my phone at once.", "fallback": { "via": "alert", "log": "Haiku could not deliver the nudge, so a Stuck alert went to my phone at once. The ladder still counts it and tries again in 10 minutes" } },
+      { "id": "chat", "kind": "ai", "label": "Owning chat", "sub": "gets the first try", "at": [1370, 140], "m": [0, 4], "body": "The chat that started the work has the context, so it gets the first chance to fix it, or to snooze the item if the wait is expected. A chat in the middle of a turn, or waiting on me, is never messaged. Fresh output from the stuck work clears the item on the next scan. Nudges already used stay used, so a later stall on the same item comes straight to me." },
+      { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "with exact steps", "at": [1120, 340], "m": [0, 3], "body": "Then my phone and my Mac get an alert: what is stuck, for how long, whether self heal was tried, and numbered steps to fix it. A nudge that could not be delivered sends its alert at once, so I can hear sooner. A chat waiting on my answer gets up to 3 alerts, 15 minutes apart." },
+      { "id": "me", "kind": "human", "label": "My call", "sub": "open, snooze or ignore", "at": [1120, 540], "m": [1, 4], "body": "I decide what happens next. The alert has no buttons: I open the chat, snooze the item from the Mac, or let it be. The watchdog never touches the work itself." },
+      { "id": "vscode", "kind": "output", "label": "VS Code", "sub": "comes forward when idle", "at": [1370, 540], "m": [1, 5], "body": "The alert itself queues VS Code to come forward. It comes to the front only after a minute without keyboard or mouse input, so it never steals keystrokes meant for another window. If a chat's process dies while its workflow is still running, the watchdog reopens it, at most twice, and nudges it to resume. A chat I closed on purpose only gets a notice with the steps to reopen it." },
+      { "id": "snooze", "kind": "rule", "label": "Snooze", "sub": "one command on the Mac", "at": [870, 540], "m": [0, 5], "body": "When a wait is expected, one command on the Mac snoozes that item for a set time, or for good. Every stall nudge tells the chat how to snooze it too. Snooze covers stalled workflows, agents, shells and handoffs, not a chat waiting on me. When the snooze ends and the item is still stuck, the ladder starts again with only the nudges it has left." },
+      { "id": "remind", "kind": "output", "label": "One reminder", "sub": "then silence", "at": [1120, 740], "m": [1, 6], "body": "For a stalled workflow, agent, shell or handoff, one reminder follows 30 minutes later. Then it stays quiet until the item recovers; if it stalls again later it comes straight to me, with its nudges spent." }
     ],
     "edges": [
       ["scan", "hooks"],
       ["hooks", "detect"],
       ["hooks", "heartbeat"],
+      ["hooks", "done"],
       ["heartbeat", "alert"],
       ["detect", "done"],
       ["detect", "risky"],
+      ["detect", "alert", "skip"],
       ["risky", "nudge"],
       ["risky", "alert", "skip"],
       ["nudge", "chat"],
-      ["nudge", "alert"],
+      ["nudge", "alert", "fallback"],
       ["chat", "alert"],
+      ["chat", "detect", "skip"],
       ["alert", "me"],
+      ["alert", "vscode"],
       ["me", "vscode"],
+      ["vscode", "chat"],
       ["me", "snooze"],
+      ["snooze", "risky"],
       ["me", "remind"]
     ],
     "run": [
-      { "node": "scan", "log": "Minute scan: 6 chats, 2 workflows, 3 background shells" },
+      { "node": "scan", "log": "Minute scan: 6 chats, 2 workflows, 3 background shells", "card": "Minute scan: 6 chats, 2 workflows, 3 shells" },
       {
         "node": "hooks",
         "log": "Hook notes read: every turn, failure, prompt and closed chat since the last scan",
         "card": "Hook notes read since the last scan",
-        "branches": [{ "to": "heartbeat", "log": "Scans are running, so the watchdog is healthy", "tone": "go" }]
+        "branches": [
+          { "to": "heartbeat", "log": "Scans are running, so the watchdog is healthy", "tone": "go" },
+          { "to": "done", "log": "A 12 minute turn ended. Done note with its summary", "tone": "go" }
+        ]
       },
       {
         "node": "detect",
         "log": "A workflow has been silent for 20 minutes. Stalled",
-        "branches": [{ "to": "done", "log": "A 14 minute agent finished elsewhere. Done note sent" }]
+        "branches": [
+          { "to": "done", "log": "A 14 minute agent finished elsewhere. Done note sent" },
+          { "to": "alert", "log": "A chat waiting 2 minutes on my Allow goes straight to me", "tone": "go" }
+        ]
       },
-      { "node": "risky", "log": "No git, ssh or deploy in it, so its own chat gets a nudge first", "card": "No git, ssh or deploy: its chat gets a nudge" },
-      {
-        "node": "nudge",
-        "log": "The chat is idle. Haiku posts a nudge: look into it, change nothing risky",
-        "card": "Chat idle. Haiku posts one careful nudge",
-        "branches": [{ "to": "chat", "log": "Two nudges, 10 minutes apart. Still no progress", "tone": "go" }]
-      },
-      { "node": "alert", "log": "Phone alert: what is stuck, for how long, and numbered steps to fix it", "card": "Phone alert with numbered steps to fix it" },
+      { "node": "risky", "log": "Its chat is idle and has nudges left. Nudge 1 of 2", "card": "Chat idle, nudges left: nudge 1 of 2" },
+      { "node": "nudge", "log": "Haiku posts nudge 1: check it, change nothing risky", "card": "Haiku posts nudge 1 of 2" },
+      { "node": "chat", "log": "10 minutes on, the workflow has still written nothing", "card": "10 min on, still nothing written" },
+      { "node": "detect", "log": "Next scan: silent for 30 minutes, still stalled" },
+      { "node": "risky", "log": "Still idle, 1 nudge left. Nudge 2 of 2" },
+      { "node": "nudge", "log": "Haiku posts nudge 2 of 2" },
+      { "node": "chat", "log": "10 more minutes, still nothing. Over to me" },
+      { "node": "alert", "log": "Phone and Mac alert at 40 minutes: self heal tried, numbered steps to fix it", "card": "Alert at 40 min: self heal tried, steps" },
       {
         "node": "me",
-        "log": "Waiting for a tap",
+        "log": "Waiting for me",
         "ask": {
-          "prompt": "A workflow is stuck. Your call?",
+          "prompt": "A workflow is still stuck after 2 nudges. Your call?",
           "choices": [
-            { "label": "Open the chat", "log": "Opening it", "route": [{ "node": "vscode", "log": "VS Code comes forward once I stop typing" }] },
-            { "label": "Snooze from the Mac", "log": "Snoozed for an hour with one command", "route": [{ "node": "snooze", "log": "Quiet for an hour, then it watches again" }] },
-            { "label": "Ignore", "log": "Ignored for now", "tone": "drop", "route": [{ "node": "remind", "log": "One reminder 30 minutes later, then silence" }] }
+            {
+              "label": "Open the chat",
+              "log": "Opening it",
+              "route": [
+                { "node": "vscode", "log": "VS Code was already in front, it came forward once I stopped typing" },
+                { "node": "chat", "log": "I type the step from the alert. The chat gets back to work" },
+                { "node": "detect", "log": "Next scan sees new output. Item cleared, the watch goes on" }
+              ]
+            },
+            {
+              "label": "Snooze it",
+              "log": "Snoozed for an hour with one command on the Mac",
+              "route": [
+                { "node": "snooze", "log": "Quiet for an hour" },
+                { "node": "risky", "log": "Snooze over, still stuck. Nudges used up, so no third one" },
+                { "node": "alert", "log": "Alert again at once: self heal already tried" },
+                { "node": "me", "log": "Back to me" }
+              ],
+              "then": "again"
+            },
+            { "label": "Ignore", "log": "Ignored for now", "tone": "drop", "route": [{ "node": "remind", "log": "One reminder 30 minutes later, then silence while the minute scan keeps watching" }] }
           ]
         }
       }
@@ -311,137 +405,176 @@
     "name": "Self-Improving Trading Lab",
     "tagline": "A paper money research lab that improves itself and is built to make fooling itself hard",
     "cadence": "daily, on my Mac",
-    "status": "Being built",
-    "note": "Paper money only. The daily runner is built and passed its dry run; stages marked planned come next. Most ideas fail, and nothing here promises returns.",
+    "note": "Paper money only. The cloud side and the daily Mac runs are live. Most ideas fail, and nothing here promises returns.",
+    "loop": "Tomorrow's run is due at 7 pm",
     "accent": "#e879f9",
     "stats": [
       { "value": 20, "label": "counted ideas a week, max" },
-      { "value": 6, "label": "kinds of strategy" },
+      { "value": 7, "label": "kinds of strategy" },
       { "value": 3, "label": "months on paper before a change" },
       { "value": 1, "label": "finding a day, at least" }
     ],
     "nodes": [
-      { "id": "clock", "kind": "trigger", "label": "Daily run", "sub": "7 pm, or the next wake", "at": [120, 140], "m": [0, 0], "body": "n8n checks every 30 minutes and starts the day's research from 7 pm, or at the first wake after a missed evening. A run that fails names the failed step on my phone and tries once more; after two failures it waits for tomorrow." },
-      { "id": "headsup", "kind": "human", "label": "Heads up", "sub": "10 min early, by phone", "at": [370, 140], "m": [1, 0], "planned": true, "body": "Built today: a start notice that says what will be tested. Planned: ten minutes before a run my phone asks first, with Delay 1 hour, Start now and Skip today. A delay says research resumes in an hour, then asks again." },
-      { "id": "guard", "kind": "rule", "label": "Safe compute", "sub": "on charger, 2 cores free", "at": [620, 140], "m": [1, 1], "planned": true, "body": "Planned: heavy tests run only on charger power, use every core but two at low priority, ease off when macOS reports heat pressure, and keep the Mac awake only while the run lasts. Built today: every run measures its own time, CPU time and peak memory." },
-      { "id": "atlas", "kind": "source", "label": "Research atlas", "sub": "everything ever tried", "at": [870, 140], "m": [0, 1], "body": "Memory comes first. The atlas records every idea, paper, study and finding with its outcome, and the trial log refuses a retuned copy of an old idea before it counts. Planned: a knowledge base rebuilt every run and handed to Claude, where each pattern carries a confidence label: spotted, promising, confirmed or proven live. Only a proven live pattern may change the strategy, and the knowledge base never carries sealed numbers." },
-      { "id": "scout", "kind": "source", "label": "Paper scout", "sub": "untrusted, checked", "at": [1120, 140], "m": [0, 2], "body": "Claude searches the web for newly published papers. Their text is treated as untrusted data: checked against a strict schema, stripped to plain text, and shown to the idea writer only inside a fenced data block. Each paper's claim is tested once on Indian data, so it ends up replicated or refuted." },
-      { "id": "claude", "kind": "ai", "label": "Claude proposes", "sub": "reason written first", "at": [1370, 140], "m": [1, 2], "body": "Claude reads the atlas and the new papers with every tool switched off, then proposes a few ideas, each with its economic reason and the direction it expects written down before any test. It never sees stock names or any result after the seal, and it never grades its own ideas.", "fallback": { "log": "Claude is unavailable, so the run stops here and nothing is counted. My phone hears which step failed, and it tries again once, 30 minutes later", "then": "end" } },
-      { "id": "menu", "kind": "rule", "label": "Strategy menu", "sub": "six kinds, fixed menus", "at": [1620, 140], "m": [1, 3], "body": "Ideas come from fixed menus across six kinds: stock factors; market timing from the rupee, the dollar, crude oil, bond yields and fear gauges; sector rotation; calendar windows around Union Budgets, RBI policy days, elections, festivals and F&O expiry; risk overlays; and position sizing, including a satellite of riskier bets capped at a fifth of the money. Planned: an adaptive weights family, where the rule that changes factor weights is the idea under test, never weights tuned by hand." },
-      { "id": "registry", "kind": "rule", "label": "Trial register", "sub": "counted before testing", "at": [1620, 340], "m": [0, 3], "body": "Every idea is registered and counted before it is tested, so a failure still counts against the lab and raises the bar for every later result. At most 4 counted ideas a weekday, 20 a week and 500 a year. Descriptive studies are labelled as such and are never counted or promoted." },
-      { "id": "split", "kind": "rule", "label": "Fair test", "sub": "buy-only, after costs", "at": [1370, 340], "m": [0, 4], "body": "Each idea is tested on frozen history from before the seal, with purged cross validation, and judged by a score that is discounted for every trial run so far. It also runs as a buy-only portfolio a person could hold, after costs, against the benchmark on the same days, and only an idea that beats the benchmark can ever be promoted. Planned: discovery on the older years, 1995 to 2014, and confirmation on 2015 up to the seal." },
-      { "id": "failed", "kind": "drop", "label": "Failed ideas", "sub": "logged, never retried", "at": [1370, 540], "m": [1, 4], "body": "Most ideas fail. Each failure stays in the atlas with the test it missed, so it is never tried again, and it will appear on the research page with the rest of the findings." },
-      { "id": "checks", "kind": "rule", "label": "Cheat checks", "sub": "leak audit, canary", "at": [1120, 340], "m": [0, 5], "body": "A result that looks too good to be true is held for a manual audit. Once a month a deliberately leaky idea runs through every check and must be caught, or the lab switches itself off. Planned: placebo dates and random markets, where a real edge must vanish, plus bootstraps and cost scenarios." },
-      { "id": "halt", "kind": "drop", "label": "Audit hold", "sub": "too good to be true", "at": [1120, 540], "m": [1, 5], "body": "A result that looks too good to be true stops that idea for a manual audit instead of moving on. In research that is almost always a bug or a leak, not a discovery. If the monthly leaky idea ever slips through, the whole lab stops itself." },
-      { "id": "seal", "kind": "rule", "label": "Sealed period", "sub": "pass or fail only", "at": [870, 340], "m": [0, 6], "body": "Everything after 2 October 2026 is sealed. Only the promotion rules may query it, in the cloud, and they get back pass or fail with no numbers. Sealed data never reaches the laptop. The sealed tests start to mean something from about October 2027, as the period fills." },
-      { "id": "ladder", "kind": "rule", "label": "History ladder", "sub": "5 rungs, then 3 months", "at": [620, 340], "m": [1, 6], "planned": true, "body": "Planned: before anything may change the live strategy it climbs a long history ladder: about 30 years of Indian stocks, the Sensex since 1979 for timing rules, Indian factor data from IIM Ahmedabad, US data back to 1926 and emerging markets since 1990. Each rung must show the idea's mechanism holds; on Indian data it must beat the current strategy on return and on worst loss, after costs. Built today: at least three months in the paper tier before a candidate is put to me." },
-      { "id": "report", "kind": "output", "label": "Phone updates", "sub": "start, finish, failure", "at": [370, 340], "m": [1, 7], "body": "A start notice, then a finish notice: how long the run took, CPU time, peak memory, what was tried and found, papers replicated or refuted, the trials used this week, and the new research version against the previous one. A failed run names the step that failed. Planned: an announcement for every change to a strategy or to the lab's own workflow." },
-      { "id": "weekly", "kind": "ai", "label": "Weekly round", "sub": "improves the lab itself", "at": [120, 340], "m": [0, 7], "planned": true, "body": "Planned: once a week a deeper Claude round works on the lab itself: its tests, its menus, its own workflow, anything outside the locked rulebook. Each round must advance at least one idea from my own ideas inbox and log its reasoning, and it keeps an innovation radar that files new papers, code and models as watch, trial, adopt or reject." },
-      { "id": "auditor", "kind": "ai", "label": "Auditor agent", "sub": "reviews every change", "at": [120, 540], "m": [0, 8], "planned": true, "body": "Planned: a separate auditor agent reviews every change the AI makes to the lab before it ships. The proposer never approves its own work, and nothing ships without the audit." },
-      { "id": "rulebook", "kind": "rule", "label": "Locked rulebook", "sub": "the AI cannot edit it", "at": [370, 540], "m": [1, 8], "planned": true, "body": "Built today: the trial log is create-only and the seal is enforced in code. Planned: the trial log, the seal, the gates, the caps and the promotion rules locked together and checked against a fingerprint on every run. Everything else the AI may improve, and every change is announced." },
-      { "id": "exams", "kind": "rule", "label": "Exams", "sub": "forecasts, keep or sell", "at": [620, 540], "m": [1, 9], "planned": true, "body": "Planned: two standing exams of the lab's judgment. A weekly forecast tournament scores its probability calls for accuracy and calibration. A keep or sell exam runs thousands of realistic starting portfolios through history and grades which holdings it keeps and which it sells, after costs and tax." },
-      { "id": "verdict", "kind": "human", "label": "Approval", "sub": "Approve or Reject tap", "at": [870, 540], "m": [0, 9], "body": "A candidate reaches me only after it passed every research gate, the buy-only test and the sealed period, and spent at least three months in the paper tier. I tap Approve or Reject, and the first answer stands. An approval waits for the monthly review, so the live strategy changes at most once a month; the cloud step that applies it there is still being built. Planned: a candidate that also clears the history ladder goes live by itself, with 24 hours for me to undo it." },
-      { "id": "engine", "kind": "trigger", "label": "Paper engine", "sub": "every market day", "at": [1620, 740], "m": [0, 10], "body": "The live strategy trades paper money in the cloud every market day, on real prices with real costs. No real money is involved. A small AI filter reads company filings for red flags, and a flagged stock is left out. Planned: on trading days my phone hears only about exceptions." },
-      { "id": "daychecks", "kind": "rule", "label": "Day checks", "sub": "9:05, 12:30, risk only", "at": [1370, 740], "m": [1, 10], "planned": true, "body": "Planned: at 9:05, before the bell, only risk rules that have already been tested may act, and no new ideas. At 12:30 a risk-only check runs; the strategy itself never changes midday." },
-      { "id": "news", "kind": "source", "label": "News desk", "sub": "every 30 min, frozen", "at": [1120, 740], "m": [1, 11], "planned": true, "body": "Planned: headlines and filings captured every 30 minutes from feeds the lab may legally use, each with its time and company. The AI filter scores each item when it arrives and the score is frozen, never rescored with hindsight. News shadow books compete forward from day one, and my phone hears about news only when it changes something." },
-      { "id": "plan", "kind": "rule", "label": "Closing plan", "sub": "15:45, triggers preset", "at": [870, 740], "m": [0, 11], "planned": true, "body": "Planned: at 15:45, after the close, the numbers rank the market and tomorrow's plan is written: a watch list with triggers set in advance, and news features over 1, 5 and 21 days for each stock. The live strategy applies only news rules that have passed the same tests." },
-      { "id": "desk", "kind": "ai", "label": "Judgment desk", "sub": "AI calls, shadow only", "at": [620, 740], "m": [0, 12], "planned": true, "body": "Planned: an AI judgment desk reads the day and makes its own calls, but only on a shadow portfolio. It earns any authority only if its record beats the rules going forward. Its judgment is never backtested, because the model already knows how history ended.", "fallback": { "log": "The desk is offline. The rules run the day alone, as they always do" } },
-      { "id": "shadow", "kind": "output", "label": "Shadow books", "sub": "scored forward", "at": [370, 740], "m": [1, 12], "body": "Ideas that pass the research gates run as paper books in the cloud, scored against the live strategy on the same days from then on. Planned: the judgment desk and the news books join this contest, and nothing they do touches the live strategy until their record says so." },
-      { "id": "findings", "kind": "output", "label": "Findings", "sub": "at least one a day", "at": [120, 740], "m": [1, 13], "body": "Every run writes at least one finding: a test result, a paper verdict, a study or a data note, with no stock names and no sealed numbers. Failures are kept with the rest, and they will be published when the research page launches." }
+      { "id": "clock", "kind": "trigger", "label": "Daily run", "sub": "7 pm, on a 5 minute tick", "at": [120, 140], "m": [0, 0], "body": "n8n ticks every 5 minutes and starts the day's research at 7 pm, or on the first tick after a wake, as long as it can start by 11 pm. First the lab's own copy of the code moves to the newest version; a changed dependency list stops the run until I review it. An evening the Mac sleeps through is not caught up; the next run says how many days were missed. A failed step is named on my phone and tried once more on the next tick, and a busy lab simply waits for a later tick." },
+      { "id": "headsup", "kind": "human", "label": "Heads up", "sub": "10 min early, by phone", "at": [370, 140], "m": [1, 0], "body": "Ten minutes before a run my phone says what will be tested and whether heavy tests can run, then asks: Delay 1h, Start now or Skip today. A delay moves the run an hour and asks again ten minutes before the new time; a delay past 11 pm skips the day. No reply means the run starts on time." },
+      { "id": "rulebook", "kind": "rule", "label": "Locked rulebook", "sub": "checked before every run", "at": [620, 140], "m": [1, 1], "body": "The trial log, the seal, the gates, the caps and the promotion rules are locked together with every file they load, and checked against an approved fingerprint before every run and every lab command. A mismatch pauses research until I approve the change at my Mac; no phone button can loosen it. Everything else the AI may improve.", "fallback": { "log": "Rulebook changed without my approval. Research pauses until I approve at my Mac, then the next tick starts the run", "then": "end" } },
+      { "id": "atlas", "kind": "source", "label": "Research atlas", "sub": "knowledge base for Claude", "at": [870, 140], "m": [0, 1], "body": "Memory comes first. The atlas records every idea, paper, study and finding with its outcome, and a knowledge base rebuilt every run hands it all to Claude, each pattern labelled spotted, promising, confirmed or proven live. It never carries stock names, exact dates or sealed numbers, and only a proven live pattern may ever change the strategy." },
+      { "id": "scout", "kind": "ai", "label": "Paper scout", "sub": "untrusted, checked", "at": [1120, 140], "m": [0, 2], "body": "Claude searches scholarly sites for newly published papers. Their text is treated as untrusted data: checked against a strict schema, stripped to plain text, and shown to the idea writer only inside a fenced data block. A paper whose claim can be tested is tested once on Indian data and marked replicated or refuted; the rest are filed as untested or not testable.", "fallback": { "log": "The scout failed, so today runs without new papers. It is skipped, never retried in a loop" } },
+      { "id": "claude", "kind": "ai", "label": "Claude proposes", "sub": "reason written first", "at": [1370, 140], "m": [1, 2], "body": "Claude reads the knowledge base and the new papers with every tool switched off, then proposes a few ideas, each with its economic reason and expected direction written down before any test. It never sees stock names, exact dates or any result after the seal, and it never grades its own ideas. At weekends it proposes no ideas, only studies and a research note.", "fallback": { "log": "Claude is unavailable or past its weekly token guard, so no ideas are proposed and the Mac spends the time on local heavy tests instead" } },
+      { "id": "menu", "kind": "rule", "label": "Strategy menu", "sub": "seven kinds, fixed menus", "at": [1620, 140], "m": [1, 3], "body": "Ideas come from fixed menus across seven kinds: stock factors; market timing from the rupee, the dollar, crude oil, bond yields and fear gauges; sector rotation; calendar windows around F&O expiry and results season, with Union Budget, RBI policy and election windows waiting until their past dates are filled in with sources; risk overlays; position sizing, including a satellite of riskier bets capped at a fifth of the money; and adaptive weights, where the rule that changes factor weights is the idea under test, never weights tuned by hand." },
+      { "id": "sweep", "kind": "source", "label": "Formula sweep", "sub": "Sundays, top 2 on Mondays", "at": [1620, 340], "m": [0, 3], "body": "On Sundays the Mac's spare cores search thousands of formulas, on the older years only, and every formula it looks at raises the bar for every later result. On Monday the top 2 are registered as counted ideas, but only if they also hold on a held out half, which leaves Claude 2 of that day's 4 slots." },
+      { "id": "registry", "kind": "rule", "label": "Trial register", "sub": "counted before testing", "at": [1370, 340], "m": [0, 4], "body": "Every idea is registered and counted before it is tested, so a failure still counts against the lab and raises the bar for every later result. At most 4 counted ideas a weekday and none at weekends, 20 a week and 500 a year. A retuned copy of an old idea, or one that behaves the same, is refused before it counts, and descriptive studies are never counted or promoted." },
+      { "id": "split", "kind": "rule", "label": "Fair test", "sub": "2005 to 2014, after costs", "at": [1120, 340], "m": [1, 4], "body": "Each idea is tested only on the discovery years, 2005 to 2014, from frozen history before the seal, with purged cross validation and a score discounted for every trial run so far. It must also hold as a buy-only portfolio a person could own, after costs, against the benchmark on the same days. A timing or calendar rule must beat simply staying invested, because sitting in cash is not an edge. A result that looks too good is held for audit right here." },
+      { "id": "failed", "kind": "drop", "label": "Failed ideas", "sub": "logged, never retried", "at": [870, 540], "m": [1, 5], "body": "Most ideas fail. Each failure stays in the atlas with the test it missed, so it is never tried again, and it will appear on the research page with the rest of the findings." },
+      { "id": "guard", "kind": "rule", "label": "Safe compute", "sub": "on charger, 2 cores free", "at": [870, 340], "m": [0, 5], "body": "Heavy tests run only on charger power, on every core but two at low priority, and the Mac stays awake for the run and no longer. Heat pressure halves the workers or pauses them, and 3 minutes off the charger stops the step; a skipped heavy step is owed to the next run. Every run measures its own time, CPU time and peak memory." },
+      { "id": "checks", "kind": "rule", "label": "Cheat checks", "sub": "placebos, then 2015 on", "at": [620, 340], "m": [0, 6], "body": "A survivor must beat 200 placebo shuffles, fail on 3 random markets with no edge, keep a positive bootstrap range and survive double costs. Only then is it confirmed once on 2015 up to the seal, at most 12 a quarter. A result that looks too good is held for audit, and once a month a deliberately leaky idea must be caught, or the lab switches itself off." },
+      { "id": "halt", "kind": "drop", "label": "Audit hold", "sub": "too good to be true", "at": [620, 540], "m": [1, 6], "body": "A result that looks too good to be true stops that idea for a manual audit instead of moving on, and so does an idea that wins on a random market. In research that is almost always a bug or a leak, not a discovery. If the monthly leaky idea ever slips through, the whole lab stops itself." },
+      { "id": "ladder", "kind": "rule", "label": "History ladder", "sub": "4 rungs, Sensex pending", "at": [370, 340], "m": [0, 7], "body": "Before anything may change the live strategy it climbs a history ladder: the Indian stock history, Indian factor data from IIM Ahmedabad, US data back to 1926, and developed and emerging markets since about 1990. Each rung that applies must agree and none may contradict it. The Sensex since 1979 stays unavailable until a legal source is verified, and an idea that works only in India keeps my yearly review." },
+      { "id": "exams", "kind": "rule", "label": "Exams", "sub": "forecasts, keep or sell", "at": [120, 340], "m": [1, 7], "body": "Two standing exams of the lab's judgment. Every Monday the cloud issues probability calls on the book's stocks and later scores them for accuracy and calibration against a plain base rate. On Sundays the keep or sell exam runs 5,000 realistic starting portfolios through history and grades what it keeps and sells, after costs and Indian tax." },
+      { "id": "weekly", "kind": "ai", "label": "Weekly round", "sub": "Sundays, no commands, no web", "at": [120, 540], "m": [1, 8], "body": "On Sundays a deeper Claude round works in a throwaway copy of the code, with no commands and no web. It must advance at least one idea from my own ideas inbox, may make one small tested improvement, and can never touch the locked rulebook. Before it, a separate web-only scout files new papers, code and models as watch, trial, adopt or reject." },
+      { "id": "auditor", "kind": "ai", "label": "Two auditors", "sub": "then tests in a sandbox", "at": [370, 540], "m": [0, 8], "body": "Two separate auditors read the full change and a checker scans it for stock names; then tests, typecheck and the rulebook check run in a sandbox with no network. Any failure discards the whole session. A passing change waits as a local branch for my review, never pushed and never merged by itself." },
+      { "id": "findings", "kind": "output", "label": "Findings", "sub": "at least one a day", "at": [120, 740], "m": [0, 9], "body": "Every run writes at least one finding: a test result, a paper verdict, a study or a data note, plus a Breakthroughs section for any idea whose label moved up. No stock names and no sealed numbers, and a day with only data notes says so. Failures are kept with the rest, for the research page when it launches." },
+      { "id": "seal", "kind": "rule", "label": "Cloud checks", "sub": "sealed: pass or fail only", "at": [370, 740], "m": [1, 9], "body": "The Mac hands the cloud its jobs. Survivors start paper books there, and everything after 2 October 2026 is sealed: a candidate may ask it once, after a long paper record, and gets back pass or fail with no numbers. On the first run of a month the cloud rechecks at most one pick against all 10 promotion rules, from its own records, and stages it, and the first run of a month also reruns the monthly walk-forward.", "fallback": { "log": "A cloud job failed. It is owed and runs first on the next run" } },
+      { "id": "report", "kind": "output", "label": "Phone updates", "sub": "finish, change, failure", "at": [620, 740], "m": [1, 10], "body": "A finish notice after every run: how long it took, CPU time, peak memory, what was tested with the reasons for each refusal, breakthroughs, heavy steps run or owed, and Claude and Jev tokens with cost estimates. A new research version is announced against the previous one, and so is every change to a strategy or to the lab itself. A failed step is named, with when it will be tried again." },
+      { "id": "verdict", "kind": "human", "label": "Undo window", "sub": "Undo within 24 hours", "at": [870, 740], "m": [0, 10], "body": "No phone tap can approve a change. A staged change reaches my phone with an Undo button: 24 hours to take it back, and with no answer it goes live at the next quarterly ranking day, at most one change a month. Later a Rollback restores the previous version exactly. Ideas that add a stock factor or a sector rotation still wait for my yearly review." },
+      { "id": "engine", "kind": "trigger", "label": "Paper engine", "sub": "15 min, 8 am to midnight", "at": [1120, 740], "m": [0, 11], "body": "The live strategy trades paper money in the cloud on real prices with real costs, on a 15 minute tick, and it trades only on market days. No real money is involved. A change I did not undo applies from the next quarterly ranking day, and with no change the plan is exactly what it was. A red flag filter on company filings is wired, but the filings feeds are blocked from the cloud, so today it has nothing to read." },
+      { "id": "news", "kind": "source", "label": "News desk", "sub": "probe only for now", "at": [1370, 740], "m": [1, 11], "body": "Every half hour the cloud may capture headlines from feeds the lab is allowed to read, match each to one company, and have TypeSafe's Jev model score it once, frozen and never rescored. No feed's terms are confirmed yet, so today it only checks which feeds answer. News cannot enter research until a clean year of archive exists." },
+      { "id": "daychecks", "kind": "rule", "label": "Day checks", "sub": "9:05, 12:30, risk only", "at": [1620, 740], "m": [1, 12], "body": "At 9:05, before the bell, only tested risk rules may act. At 12:30 a risk-only check reads intraday prices against the triggers fixed the evening before. Neither changes the strategy or the main book, and my phone hears only about exceptions." },
+      { "id": "desk", "kind": "ai", "label": "Judgment desk", "sub": "Jev, shadow book only", "at": [1620, 540], "m": [0, 12], "body": "On each exception TypeSafe's Jev model answers one typed question: hold, exit or flag it for me. The answer acts only on the desk's own paper book, and it earns authority only if its record beats the rules going forward. Its judgment is never backtested, because the model already knows how history ended.", "fallback": { "log": "No valid answer from Jev, so the desk holds and records the refusal. The main book never depended on it" } },
+      { "id": "plan", "kind": "rule", "label": "Closing plan", "sub": "after the close, 15:45 on", "at": [1370, 540], "m": [0, 13], "body": "After the close, once the day's prices are in, tomorrow's plan fixes each holding's triggers in advance: a halt, a red flag, a fixed drop 8% below the close and a 10% price band. They never change during the day. Only a news rule that passed the same tests may change a holding; today that is the red flag veto alone." },
+      { "id": "shadow", "kind": "output", "label": "Shadow books", "sub": "scored forward", "at": [1120, 540], "m": [1, 13], "body": "Survivors run as paper books in the cloud, scored against the live strategy on the same days. Five news books compete forward beside them, including my own news-first idea and the judgment desk's book, and nothing they do touches the live strategy until their record says so." }
     ],
     "edges": [
       ["clock", "headsup"],
-      ["headsup", "guard"],
-      ["guard", "atlas"],
+      ["headsup", "clock", "skip"],
+      ["headsup", "rulebook"],
+      ["rulebook", "atlas"],
       ["atlas", "scout"],
+      ["atlas", "claude", "fallback"],
       ["scout", "claude"],
+      ["scout", "menu", "fallback"],
       ["claude", "menu"],
-      ["menu", "registry"],
+      ["menu", "sweep"],
+      ["sweep", "registry"],
       ["registry", "split"],
+      ["registry", "failed", "drop"],
       ["split", "failed", "drop"],
-      ["split", "checks"],
+      ["split", "halt", "drop"],
+      ["split", "guard"],
+      ["guard", "checks"],
       ["checks", "halt", "drop"],
-      ["checks", "seal"],
-      ["seal", "ladder"],
-      ["ladder", "report"],
-      ["report", "atlas", "skip"],
-      ["report", "weekly"],
+      ["checks", "ladder"],
+      ["ladder", "exams"],
+      ["exams", "weekly"],
       ["weekly", "auditor"],
-      ["auditor", "rulebook"],
-      ["rulebook", "report"],
-      ["rulebook", "exams"],
-      ["exams", "verdict"],
+      ["auditor", "findings"],
+      ["auditor", "report"],
+      ["findings", "atlas"],
+      ["findings", "seal"],
+      ["findings", "report", "fallback"],
+      ["seal", "report"],
+      ["report", "verdict"],
       ["verdict", "engine"],
-      ["engine", "daychecks"],
-      ["daychecks", "news"],
-      ["news", "plan"],
-      ["plan", "desk"],
-      ["desk", "shadow"],
-      ["shadow", "findings"]
+      ["engine", "news"],
+      ["news", "daychecks"],
+      ["daychecks", "desk"],
+      ["desk", "plan"],
+      ["daychecks", "plan", "fallback"],
+      ["plan", "daychecks"],
+      ["plan", "shadow"]
     ],
     "run": [
-      { "node": "clock", "log": "7 pm on a weekday. A research run is due" },
+      { "node": "clock", "log": "7 pm. The 5 minute tick finds today's run due" },
       {
         "node": "headsup",
         "log": "Heads up sent to my phone, 10 minutes early",
         "ask": {
           "prompt": "Research starts in 10 minutes. Your call?",
           "choices": [
-            { "label": "Start now", "log": "Starting now", "then": "next", "route": [] },
-            { "label": "Delay 1 hour", "log": "Delayed. Research resumes in an hour, and the heads up comes again", "then": "again", "route": [] },
+            { "label": "Start now", "log": "Starting now. With no reply it would start on time anyway", "then": "next", "route": [] },
+            {
+              "label": "Delay 1h",
+              "log": "Delayed an hour. Past 11 pm a delay skips the day",
+              "then": "again",
+              "route": [
+                { "node": "clock", "log": "Run moved one hour later. The 5 minute tick waits for it" },
+                { "node": "headsup", "log": "Heads up again, 10 minutes before the new time" }
+              ]
+            },
             { "label": "Skip today", "log": "Skipped today. Nothing runs and nothing is counted", "tone": "drop", "route": [] }
           ]
         }
       },
-      { "node": "guard", "log": "On charger. All cores but two at low priority, Mac awake for this run only" },
-      { "node": "atlas", "log": "Atlas loaded: every idea, paper and finding so far" },
+      { "node": "rulebook", "log": "Rulebook matches its approved fingerprint, so research may run" },
+      { "node": "atlas", "log": "Knowledge base rebuilt and handed to Claude, with no stock names or sealed numbers", "card": "Knowledge base handed to Claude" },
       { "node": "scout", "log": "3 new papers filed as untrusted cards. Schema checks passed" },
-      { "node": "claude", "log": "4 ideas proposed, each with its reason and direction written first", "card": "4 ideas, each with its reason written first" },
-      { "node": "menu", "log": "Kinds today: rupee and crude timing, sector rotation, a policy day window, a risk overlay" },
-      { "node": "registry", "log": "4 ideas registered and counted before any test" },
+      { "node": "claude", "log": "3 ideas proposed, each with its reason and direction written first", "card": "3 ideas, each with its reason written first" },
+      { "node": "menu", "log": "Kinds today: a rupee and crude timing rule and a sector rotation" },
+      { "node": "sweep", "log": "Monday: Sunday's sweep searched thousands of formulas, and 2 held on the held out half" },
+      {
+        "node": "registry",
+        "log": "4 ideas registered and counted before any test: 2 of Claude's 3 and the sweep's 2",
+        "card": "4 ideas counted before any test",
+        "branches": [{ "to": "failed", "log": "1 of Claude's refused before it counted: too little history to test" }]
+      },
       {
         "node": "split",
-        "log": "1 of 4 holds as a buy-only portfolio after costs",
-        "branches": [{ "to": "failed", "log": "3 ideas failed. Logged, never retried" }]
+        "log": "1 of 4 passes on 2005 to 2014, buy-only, after costs",
+        "card": "1 of 4 passes, buy-only, after costs",
+        "branches": [{ "to": "failed", "log": "2 ideas failed. Logged, never retried" }, { "to": "halt", "log": "1 held for audit: too good to be true" }]
       },
+      { "node": "guard", "log": "On charger: all cores but two at low priority, Mac awake only for this run" },
       {
         "node": "checks",
-        "log": "The survivor passes the leak audit",
+        "log": "The survivor beats its placebos and holds on 2015 to the seal",
+        "card": "Survivor beats placebos, holds from 2015",
         "branches": [{ "to": "halt", "log": "Monthly leaky control caught and held" }]
       },
-      { "node": "seal", "log": "The survivor joins the paper tier. The seal answers pass or fail later", "card": "The survivor joins the paper tier" },
-      { "node": "ladder", "log": "Next: 5 rungs of history before it may change anything" },
+      { "node": "ladder", "log": "Ladder passed: India, IIM Ahmedabad, US since 1926 and emerging markets agree" },
+      { "node": "exams", "log": "Monday forecasts handed to the cloud. Sunday's keep or sell exam graded 5,000 portfolios" },
+      { "node": "weekly", "log": "Yesterday's Sunday round: one owner idea advanced, one small lab change written" },
+      {
+        "node": "auditor",
+        "log": "Sunday: 2 auditors passed it, tests went green in a sandbox, and a branch waits for my review",
+        "branches": [{ "to": "report", "log": "Change notice: a branch is ready for my review", "tone": "go" }]
+      },
+      {
+        "node": "findings",
+        "log": "Findings written. Breakthrough: the survivor moved up a label",
+        "branches": [{ "to": "atlas", "log": "Knowledge base updated, so tomorrow's Claude starts from it", "tone": "go" }]
+      },
+      {
+        "node": "seal",
+        "log": "Drill, first run of the month: the cloud rechecks one pick against all 10 rules and stages it",
+        "card": "The cloud rechecks one pick and stages it"
+      },
       {
         "node": "report",
-        "log": "Finish notice: time, CPU, peak memory, findings and the new research version",
-        "card": "Finish notice sent to my phone",
-        "branches": [{ "to": "atlas", "log": "Atlas updated, so nothing repeats tomorrow", "tone": "go" }]
+        "log": "Finish notice: time, CPU, peak memory, ideas tested with reasons, breakthroughs, Claude and Jev tokens",
+        "card": "Finish notice sent to my phone"
       },
-      { "node": "weekly", "log": "Sunday, so the weekly round runs: one owner idea advanced, the radar updated, one lab change proposed" },
-      { "node": "auditor", "log": "A separate auditor reviews the change and passes it" },
-      {
-        "node": "rulebook",
-        "log": "Rulebook untouched: it still matches its fingerprint",
-        "branches": [{ "to": "report", "log": "Lab change announced on my phone", "tone": "go" }]
-      },
-      { "node": "exams", "log": "This week's forecasts scored for calibration, and the keep or sell exam graded" },
       {
         "node": "verdict",
-        "log": "Monthly review: one candidate awaits my answer",
+        "log": "Staged change sent to my phone with an Undo button",
         "ask": {
-          "prompt": "Drill: a candidate passed every gate. Approve it?",
+          "prompt": "Drill: a change is staged. Undo it within 24 hours?",
           "choices": [
-            { "label": "Reject", "log": "Rejected. The first answer stands", "tone": "drop", "then": "next", "route": [{ "node": "engine", "log": "The paper engine keeps the current strategy" }] },
-            { "label": "Approve", "log": "Approved. Held for the monthly review", "then": "next", "route": [{ "node": "engine", "log": "The engine will switch to it at the monthly review" }] }
+            { "label": "Let it go live", "log": "No tap. It goes live at the next quarterly ranking day", "then": "next", "route": [] },
+            { "label": "Undo", "log": "Undone inside 24 hours. Nothing traded", "tone": "drop", "then": "next", "route": [] },
+            { "label": "Rollback", "log": "Rolled back later. The previous version returns exactly as it was", "tone": "drop", "then": "next", "route": [] }
           ]
         }
       },
-      { "node": "daychecks", "log": "Next market day: tested risk rules only at 9:05, a risk-only check at 12:30" },
-      { "node": "news", "log": "News desk: 41 headlines and filings scored as they arrived, then frozen" },
-      { "node": "plan", "log": "15:45: tomorrow's watch list with preset triggers" },
-      { "node": "desk", "log": "The judgment desk makes 2 calls, on its shadow portfolio only" },
-      { "node": "shadow", "log": "Paper books scored against the live strategy, same days" },
-      { "node": "findings", "log": "Today's findings kept for the research page, failures included" }
+      { "node": "engine", "log": "Paper engine on its 15 minute tick, real prices and real costs" },
+      { "node": "news", "log": "Probe only: feeds checked, nothing captured until I confirm their terms" },
+      { "node": "daychecks", "log": "12:30: 1 exception, a fixed drop trigger. My phone hears about it" },
+      { "node": "desk", "log": "Jev says hold, on the desk's own book only" },
+      {
+        "node": "plan",
+        "log": "After the close: tomorrow's triggers fixed for every holding",
+        "branches": [{ "to": "daychecks", "log": "Tomorrow's 9:05 and 12:30 checks use these triggers", "tone": "go" }]
+      },
+      { "node": "shadow", "log": "Paper books scored against the live strategy, same days" }
     ],
     "crew": ["clock", "atlas", "claude", "registry", "split", "checks", "seal", "report", "verdict"]
   }

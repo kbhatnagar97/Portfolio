@@ -495,7 +495,7 @@
     "summary": "A personal newsroom that watches AI labs and news sources, rates every story, drafts a LinkedIn post with a designed 4:5 card, and posts only after I tap Approve on my phone.",
     "description": "A personal newsroom that watches AI labs and news sources, rates each story and drafts a LinkedIn post with a 4:5 card, posting only after approval.",
     "spark": "Big AI launches move fast, and by the time I had read the news, written a post and made an image, the moment had passed. I wanted to be early without handing my LinkedIn over to a bot.",
-    "build": "I built a pipeline on n8n that polls 57 sources every 5 minutes, has TypeSafe's Jev model rate each story on 5 typed questions including reader benefit, and has Claude Opus research and draft the post in my voice with a 1080×1350 card that goes through a checker and a headless Chrome layout check, each with one fix pass. Each draft arrives as one phone notification with Approve, Edit (type it) and Reject, where a typed change goes to Claude for a new version, and only an Approve publishes it through the LinkedIn Posts API with companies tagged automatically.",
+    "build": "I built a pipeline on n8n that polls 57 sources every 5 minutes, has TypeSafe's Jev model rate each story on 5 typed questions including reader benefit, and has Claude Opus research and draft the post in my voice with a 1080×1350 card that goes through a checker and a headless Chrome layout check, each with one fix pass. Each draft arrives as one phone notification with Approve, Edit (type it) and Reject, where a typed change goes back through Claude, the checker and the layout check before a new version returns, and only an Approve publishes it through the LinkedIn Posts API with companies tagged automatically.",
     "architecture": [
       "Jev rating gate with Claude Haiku fallback, Claude Opus drafts, a checker and a layout check on every draft",
       "Approval over ntfy, no inbound tunnel",
@@ -523,16 +523,16 @@
     "accent": "#22d3ee",
     "stack": [
       "n8n",
-      "Python",
+      "Node.js",
       "Jev",
       "Claude",
       "Google Sheets",
       "ntfy"
     ],
-    "summary": "A personal pipeline that polls 214 company career pages every three minutes, screens each new posting against my profile, estimates the pay, and pushes the best matches to my phone before most people have seen them.",
-    "description": "A pipeline that polls 214 company career pages every three minutes, screens each new posting, estimates the pay and pushes the best matches to a phone.",
+    "summary": "A personal pipeline that polls 214 company career pages every three minutes, screens the new postings that pass a title and place check against my profile, estimates the pay, and pushes the best matches to my phone before most people have seen them.",
+    "description": "A pipeline that polls 214 company career pages every three minutes, screens the new postings that pass a title and place check, estimates the pay and pushes the best matches to a phone.",
     "spark": "Job board alerts arrive a day late, and by then a good role already has hundreds of applicants. Company career pages publish the moment a job goes live, so I wanted to read them directly and only look at the roles worth my time.",
-    "build": "An n8n workflow polls the ATS feeds behind 214 career pages. TypeSafe's Jev model screens every posting with seven typed questions, Claude prices the shortlist and writes a fit and a risk line, and fixed priority rules decide what reaches the tracker and my phone. Top roles ask for a referral first and hold the application for 48 hours.",
+    "build": "An n8n workflow polls the ATS feeds behind 214 career pages. A title and place check stops most postings, then TypeSafe's Jev model screens the rest with seven typed questions, Claude prices the shortlist and writes a fit and a risk line, and fixed priority rules decide what reaches the tracker and my phone. Top roles ask for a referral first and hold the application for 48 hours. Claude drafts the referral asks for P1 and P2 roles, and every tick checks the Referrals tab until I mark a role referred or 48 hours pass.",
     "architecture": [
       "Jev screen with typed questions, Claude pricing that degrades gracefully",
       "Fixed P1, P2, P3 rules so the tracker never disagrees with itself",
@@ -564,19 +564,20 @@
       "Claude",
       "ntfy"
     ],
-    "summary": "A Gmail sorter that labels every email within a minute and only alerts me for clients, customers of my products, replies from companies and real people. Everything else waits for one briefing at 11:00.",
+    "summary": "A Gmail sorter that labels every email within a minute and only alerts me for clients, customers of my products, replies from companies I applied to, people I know and notices with a real deadline. Everything else is counted in one briefing at 11:00.",
+    "description": "A Gmail sorter that labels every email within a minute and alerts my phone only for clients, customers, job replies, people I know and real deadlines.",
     "spark": "Important mail from clients and customers kept drowning between bank notices, newsletters and job alerts, and filters could not tell a person from a template.",
-    "build": "Apps Script on Google picks up new mail every minute. Rules from a Sheet settle the certain cases, Jev classifies the rest against the label descriptions, and Claude on my Mac decides only what Jev is unsure about. Alerts go to my phone through ntfy with buttons that teach the sorter.",
+    "build": "Apps Script on Google picks up new mail every minute. Rules from a Sheet settle the certain cases, Jev classifies the rest against the label descriptions, and Claude on my Mac decides only what Jev is unsure about, with Apps Script re-checking every answer. Alerts reach my phone through ntfy exactly once, with buttons to mark a client or mute a sender.",
     "architecture": [
       "Cheapest certain check first: Sheet rules, then Jev, then Claude",
       "A sleeping Mac never hides a human: unsure mail from people alerts after 30 minutes",
       "Never archives, deletes or marks mail read"
     ],
     "highlights": [
-      "93.1% right label on a 289 email test set",
-      "0.4% wrong alerts",
+      "93.1% right label on a 289 email test with a simulated Jev",
+      "0.4% wrong alerts with a simulated Jev",
       "One morning briefing instead of constant pings",
-      "Every tap teaches it"
+      "A sleeping Mac never hides a human"
     ]
   },
   {

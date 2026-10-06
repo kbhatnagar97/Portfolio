@@ -780,96 +780,139 @@ const Lab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void }) => {
     setRunning(true);
     setVisited(new Set());
     setLogs([]);
-    // a flow that is not live yet plays an example of how a run will go, never a record of a real one
-    log(`${isLive(flow) ? 'Run' : 'Sample run'} ${runs + 1} started`, 'sys');
-    let cur: string | undefined;
-    let chaos = false;
-    let stopped = false;
-    // the first flash lands on the next beat when music plays, at once otherwise
-    await clk.start();
-    if (!alive()) return;
-
-    for (const step of flow.run) {
-      const node = byId[step.node];
-      if (offlineRef.current.has(step.node) && node.fallback) {
-        chaos = true;
-        if (node.fallback.via) {
-          if (cur) await hop(cur, node.fallback.via, 'alt');
-          if (!alive()) return;
-          flash(node.fallback.via);
-          cur = node.fallback.via;
-        }
-        log(node.fallback.log, 'alt');
-        sfx.play('reroute', { pan: panAt(step.node) });
-        if (node.fallback.then !== 'end') continue;
-        stopped = true;
-        break;
-      }
-      if (cur) await hop(cur, step.node, edgeKind(flow, cur, step.node) === 'fallback' ? 'alt' : 'go');
-      else {
-        follow(step.node);
-        sfx.play('arrive', { kind: node.kind, at: clk.at, pan: panAt(step.node) });
-      }
+    let n = runs;
+    // a polling flow fires its trigger again after every run, as its real schedule does, until the visitor stops it
+    for (let first = true; ; first = false) {
+      // a flow that is not live yet plays an example of how a run will go, never a record of a real one
+      log(`${isLive(flow) ? 'Run' : 'Sample run'} ${++n} started`, 'sys');
+      let cur: string | undefined;
+      let chaos = false;
+      let stopped = false;
+      // the hop after a fallback jump travels as a reroute
+      let rerouted = false;
+      // the first flash lands on the next beat when music plays, at once otherwise
+      if (first) await clk.start();
       if (!alive()) return;
-      flash(step.node);
-      log(lineOf(step.log, step.node));
-      const from = step.node;
-      step.branches?.forEach((b) => {
-        // a branch with no tone keeps its item (a digest, a tray) unless it goes to the discard node
-        const tone = b.tone ?? (byId[b.to].kind === 'drop' ? 'drop' : 'go');
-        travel(from, b.to, tone).then(() => {
-          if (!alive()) return;
-          flash(b.to);
-          log(lineOf(b.log, from, b.to), tone);
-        });
-      });
-      cur = step.node;
 
-      if (step.ask) {
-        let choice: IFlowChoice | undefined;
-        do {
-          setAsk({ ...step.ask, node: step.node });
-          sfx.play('alert', { pan: panAt(step.node) });
-          music.decide(true);
-          choice = await new Promise<IFlowChoice | undefined>((r) => (answer.current = r));
-          answer.current = undefined;
-          setAsk(undefined);
-          // the answered buttons unmount; a run that carries on keeps keyboard focus inside the lab
-          requestAnimationFrame(() => {
-            if (document.activeElement === document.body) root.current?.focus({ preventScroll: true });
-          });
-          if (!alive() || !choice) return;
-          music.decide(false);
-          music.stinger(choice.tone === 'drop' ? 'no' : 'yes');
-          clk.resync();
-          complete('decide');
-          log(lineOf(choice.log, step.node), choice.tone);
-          // the first route courier leaves when its resynced 8th is heard, so it lands with its chime
-          await clk.advance(0);
-          if (!alive()) return;
-          for (const h of choice.route) {
-            await hop(cur, h.node, 'ok');
+      for (let i = 0; i < flow.run.length; i++) {
+        const step = flow.run[i];
+        const node = byId[step.node];
+        const fb = node.fallback;
+        if (offlineRef.current.has(step.node) && fb) {
+          chaos = true;
+          // a reroute to a later stage of this run jumps there, so the next hop runs along that stage's drawn line
+          const ahead = fb.via && fb.then !== 'end' ? flow.run.findIndex((s, k) => k > i && s.node === fb.via) : -1;
+          if (fb.via && ahead < 0) {
+            if (cur) await hop(cur, fb.via, 'alt');
             if (!alive()) return;
-            flash(h.node);
-            log(lineOf(h.log, step.node, h.node), 'ok');
-            cur = h.node;
+            flash(fb.via);
+            cur = fb.via;
           }
-        } while (choice.then === 'again');
-        if (choice.then !== 'next') break;
-      }
-      await clk.advance(0.5);
-      if (!alive()) return;
-    }
+          log(fb.log, 'alt');
+          sfx.play('reroute', { pan: panAt(step.node) });
+          if (ahead >= 0) {
+            i = ahead - 1;
+            rerouted = true;
+            continue;
+          }
+          if (fb.then !== 'end') continue;
+          stopped = true;
+          break;
+        }
+        if (cur) await hop(cur, step.node, rerouted || edgeKind(flow, cur, step.node) === 'fallback' ? 'alt' : 'go');
+        else {
+          follow(step.node);
+          sfx.play('arrive', { kind: node.kind, at: clk.at, pan: panAt(step.node) });
+        }
+        rerouted = false;
+        if (!alive()) return;
+        flash(step.node);
+        log(lineOf(step.log, step.node));
+        const from = step.node;
+        step.branches?.forEach((b) => {
+          // a branch with no tone keeps its item (a digest, a tray) unless it goes to the discard node
+          const tone = b.tone ?? (byId[b.to].kind === 'drop' ? 'drop' : 'go');
+          travel(from, b.to, tone).then(() => {
+            if (!alive()) return;
+            flash(b.to);
+            log(lineOf(b.log, from, b.to), tone);
+          });
+        });
+        cur = step.node;
 
-    await clk.advance(1);
-    if (!alive()) return;
-    log(stopped ? 'Run stopped safely. The fallback held' : chaos ? 'Run complete. The fallback held' : 'Run complete', 'sys');
-    if (consoleRef.current?.getClientRects().length) sfx.play('typeTick');
-    music.completeRun(chaos);
-    setRuns((n) => n + 1);
-    complete('run');
-    if (chaos) complete('chaos');
-    setRunning(false);
+        if (step.ask) {
+          let choice: IFlowChoice | undefined;
+          let retry = false;
+          do {
+            retry = false;
+            setAsk({ ...step.ask, node: step.node });
+            sfx.play('alert', { pan: panAt(step.node) });
+            music.decide(true);
+            choice = await new Promise<IFlowChoice | undefined>((r) => (answer.current = r));
+            answer.current = undefined;
+            setAsk(undefined);
+            // the answered buttons unmount; a run that carries on keeps keyboard focus inside the lab
+            requestAnimationFrame(() => {
+              if (document.activeElement === document.body) root.current?.focus({ preventScroll: true });
+            });
+            if (!alive() || !choice) return;
+            music.decide(false);
+            music.stinger(choice.tone === 'drop' ? 'no' : 'yes');
+            clk.resync();
+            complete('decide');
+            log(lineOf(choice.log, step.node), choice.tone);
+            // the first route courier leaves when its resynced 8th is heard, so it lands with its chime
+            await clk.advance(0);
+            if (!alive()) return;
+            for (const h of choice.route) {
+              const hfb = byId[h.node].fallback;
+              // a route stage knocked offline takes its fallback; one that leads back to the ask asks again
+              if (offlineRef.current.has(h.node) && hfb?.via) {
+                chaos = true;
+                await hop(cur, h.node, 'alt');
+                if (!alive()) return;
+                flash(h.node);
+                log(hfb.log, 'alt');
+                sfx.play('reroute', { pan: panAt(h.node) });
+                await hop(h.node, hfb.via, 'alt');
+                if (!alive()) return;
+                flash(hfb.via);
+                cur = hfb.via;
+                retry = cur === step.node;
+                break;
+              }
+              await hop(cur, h.node, 'ok');
+              if (!alive()) return;
+              flash(h.node);
+              log(lineOf(h.log, step.node, h.node), 'ok');
+              cur = h.node;
+            }
+          } while (choice.then === 'again' || retry);
+          if (choice.then !== 'next') break;
+        }
+        await clk.advance(0.5);
+        if (!alive()) return;
+      }
+
+      await clk.advance(1);
+      if (!alive()) return;
+      log(stopped ? 'Run stopped safely. The fallback held' : chaos ? 'Run complete. The fallback held' : 'Run complete', 'sys');
+      if (consoleRef.current?.getClientRects().length) sfx.play('typeTick');
+      setRuns((r) => r + 1);
+      complete('run');
+      if (chaos) complete('chaos');
+      if (!flow.loop) {
+        music.completeRun(chaos);
+        setRunning(false);
+        return;
+      }
+      // the groove keeps going between ticks; only the stinger marks the finished run
+      music.stinger(chaos ? 'chaosComplete' : 'complete');
+      log(flow.loop, 'sys');
+      await clk.advance(4);
+      if (!alive()) return;
+      setVisited(new Set());
+    }
   };
 
   const reset = () => {
@@ -1141,7 +1184,9 @@ const Lab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void }) => {
 
   // #region Render
   const node = selected ? byId[selected] : undefined;
-  const aiNodes = flow.nodes.filter((n) => n.fallback);
+  // the chaos hint names the AI stages; a rule or output with a fallback can still be knocked offline from its inspector
+  const withFallback = flow.nodes.filter((n) => n.fallback);
+  const aiNodes = withFallback.some((n) => n.kind === 'ai') ? withFallback.filter((n) => n.kind === 'ai') : withFallback;
 
   const renderEdges = () =>
     flow.edges.map(([a, b, kind]) => {
@@ -1264,9 +1309,9 @@ const Lab = ({ flow, onClose }: { flow: IAutomation; onClose: () => void }) => {
   const renderDock = () => (
     <div ref={dock} className='lab__dock'>
       <div className='lab__controls'>
-        <button type='button' className='lab__run' onClick={() => void run()} disabled={running}>
+        <button type='button' className='lab__run' onClick={() => (running ? stop() : void run())} disabled={running && !flow.loop}>
           <span className='lab__run-core' aria-hidden='true' />
-          {running ? 'Running' : runs ? 'Run it again' : 'Run the pipeline'}
+          {running ? (flow.loop ? 'Stop the loop' : 'Running') : runs ? 'Run it again' : 'Run the pipeline'}
         </button>
         <div className='lab__tools' role='group' aria-label='Board'>
           <button type='button' className='lab__icon' onClick={() => zoomBy(1 / 1.25)} aria-label='Zoom out'>

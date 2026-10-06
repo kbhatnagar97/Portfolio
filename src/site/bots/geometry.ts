@@ -25,10 +25,11 @@ export type TLayout = {
 export const PROP_SCALE = 0.8;
 export const HATCH = 22;
 
-// The run's main line, then the first choice's hops; a revisit (inbox learn to sheet) stays one station.
+// The run's main line, then every choice's hops, so each choice the card acts out has its stations; a revisit
+// (inbox learn to sheet) stays one station.
 export const routeOf = (flow: ICrew) => {
   const ids = flow.run.map((s) => s.node);
-  flow.run[flow.run.length - 1].ask?.choices[0].route.forEach((h) => ids.push(h.node));
+  flow.run[flow.run.length - 1].ask?.choices.forEach((c) => c.route.forEach((h) => ids.push(h.node)));
   return ids.filter((id, i) => ids.indexOf(id) === i);
 };
 // #endregion

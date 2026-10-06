@@ -14,7 +14,8 @@ import {
 export { readPalette, setView } from './crew';
 
 // #region Types
-type TCue = { kind: 'ring' | 'rain' | 'station' | 'ask' | 'rest'; st: number; log: string; step?: IFlowStep; next: number; last: boolean; crash: boolean; kick: boolean };
+// `ch` is the choice an ask cue acts out; a loop choice asks again, so one loop can hold two asks
+type TCue = { kind: 'ring' | 'rain' | 'station' | 'ask' | 'rest'; st: number; log: string; step?: IFlowStep; next: number; last: boolean; crash: boolean; kick: boolean; ch?: number };
 type TLater = { at: number; fn: () => boolean | void };
 type TFonts = { label: string; glyph: string; digit: string; tagR: number };
 
@@ -207,10 +208,16 @@ export class BotWorld {
       });
       const kind = node.kind === 'trigger' ? 'ring' : node.kind === 'source' ? 'rain' : node.kind === 'human' ? 'ask' : 'station';
       const crash = this.loop % 3 === 1 && !!node.fallback && node.kind === 'ai';
-      cues.push({ kind, st: st[s.node], log: s.log, step: s, next: -1, last: false, crash, kick });
+      cues.push({ kind, st: st[s.node], log: s.log, step: s, next: -1, last: false, crash, kick, ch: s.ask ? this.choice : undefined });
     });
     this.rainN = Math.min(this.L.compact ? 4 : 5, 1 + consumers + kicks);
     cues.push(...this.hops());
+    // a loop choice (an edit, a wait, a snooze) comes back to me, so I am asked again and take the default path
+    const last = run[run.length - 1];
+    if (ask?.choices[this.choice].then === 'again') {
+      cues.push({ kind: 'ask', st: st[last.node], log: '', step: last, next: -1, last: false, crash: false, kick: false, ch: 0 });
+      cues.push(...this.hops(0));
+    }
     cues.push({ kind: 'rest', st: -1, log: '', next: -1, last: false, crash: false, kick: false });
     this.link(cues);
     this.cues = cues;
@@ -237,9 +244,9 @@ export class BotWorld {
     return kind === 'drop' || tone === 'drop' || (!tone && kind === 'output');
   }
 
-  hops(): TCue[] {
+  hops(ch = this.choice): TCue[] {
     const ask = this.flow.run[this.flow.run.length - 1].ask;
-    const route = ask?.choices[this.choice].route.filter((h) => h.node in this.L.station) ?? [];
+    const route = ask?.choices[ch].route.filter((h) => h.node in this.L.station) ?? [];
     return route.map((h, k) => ({ kind: 'station', st: this.L.station[h.node], log: h.log, next: -1, last: k === route.length - 1, crash: false, kick: false }));
   }
 
@@ -690,9 +697,14 @@ export class BotWorld {
       this.smash(c.st, 2.4);
       this.say(c.st, this.L.stations[c.st].node.fallback?.log ?? c.log, 2);
       if (via === undefined) {
-        // no fallback bot: the blast itself delivers, unpriced
+        // no fallback bot: the blast itself delivers, unpriced, to the next station or to the later station the
+        // fallback hands over to, and the cues jump ahead to that station
         it.dashed = true;
-        if (c.next >= 0) this.fly(this.main, c.next, it.x, it.y, clamp(0.35 + Math.abs(bots[c.next].x - it.x) / 600, 0.35, 0.9) * T);
+        const to = this.L.stations[c.st].node.fallback?.via;
+        const j = to !== undefined && to in this.L.station ? this.cues.findIndex((q, k) => k > this.ci && q.st === this.L.station[to]) : -1;
+        const aim = j >= 0 ? this.cues[j].st : c.next;
+        if (aim >= 0) this.fly(this.main, aim, it.x, it.y, clamp(0.35 + Math.abs(bots[aim].x - it.x) / 600, 0.35, 0.9) * T);
+        if (j >= 0) this.ci = j - 1;
         this.thrown = true;
         return true;
       }
@@ -816,7 +828,7 @@ export class BotWorld {
       this.next(3);
       return false;
     }
-    const choice = ask.choices[this.choice];
+    const choice = ask.choices[c.ch ?? this.choice];
     if (this.ph === 3) {
       if (this.first(1)) {
         this.press = 1;
@@ -858,7 +870,8 @@ export class BotWorld {
     const c = this.cues[this.ci];
     if (!c || c.kind !== 'ask' || this.ph < 1 || this.ph > 2) return false;
     this.choice = 0;
-    this.cues = [...this.cues.slice(0, this.ci + 1), ...this.hops(), this.cues[this.cues.length - 1]];
+    c.ch = 0;
+    this.cues = [...this.cues.slice(0, this.ci + 1), ...this.hops(0), this.cues[this.cues.length - 1]];
     this.link(this.cues);
     this.glove = this.L.stations[c.st].y - 44;
     this.next(3);

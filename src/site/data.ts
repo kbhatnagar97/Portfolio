@@ -46,7 +46,8 @@ export interface IFlowNode {
   m: [number, number];
   // designed but not built yet: drawn dashed, and its run lines are marked planned
   planned?: boolean;
-  // what happens when a visitor knocks the node offline: hand over to `via`, then carry on, or end the run there
+  // what happens when a visitor knocks the node offline: hand over to `via`, then carry on, or end the run there;
+  // a `via` that is a later run step jumps the run ahead to that step
   fallback?: { via?: string; log: string; then?: 'end' };
 }
 
@@ -85,6 +86,8 @@ export interface IAutomation {
   nodes: IFlowNode[];
   edges: string[][];
   run: IFlowStep[];
+  // a polling flow: after each run the lab logs this line and fires the trigger again, until the visitor stops it
+  loop?: string;
   // the run steps the card's bot crew acts out, for a run too long for the card; defaults to the whole run
   crew?: string[];
 }
