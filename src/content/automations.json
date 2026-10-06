@@ -13,21 +13,22 @@
       { "value": 0, "label": "posts without my tap" }
     ],
     "nodes": [
-      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 5 min", "at": [120, 140], "m": [0, 0], "body": "n8n starts one run at a time. A stuck run's lock expires after 90 minutes, and a health check restarts n8n if it jams or goes quiet for 25 minutes." },
-      { "id": "collect", "kind": "source", "label": "57 sources", "sub": "polled at once", "at": [370, 140], "m": [0, 1], "body": "Lab newsrooms and sitemaps, the White House and UK PM, OpenAI and Claude status pages, SDK releases, OpenRouter, Hugging Face, Techmeme, Bloomberg, CNBC, Hacker News, Reddit, Bluesky, lab YouTube channels, leak trackers and Google News for the last hour." },
-      { "id": "filter", "kind": "rule", "label": "Fresh filter", "sub": "new and under 12 h", "at": [620, 140], "m": [0, 2], "body": "Anything seen before is skipped. Stories older than 12 hours are dropped before any model sees them." },
-      { "id": "jev", "kind": "ai", "label": "Jev rates", "sub": "4 typed questions", "at": [870, 140], "m": [0, 3], "body": "TypeSafe's Jev model answers four typed questions per story: impact, interest from 1 to 10, is it a launch, and is it a duplicate of anything covered in the last 3 days. Twelve stories take under a second.", "fallback": { "via": "haiku", "log": "Jev is offline. Claude Haiku takes over and rates the run" } },
-      { "id": "haiku", "kind": "ai", "label": "Haiku backup", "sub": "only if Jev fails", "at": [870, 340], "m": [1, 3], "body": "If Jev errors, Claude Haiku rates that run on the same scale. If credit runs out, Jev pauses for an hour and comes back by itself." },
-      { "id": "rules", "kind": "rule", "label": "Fixed rules", "sub": "adjust every score", "at": [1120, 140], "m": [0, 4], "body": "Duplicates become noise. Rumours and stories over 6 hours old are capped at 7. When two outlets cover one event in a run, the better rated one stays." },
+      { "id": "tick", "kind": "trigger", "label": "n8n tick", "sub": "every 5 min", "at": [120, 140], "m": [0, 0], "body": "n8n fires every 5 minutes on India time and starts the pipeline in the background. A run lock stops overlapping runs, and a crashed run's lock expires after 90 minutes. A health check every 5 minutes restarts n8n if it jams, a queued run is stuck for 15 minutes, or the draft run goes quiet for 25 minutes, waiting 15 minutes between restarts." },
+      { "id": "collect", "kind": "source", "label": "57 sources", "sub": "polled at once", "at": [370, 140], "m": [0, 1], "body": "Lab newsrooms and sitemaps, the White House and UK PM, OpenAI and Claude status pages, SDK releases, OpenRouter, Hugging Face, Techmeme, Bloomberg, CNBC, Hacker News, Reddit, Bluesky, YouTube channels from labs, the White House and CNBC, a leak tracker and Google News for the last hour. Each request gets 15 seconds and the whole sweep 50 seconds, and a broken feed only adds an error line. Sitemaps and model lists report only entries new since the last poll, and more than 25 at once counts as a site restructure, not news." },
+      { "id": "filter", "kind": "rule", "label": "Fresh filter", "sub": "new and under 12 h", "at": [620, 140], "m": [0, 2], "body": "Each link is cleaned of tracking tags before it is compared, so a story seen before is skipped and the earliest sighting wins. Stories older than 12 hours are dropped before any model sees them, and a date-only story passes only if it is from today or yesterday. A story counts as seen only after its rating is stored." },
+      { "id": "jev", "kind": "ai", "label": "Jev rates", "sub": "5 typed questions", "at": [870, 140], "m": [0, 3], "body": "TypeSafe's Jev model answers 5 typed questions per story: impact, interest from 1 to 10, is it a launch, is it a duplicate of what I covered in the last 3 days or have queued, and how much it helps my readers from 1 to 10. It rates 6 stories at a time in parallel and retries up to 4 times when the service is busy or failing.", "fallback": { "via": "haiku", "log": "Jev is offline. Claude Haiku takes over and rates the run" } },
+      { "id": "haiku", "kind": "ai", "label": "Haiku backup", "sub": "only if Jev fails", "at": [870, 340], "m": [1, 3], "body": "If Jev errors, Claude Haiku rates that run in batches of 35 on the same rules. If Jev runs out of credit, it pauses for 1 hour and tries again, so adding credit switches it back on by itself. Unrated stories carry over to the next run, and if rating fails for over 30 minutes my phone gets one alert." },
+      { "id": "rules", "kind": "rule", "label": "Fixed rules", "sub": "adjust every score", "at": [1120, 140], "m": [0, 4], "body": "The rating is the higher of interest and the average of interest and reader benefit, plus 1 because Jev scores run about 1 below Haiku. Low reader benefit caps a story at 8, while leaks, stories over 6 hours old and date-only items are capped at 7, and duplicates become noise. When several stories in a run score 9 or more, one Claude Haiku check drops any that repeat the top story." },
       { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "scored 7 or less", "at": [1380, 140], "m": [1, 4], "body": "Most stories end here. Being early only matters for the few that deserve a post." },
-      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "scored 8", "at": [1380, 340], "m": [1, 5], "body": "Second tier stories wait for a nightly carousel instead of a post of their own." },
-      { "id": "budget", "kind": "rule", "label": "Daily budget", "sub": "6 drafts a day", "at": [1120, 540], "m": [0, 5], "body": "At most six drafts a day, so the feed never turns into spam." },
-      { "id": "alert", "kind": "output", "label": "Breaking alert", "sub": "over budget", "at": [1380, 540], "m": [1, 6], "body": "Over the limit, a strong story still reaches my phone as a Breaking AI news alert with the source link." },
-      { "id": "opus", "kind": "ai", "label": "Opus drafts", "sub": "researched, 200 to 280 words", "at": [870, 540], "m": [0, 6], "body": "Claude Opus finds the first publication time, verifies every number and quote, then writes a time line, the stakes, a labelled take, the strongest counter and a two sided question." },
-      { "id": "checker", "kind": "rule", "label": "Checker", "sub": "one rewrite allowed", "at": [620, 540], "m": [0, 7], "body": "Sends a draft back once for dashes, length, hashtag count, a missing take or question, bait phrases, or photos without a free licence." },
-      { "id": "render", "kind": "output", "label": "Card render", "sub": "headless Chrome", "at": [370, 540], "m": [0, 8], "body": "Builds the 4:5 card: an HD still for people posters, a seamless looping GIF where motion helps, a PNG otherwise." },
-      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [370, 740], "m": [0, 9], "body": "Every draft arrives as one phone notification with Approve, Edit on Mac and Reject. Nothing posts without my tap." },
-      { "id": "publish", "kind": "output", "label": "LinkedIn", "sub": "posted through the API", "at": [870, 740], "m": [1, 9], "body": "Posted through the LinkedIn API with companies tagged. The Posted notice lists people to tag by hand and reminds me to reply in the first hour." }
+      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "8 and up, 2 to 5 stories", "at": [1380, 540], "m": [1, 5], "body": "Stories rated 8 or more are held for a nightly carousel built once between 21:00 and 03:00 India time. It needs 2 to 5 stories from the last 24 hours, one per event, laid out as a cover plus one 4:5 page per story. Opus writes 120 to 200 words with a benefit line per story, and the carousel reaches my phone with the same 3 buttons." },
+      { "id": "budget", "kind": "rule", "label": "Daily budget", "sub": "9 or 10, 6 drafts a day", "at": [1120, 540], "m": [0, 5], "body": "Only stories rated 9 or 10 are queued for their own post. At most 6 drafts per India day and 1 draft attempt per run, so the feed never turns into spam. A queued story is drafted only while it is under 5.25 hours old." },
+      { "id": "alert", "kind": "output", "label": "Breaking alert", "sub": "over budget", "at": [1120, 740], "m": [1, 6], "body": "Over the limit, each queued story still reaches my phone once as a Breaking AI news alert with its rating and a Read source button. No Opus draft is made, so it adds no Opus cost." },
+      { "id": "opus", "kind": "ai", "label": "Opus drafts", "sub": "researched, 200 to 280 words", "at": [870, 540], "m": [0, 6], "body": "Claude Opus finds the first publication time and verifies every number and quote, keeping anything unverified out of the post. It puts reader benefit first with a For you line, then my take, the strongest counter and a question that names both sides. The post opens with how long ago the news broke, or on the news itself once it is over 8 hours old. It also writes the card as HTML from one of the templates." },
+      { "id": "checker", "kind": "rule", "label": "Checker", "sub": "one fix pass", "at": [620, 540], "m": [0, 7], "body": "Checks every draft for dashes, a missing age opener, length, hashtag count, bait or AI tell phrases, and a missing For you line, take or closing question. It also flags emoji in the card, a missing photo or licence credit, and motion on a photo poster. Opus gets one fix pass, and anything left reaches my phone as rule warnings." },
+      { "id": "layout", "kind": "rule", "label": "Layout check", "sub": "Chrome audit, one fix", "at": [370, 540], "m": [0, 8], "body": "A headless Chrome audit checks the finished frame for text off the canvas or within 16 px of an edge, clipped or overlapping text, text under 14 px, and contrast under 4.5:1, or 3:1 for text 24 px and up. Opus fixes what it finds once, keeping 48 px margins. The frame is checked again, and anything left goes into the draft warning." },
+      { "id": "render", "kind": "output", "label": "Card render", "sub": "headless Chrome", "at": [370, 740], "m": [0, 9], "body": "Builds the 4:5 card at 1080 × 1350 from 7 templates, never the same design twice in a row, except the plain fallback. Motion only points the eye: everything reads in frame 1, eased over 3 to 6 seconds, and loops only when natural. If motion hides content, Opus rewrites it once before the card falls back to a still. Stills and people posters with a free licence photo go out as 2x HD JPEGs, moving cards as GIFs." },
+      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [620, 740], "m": [0, 10], "body": "Every draft arrives as one phone notification with the card that will post (a smaller copy when the GIF is large), tags in bold, when and where the news first broke, and any rule warnings. The buttons are Approve, Edit (type it) and Reject, and a typed change goes to Claude Opus, which sends back the next version. Approve refuses a story already posted or a single story over 6 hours old, and a draft with no answer for 48 hours expires. Nothing posts without my tap." },
+      { "id": "publish", "kind": "output", "label": "LinkedIn", "sub": "posted through the API", "at": [870, 740], "m": [1, 10], "body": "Posted through the LinkedIn API as one image or GIF, or a multi-image post for the digest, with each company tagged once at its first mention. Nothing posts unless every upload succeeds, and a failed step sends the draft back to my phone for one more Approve. If the post is not confirmed within 15 minutes, my phone asks whether it is already live. The Posted notice lists people to tag by hand and reminds me to reply in the first hour." }
     ],
     "edges": [
       ["tick", "collect"],
@@ -42,24 +43,28 @@
       ["budget", "alert"],
       ["budget", "opus"],
       ["opus", "checker"],
-      ["checker", "render"],
+      ["checker", "layout"],
+      ["layout", "render"],
       ["render", "you"],
-      ["you", "publish"]
+      ["you", "publish"],
+      ["digest", "you", "skip"]
     ],
     "run": [
       { "node": "tick", "log": "Tick fired. Lock acquired" },
-      { "node": "collect", "log": "57 sources polled. 41 new items" },
+      { "node": "collect", "log": "57 sources polled. 41 items fetched" },
       { "node": "filter", "log": "29 already seen, 3 older than 12 h. 9 go on" },
-      { "node": "jev", "log": "Jev rated 9 stories in 0.8 s" },
+      { "node": "jev", "log": "Jev answered 5 questions on each of 9 stories" },
       {
         "node": "rules",
         "log": "Top story scores 10: a new frontier model launch",
+        "card": "Top story scores 10: a frontier model launch",
         "branches": [{ "to": "drop", "log": "6 stories at 7 or less dropped" }, { "to": "digest", "log": "2 stories kept for the nightly digest" }]
       },
       { "node": "budget", "log": "Draft 3 of 6 today" },
-      { "node": "opus", "log": "Opus verified 4 numbers and 2 quotes. 247 words" },
+      { "node": "opus", "log": "Opus verified 4 numbers and 2 quotes. 247 words", "card": "Verified 4 numbers, 2 quotes. 247 words" },
       { "node": "checker", "log": "Checker passed on the first try" },
-      { "node": "render", "log": "4:5 card rendered at 1080 × 1350" },
+      { "node": "layout", "log": "Layout check flagged 1 clipped headline. Opus fixed it and the recheck is clean", "card": "1 clipped headline fixed, recheck clean" },
+      { "node": "render", "log": "4:5 GIF rendered, readable in frame 1" },
       {
         "node": "you",
         "log": "Draft sent to my phone. Waiting for a tap",
@@ -67,12 +72,13 @@
           "prompt": "A draft is on your phone. Post it?",
           "choices": [
             { "label": "Approve", "log": "Approved", "route": [{ "node": "publish", "log": "Posted. 3 companies tagged" }] },
-            { "label": "Edit on Mac", "log": "Opened on the Mac, tightened the take", "route": [{ "node": "publish", "log": "Edited draft posted" }] },
+            { "label": "Edit (type it)", "log": "Typed a change. Claude sent back version 2", "route": [{ "node": "publish", "log": "Approved version 2. Posted" }] },
             { "label": "Reject", "log": "Rejected. Nothing posts", "tone": "drop", "route": [] }
           ]
         }
       }
-    ]
+    ],
+    "crew": ["tick", "collect", "jev", "rules", "budget", "opus", "checker", "layout", "render", "you"]
   },
   {
     "id": "first-to-apply",
