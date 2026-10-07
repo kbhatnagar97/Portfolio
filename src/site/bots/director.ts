@@ -307,10 +307,11 @@ export class BotWorld {
       else this.later.splice(i, 1);
     }
     if (this.loop < 0) this.startLoop();
+    // the loopT cap guards stuck loops only: a choice that comes back (an edit, a snooze) plus a crash runs past 20 s
     if (this.fade > 0) {
       this.fade -= dt;
       if (this.fade <= 0) this.reset();
-    } else if (this.loopT > 20) this.fade = 0.3;
+    } else if (this.loopT > 28) this.fade = 0.3;
     this.upkeep(dt);
     this.cue(dt);
     this.items(dt);

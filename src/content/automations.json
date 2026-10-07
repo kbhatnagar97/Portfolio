@@ -21,14 +21,15 @@
       { "id": "haiku", "kind": "ai", "label": "Haiku backup", "sub": "only if Jev fails", "at": [870, 340], "m": [1, 3], "body": "If Jev errors, Claude Haiku rates that run in batches of 35 with the same freshness, leak and duplicate caps, but without the reader benefit score. If Jev runs out of credit, it pauses for 1 hour and tries again, so adding credit switches it back on by itself. Unrated stories carry over to the next run, and if rating fails for over 30 minutes my phone gets one alert." },
       { "id": "rules", "kind": "rule", "label": "Fixed rules", "sub": "adjust every score", "at": [1120, 140], "m": [0, 4], "body": "The rating is the higher of interest and the average of interest and reader benefit, plus 1 because Jev scores run about 1 below Haiku. Low reader benefit caps a story at 8, while leaks, stories over 6 hours old and date-only items are capped at 7, and duplicates become noise. When several stories in a run score 9 or more, one Claude Haiku check drops any that repeat the top story." },
       { "id": "drop", "kind": "drop", "label": "Dropped", "sub": "scored 7 or less", "at": [1380, 140], "m": [1, 4], "body": "Most stories end here. Being early only matters for the few that deserve a post." },
-      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "8 and up, 2 to 5 stories", "at": [1380, 540], "m": [1, 5], "body": "Stories rated 8 or more are held for a nightly carousel built once between 21:00 and 03:00 India time. It needs 2 to 5 stories from the last 24 hours, one per event, laid out as a cover plus one 4:5 page per story. Opus writes 120 to 200 words with a benefit line per story, and the carousel reaches my phone with the same 3 buttons. Its pages pass the same checker, layout check and render." },
+      { "id": "digest", "kind": "output", "label": "Nightly digest", "sub": "8 and up, 2 to 5 stories", "at": [1380, 540], "m": [1, 5], "body": "Stories rated 8 or more are held for a nightly carousel built once between 21:00 and 03:00 India time. It needs 2 to 5 stories from the last 24 hours, one per event, laid out as a cover plus one 4:5 page per story. Opus writes 120 to 200 words with a benefit line per story, and the carousel reaches my phone with the same 3 buttons. Its pages pass the same checker, layout check and render, and its text gets the same company tags." },
       { "id": "budget", "kind": "rule", "label": "Daily budget", "sub": "9 or 10, 6 drafts a day", "at": [1120, 540], "m": [0, 5], "body": "Only stories rated 9 or 10 are queued for their own post. At most 6 drafts per India day and 1 draft attempt per run, so the feed never turns into spam. A queued story is drafted only while it is under 5.25 hours old. A draft that fails gets one more try on a later run." },
       { "id": "alert", "kind": "output", "label": "Breaking alert", "sub": "over budget", "at": [1120, 740], "m": [1, 6], "body": "Over the limit, each queued story still reaches my phone once as a Breaking AI news alert with its rating and a Read source button. No Opus draft is made, so it adds no Opus cost." },
       { "id": "opus", "kind": "ai", "label": "Opus drafts", "sub": "researched, 200 to 280 words", "at": [870, 540], "m": [0, 6], "body": "Claude Opus finds the first publication time and verifies every number and quote, keeping anything unverified out of the post. It puts reader benefit first with a For you line, then my take, the strongest counter and a question that names both sides. The post opens with how long ago the news broke, or on the news itself once it is over 8 hours old, and the card is HTML from one of the templates. If research shows the news first broke over 6 hours ago, the draft is archived before it reaches my phone.", "fallback": { "log": "Opus draft failed. My phone gets an alert and the story waits in the queue for one more try on a later run", "then": "end" } },
       { "id": "checker", "kind": "rule", "label": "Checker", "sub": "one fix pass", "at": [620, 540], "m": [0, 7], "body": "Checks every draft for dashes, a missing age opener, length, hashtag count, bait or AI tell phrases, and a missing For you line, take or closing question. It also flags emoji in the card, a missing photo or licence credit, and motion on a photo poster. Opus gets one fix pass, and anything left reaches my phone as rule warnings." },
       { "id": "layout", "kind": "rule", "label": "Layout check", "sub": "Chrome audit, one fix", "at": [370, 540], "m": [0, 8], "body": "A headless Chrome audit checks the finished frame for text off the canvas or within 16 px of an edge, clipped or overlapping text, text under 14 px, and contrast under 4.5:1, or 3:1 for text 24 px and up. Opus fixes what it finds once, keeping 48 px margins. The frame is checked again, and anything left goes into the draft warning." },
-      { "id": "render", "kind": "output", "label": "Card render", "sub": "headless Chrome", "at": [370, 740], "m": [0, 9], "body": "Builds the 4:5 card at 1080 × 1350 from 7 templates, never the same design twice in a row, except the plain fallback. Motion only points the eye: everything reads in frame 1, eased over 3 to 6 seconds, and loops only when natural. If motion hides content, Opus rewrites it once before the card falls back to a still. Stills and people posters with a free licence photo go out as 2x HD JPEGs, moving cards as GIFs." },
-      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [620, 740], "m": [0, 10], "body": "Every draft arrives as one phone notification with the card that will post (a smaller copy when the GIF is large), tags in bold, when and where the news first broke, and any rule warnings. The buttons are Approve, Edit (type it) and Reject. A typed change goes to Claude Opus with the draft I was sent last. A news draft then goes back through the checker and, when the card changed, the layout check and render, before it returns as the next version with the same 3 buttons, one edit at a time. If Claude cannot be reached, my phone says so and the earlier version stays. Approve refuses a story already posted or a single story over 6 hours old, a draft with no answer for 48 hours expires, and nothing posts without my tap." },
+      { "id": "render", "kind": "output", "label": "Card render", "sub": "headless Chrome", "at": [120, 540], "m": [0, 9], "body": "Builds the 4:5 card at 1080 × 1350 from 7 templates, never the same design twice in a row, except the plain fallback. Motion only points the eye: everything reads in frame 1, eased over 3 to 6 seconds, and loops only when natural. If motion hides content, Opus rewrites it once before the card falls back to a still. Stills and people posters with a free licence photo go out as 2x HD JPEGs, moving cards as GIFs." },
+      { "id": "tags", "kind": "ai", "label": "Company tags", "sub": "Sonnet search, pages checked", "at": [370, 740], "m": [1, 9], "body": "Claude Sonnet lists every company, AI lab, product, app and model named in the post and searches the web for its LinkedIn company or showcase page, reusing pages it already knows. My code then opens every page, including any Opus already chose for the draft, and keeps it only if it exists and its official name matches how I wrote it. Each page is tagged once, at its first mention, and a product gets its verified maker in front, like OpenAI's ChatGPT or Google's Gemini, unless the company is already named or is part of the product's name, like GitHub Copilot. The check runs on every draft, digest, edited version and resend on its way to my phone, where tags show in bold and a name with no page comes back as a rule warning, and it skips text it has already checked, so a plain resend costs nothing.", "fallback": { "via": "you", "log": "Tag check failed. The draft still reaches my phone with a tags warning" } },
+      { "id": "you", "kind": "human", "label": "My approval", "sub": "approve, edit or reject", "at": [620, 740], "m": [0, 10], "body": "Every draft arrives as one phone notification with the card that will post (a smaller copy when the GIF is large), tags in bold, when and where the news first broke, any rule warnings, and the buttons Approve, Edit (type it) and Reject. A typed change goes to Claude Opus with the draft I was sent last, and a news draft then goes back through the checker and, when the card changed, the layout check and render, then the company tags, before it returns as the next version with the same 3 buttons, one edit at a time. If Claude cannot be reached, my phone says so and the earlier version stays. Approve refuses a story already posted or a single story over 6 hours old, a draft with no answer for 48 hours expires, and nothing posts without my tap." },
       { "id": "publish", "kind": "output", "label": "LinkedIn", "sub": "posted through the API", "at": [870, 740], "m": [1, 10], "body": "Posted through the LinkedIn API as one image or GIF, a multi-image post for the digest, or a document post when I hand it a PDF, with each company tagged once at its first mention. Nothing posts unless every upload succeeds, and a failed step sends the draft back to my phone, and every Approve tries again. If the post is not confirmed within 15 minutes, my phone asks whether it is already live. The Posted notice lists people to tag by hand and reminds me to reply in the first hour.", "fallback": { "via": "you", "log": "LinkedIn upload failed. Nothing posted, and the draft is back on my phone so Approve can try again" } }
     ],
     "edges": [
@@ -46,10 +47,12 @@
       ["opus", "checker"],
       ["checker", "layout"],
       ["layout", "render"],
-      ["render", "you"],
+      ["render", "tags"],
+      ["tags", "you"],
+      ["render", "you", "fallback"],
       ["you", "opus"],
       ["you", "publish"],
-      ["digest", "you", "skip"],
+      ["digest", "tags", "skip"],
       ["publish", "you", "fallback"]
     ],
     "run": [
@@ -68,6 +71,7 @@
       { "node": "checker", "log": "Checker passed on the first try" },
       { "node": "layout", "log": "Layout check flagged 1 clipped headline. Opus fixed it and the recheck is clean", "card": "1 clipped headline fixed, recheck clean" },
       { "node": "render", "log": "4:5 GIF rendered, readable in frame 1" },
+      { "node": "tags", "log": "Sonnet found 4 names. 3 LinkedIn pages verified, 1 model now names its maker, and 1 name with no page comes back as a warning", "card": "3 companies tagged, 1 name has no page" },
       {
         "node": "you",
         "log": "Draft sent to my phone. Waiting for a tap",
@@ -83,6 +87,7 @@
                 { "node": "checker", "log": "Checker ran again on the edited draft. Clean" },
                 { "node": "layout", "log": "The card changed, so the layout check ran again. Clean" },
                 { "node": "render", "log": "Card rendered again" },
+                { "node": "tags", "log": "Tags checked again, 3 known pages reused" },
                 { "node": "you", "log": "The new version is on my phone with the same 3 buttons" }
               ],
               "then": "again"
@@ -92,7 +97,7 @@
         }
       }
     ],
-    "crew": ["tick", "collect", "jev", "rules", "budget", "opus", "checker", "layout", "render", "you"]
+    "crew": ["tick", "collect", "jev", "rules", "budget", "opus", "checker", "layout", "render", "tags", "you"]
   },
   {
     "id": "first-to-apply",
