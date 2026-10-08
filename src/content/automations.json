@@ -309,30 +309,34 @@
   {
     "id": "claude-watchdog",
     "name": "Claude Watchdog",
-    "tagline": "Watches every Claude Code chat on my Mac and taps me when one needs me or long work ends",
+    "tagline": "Taps me when a Claude Code chat needs me or long work ends, and prices each automation's runs",
     "cadence": "every minute",
     "accent": "#ec4899",
     "loop": "Next scan in 1 minute",
     "stats": [
-      { "value": 60, "label": "second scan" },
+      { "value": 1, "label": "spend ping per automation burst" },
       { "value": 4, "label": "Claude Code hooks" },
       { "value": 2, "label": "nudges per stuck item, max" },
       { "value": 0, "label": "pushes or deploys it triggers" }
     ],
     "nodes": [
-      { "id": "scan", "kind": "trigger", "label": "Minute scan", "sub": "every chat on the Mac", "at": [120, 140], "m": [0, 0], "body": "A LaunchAgent runs one scan a minute across every Claude Code chat on this Mac: the chats themselves, their workflows, background agents, background shells and Cowork handoffs. After the Mac wakes from sleep, every timer starts fresh, so nothing looks stuck just because the lid was shut." },
-      { "id": "hooks", "kind": "source", "label": "Hook notes", "sub": "stop, fail, ask, end", "at": [370, 140], "m": [1, 0], "body": "Four Claude Code hooks fire inside the chats: every finished turn, every API failure, every permission prompt or question, and every chat that closes. They leave notes for the next scan, and a turn that ran 10 minutes or more gets its Done note straight away." },
+      { "id": "scan", "kind": "trigger", "label": "Minute scan", "sub": "chats and automation runs", "at": [120, 140], "m": [0, 0], "body": "A LaunchAgent runs one scan a minute across every Claude Code chat on this Mac: the chats themselves, their workflows, background agents, background shells and Cowork handoffs, plus the headless Claude runs my other automations start. Each check runs on its own, so one that fails never stops the rest. If scans stop for over 5 minutes, as when the Mac sleeps, every stall, wait and question timer starts fresh, so nothing looks stuck just because the lid was shut." },
+      { "id": "hooks", "kind": "source", "label": "Hook notes", "sub": "stop, fail, ask, end", "at": [370, 140], "m": [1, 0], "body": "4 Claude Code hooks fire inside the chats: every finished turn, every API failure, every permission prompt or question, and every chat that closes. They leave notes for the next scan, and a turn that ran 10 minutes or more gets its Done note straight away. The watchdog's own Haiku runs never fire them, and a hook that errors is only logged, so it never breaks a chat." },
       { "id": "heartbeat", "kind": "rule", "label": "Self check", "sub": "says so if scans stop", "at": [370, 540], "m": [0, 2], "body": "A watcher that dies quietly is worse than none. If no scan has run for 10 minutes, the next finished turn sends an alert, at most once an hour, that the watchdog is not scanning, with the command that starts it again." },
-      { "id": "detect", "kind": "rule", "label": "Trouble finder", "sub": "waiting, stuck, silent", "at": [620, 140], "m": [1, 1], "body": "Spots chats waiting on my Allow or answer for 2 minutes, workflows and background agents silent for 20 minutes, background shells silent for 30, chats busy for 40 minutes with no output, Cowork handoffs silent for 45 minutes, chats stopped by an API error or a usage limit, failed workflows, and questions left unanswered for 5 minutes. A chat waiting on me, a chat stuck busy, an unanswered question, a usage limit, a login or billing error and a third failure come straight to me, since a nudge cannot help. Dev servers and deliberate waits are left alone." },
-      { "id": "done", "kind": "output", "label": "Done notes", "sub": "long work finished", "at": [620, 340], "m": [0, 1], "body": "Long work that finishes, a turn, a workflow, an agent or a background task over 10 minutes, gets a short Done note with the chat's own summary. It waits up to 3 minutes for that summary, so I never sit waiting on something already finished." },
-      { "id": "risky", "kind": "rule", "label": "Nudge gate", "sub": "idle chat, nothing risky", "at": [870, 140], "m": [1, 2], "body": "A nudge goes out only if the owning chat is idle, not waiting on me, and its 2 nudges are not used up. A chat busy mid turn gets 10 minutes to go idle, then the item comes to me instead. A stuck shell command that touches git, ssh, scp, rsync, a push or a deploy skips the nudge and comes straight to me. A snoozed item passes as healthy until its snooze ends." },
-      { "id": "nudge", "kind": "ai", "label": "Haiku nudge", "sub": "only if the chat is idle", "at": [1120, 140], "m": [1, 3], "body": "A throwaway Claude Haiku that can only send one message posts a nudge into the owning chat, at most twice per item, once for a Cowork handoff, 10 minutes apart. It also asks a chat stopped by a passing API error to continue, up to 2 retries, and asks a chat whose workflow failed to diagnose and resume it. The nudge never asks a chat to commit, push, deploy, stop or rerun anything. If a stall, retry or failure nudge is not confirmed as delivered, for example it only queues for approval in that chat, its alert goes to my phone at once.", "fallback": { "via": "alert", "log": "Haiku could not deliver the nudge, so a Stuck alert went to my phone at once. The ladder still counts it and tries again in 10 minutes" } },
-      { "id": "chat", "kind": "ai", "label": "Owning chat", "sub": "gets the first try", "at": [1370, 140], "m": [0, 4], "body": "The chat that started the work has the context, so it gets the first chance to fix it, or to snooze the item if the wait is expected. A chat in the middle of a turn, or waiting on me, is never messaged. Fresh output from the stuck work clears the item on the next scan. Nudges already used stay used, so a later stall on the same item comes straight to me." },
+      { "id": "detect", "kind": "rule", "label": "Trouble finder", "sub": "waiting, stuck, silent", "at": [620, 140], "m": [1, 1], "body": "Spots chats waiting on my Allow or answer for 2 minutes, workflows and background agents silent for 20 minutes, background shells silent for 30, chats busy for 40 minutes with no output, Cowork handoffs silent for 45 minutes, chats stopped by an API error or a usage limit, failed workflows, and questions left unanswered for 5 minutes. A chat waiting on me, a chat stuck busy, an unanswered question, a usage limit, a 3rd failure and a login, billing or invalid request error come straight to me, since a nudge cannot help. Dev servers and deliberate waits are left alone." },
+      { "id": "done", "kind": "output", "label": "Done notes", "sub": "long work finished", "at": [620, 340], "m": [0, 1], "body": "Long work that finishes, a turn, a workflow, an agent or a background task of 10 minutes or more, gets a short Done note with the chat's own summary. It waits up to 3 minutes for that summary, so I never sit waiting on something already finished." },
+      { "id": "risky", "kind": "rule", "label": "Nudge gate", "sub": "idle chat, nothing risky", "at": [870, 140], "m": [1, 2], "body": "A nudge goes out only if the owning chat is idle, has a unique name, is not waiting on me, and its 2 nudges are not used up. A chat busy mid turn gets 10 minutes to go idle, then the item comes to me instead. A stuck shell command that touches git, ssh, scp, rsync, a push or a deploy skips the nudge and comes straight to me. A snoozed item passes as healthy until its snooze ends." },
+      { "id": "nudge", "kind": "ai", "label": "Haiku nudge", "sub": "only if the chat is idle", "at": [1120, 140], "m": [1, 3], "body": "A throwaway Claude Haiku that can only send one message posts a nudge into the owning chat, at most twice per item, once for a Cowork handoff, 10 minutes apart. It also asks a chat stopped by a passing API error to continue, up to 2 retries, and asks a chat whose workflow failed to diagnose and resume it. Stall nudges tell the chat never to commit, push, deploy, stop or rerun anything because of them, and a workflow is resumed only if it does not commit, push or deploy; otherwise the chat checks with me first. If a stall, retry or failure nudge is not confirmed as delivered, its alert goes to my phone and Mac at once.", "fallback": { "via": "alert", "log": "Haiku could not deliver the nudge, so a Stuck alert went to my phone at once. The ladder still counts it and tries again in 10 minutes" } },
+      { "id": "chat", "kind": "ai", "label": "Owning chat", "sub": "gets the first try", "at": [1370, 140], "m": [0, 4], "body": "The chat that started the work has the context, so it gets the first chance to fix it, or to snooze the item if the wait is expected. A chat in the middle of a turn, or waiting on me, is never messaged. Fresh output from the stuck work clears the item on the next scan. Nudges already used stay used, so a later stall on the same item gets only the nudges it has left, then comes to me." },
       { "id": "alert", "kind": "output", "label": "Phone alert", "sub": "with exact steps", "at": [1120, 340], "m": [0, 3], "body": "Then my phone and my Mac get an alert: what is stuck, for how long, whether self heal was tried, and numbered steps to fix it. A nudge that could not be delivered sends its alert at once, so I can hear sooner. A chat waiting on my answer gets up to 3 alerts, 15 minutes apart." },
-      { "id": "me", "kind": "human", "label": "My call", "sub": "open, snooze or ignore", "at": [1120, 540], "m": [1, 4], "body": "I decide what happens next. The alert has no buttons: I open the chat, snooze the item from the Mac, or let it be. The watchdog never touches the work itself." },
-      { "id": "vscode", "kind": "output", "label": "VS Code", "sub": "comes forward when idle", "at": [1370, 540], "m": [1, 5], "body": "The alert itself queues VS Code to come forward. It comes to the front only after a minute without keyboard or mouse input, so it never steals keystrokes meant for another window. If a chat's process dies while its workflow is still running, the watchdog reopens it, at most twice, and nudges it to resume. A chat I closed on purpose only gets a notice with the steps to reopen it." },
+      { "id": "me", "kind": "human", "label": "My call", "sub": "open, snooze or ignore", "at": [1120, 540], "m": [1, 4], "body": "I decide what happens next. The alert has no buttons: I open the chat, snooze the item from the Mac, or let it be. A spend ping needs nothing from me. The watchdog never touches the work itself." },
+      { "id": "vscode", "kind": "output", "label": "VS Code", "sub": "comes forward when idle", "at": [1370, 540], "m": [1, 5], "body": "The alert itself queues VS Code, or the Claude app for a Cowork handoff, to come forward. It comes to the front only after a minute without keyboard or mouse input, so it never steals keystrokes meant for another window. If a chat's process dies while its workflow is still running, the watchdog reopens it, at most twice, and nudges it to resume. If I closed the chat on purpose, VS Code is closed or 2 reopen tries fail, I get one notice with the steps to reopen it instead." },
       { "id": "snooze", "kind": "rule", "label": "Snooze", "sub": "one command on the Mac", "at": [870, 540], "m": [0, 5], "body": "When a wait is expected, one command on the Mac snoozes that item for a set time, or for good. Every stall nudge tells the chat how to snooze it too. Snooze covers stalled workflows, agents, shells and handoffs, not a chat waiting on me. When the snooze ends and the item is still stuck, the ladder starts again with only the nudges it has left." },
-      { "id": "remind", "kind": "output", "label": "One reminder", "sub": "then silence", "at": [1120, 740], "m": [1, 6], "body": "For a stalled workflow, agent, shell or handoff, one reminder follows 30 minutes later. Then it stays quiet until the item recovers; if it stalls again later it comes straight to me, with its nudges spent." }
+      { "id": "remind", "kind": "output", "label": "One reminder", "sub": "then silence", "at": [1120, 740], "m": [1, 6], "body": "For a stalled workflow, agent, shell or handoff, one reminder follows 30 minutes later. Then it stays quiet until the item recovers; if it stalls again later, it gets only the nudges it has left, then comes to me." },
+      { "id": "runs", "kind": "source", "label": "Automation runs", "sub": "headless runs, cost on exit", "at": [120, 340], "m": [0, 6], "body": "Each scan also finds the headless Claude runs my other automations start; my own chats are told apart by how their first prompt arrived and are never costed. Counting started with the first scan after tracking was switched on, never the history. When a run exits, Claude Code records its cost and tokens, so a run still going is simply checked again on the next scan. A run that adds no cost, such as one that fails at the start, is skipped, a resumed run counts only its new part, and the watchdog's own Haiku nudges keep no transcript, so they never count." },
+      { "id": "price", "kind": "rule", "label": "Name and price", "sub": "list price at ₹95 a dollar", "at": [120, 540], "m": [0, 7], "body": "Each run gets 2 names: the automation, from the folder it started in, like LINKEDIN NEWSROOM, and the task, from how its prompt opens, like Draft post, or up to its first 4 words when the opening is new. Its cost is Claude's API list price turned into rupees at 95 to the dollar, so it is an estimate, not a bill. Its tokens add up input, output and cache tokens across every model the run used. Each run then gets one line in a ledger on my Mac." },
+      { "id": "quiet", "kind": "rule", "label": "Quiet window", "sub": "10 quiet min, 1 hour max", "at": [120, 740], "m": [1, 7], "body": "Costed runs queue up per automation, so a burst of runs becomes one message instead of one per run. The ping goes once that automation has had no new run for 10 minutes, or an hour after the burst's first run, whichever comes first." },
+      { "id": "usage", "kind": "output", "label": "Spend ping", "sub": "silent, phone only", "at": [370, 740], "m": [1, 8], "body": "My phone gets one short, silent ping per automation, titled for example CLAUDE WATCHDOG: LINKEDIN NEWSROOM used ₹120. Each line is one task with its rupees and tokens, such as Draft post x2: ₹120, 1.4M tokens. Lines run biggest spend first, and the last one gives today's total across all my automations. It has no buttons and no Mac banner, since it needs nothing from me, and one command on the Mac prints the same totals for today or any number of days." }
     ],
     "edges": [
       ["scan", "hooks"],
@@ -355,7 +359,13 @@
       ["vscode", "chat"],
       ["me", "snooze"],
       ["snooze", "risky"],
-      ["me", "remind"]
+      ["me", "remind"],
+      ["scan", "runs"],
+      ["runs", "price"],
+      ["price", "quiet"],
+      ["quiet", "usage"],
+      ["usage", "me"],
+      ["alert", "runs", "skip"]
     ],
     "run": [
       { "node": "scan", "log": "Minute scan: 6 chats, 2 workflows, 3 background shells", "card": "Minute scan: 6 chats, 2 workflows, 3 shells" },
@@ -378,15 +388,15 @@
       },
       { "node": "risky", "log": "Its chat is idle and has nudges left. Nudge 1 of 2", "card": "Chat idle, nudges left: nudge 1 of 2" },
       { "node": "nudge", "log": "Haiku posts nudge 1: check it, change nothing risky", "card": "Haiku posts nudge 1 of 2" },
-      { "node": "chat", "log": "10 minutes on, the workflow has still written nothing", "card": "10 min on, still nothing written" },
-      { "node": "detect", "log": "Next scan: silent for 30 minutes, still stalled" },
-      { "node": "risky", "log": "Still idle, 1 nudge left. Nudge 2 of 2" },
-      { "node": "nudge", "log": "Haiku posts nudge 2 of 2" },
-      { "node": "chat", "log": "10 more minutes, still nothing. Over to me" },
-      { "node": "alert", "log": "Phone and Mac alert at 40 minutes: self heal tried, numbered steps to fix it", "card": "Alert at 40 min: self heal tried, steps" },
+      { "node": "chat", "log": "10 minutes on, still nothing, so Haiku sends nudge 2. 10 more minutes, still nothing. Over to me", "card": "Nudge 2 of 2 sent, still nothing. Over to me" },
+      { "node": "alert", "log": "Phone and Mac alert: self heal tried, numbered steps to fix it", "card": "Phone alert: self heal tried, numbered steps" },
+      { "node": "runs", "log": "Later minute scans find 2 finished LinkedIn newsroom runs, costed on exit" },
+      { "node": "price", "log": "Example: 2 Draft post runs, ₹60 each, 1.4M tokens in all. 2 ledger lines" },
+      { "node": "quiet", "log": "No new newsroom run for 10 minutes. Burst closed" },
+      { "node": "usage", "log": "Sample silent ping: LINKEDIN NEWSROOM used ₹120. Draft post x2: ₹120, 1.4M tokens. Today, all automations: ₹180", "card": "Sample ping: LINKEDIN NEWSROOM used ₹120" },
       {
         "node": "me",
-        "log": "Waiting for me",
+        "log": "Waiting for me. The spend ping needs no reply",
         "ask": {
           "prompt": "A workflow is still stuck after 2 nudges. Your call?",
           "choices": [
@@ -394,27 +404,28 @@
               "label": "Open the chat",
               "log": "Opening it",
               "route": [
-                { "node": "vscode", "log": "VS Code was already in front, it came forward once I stopped typing" },
-                { "node": "chat", "log": "I type the step from the alert. The chat gets back to work" },
-                { "node": "detect", "log": "Next scan sees new output. Item cleared, the watch goes on" }
+                { "node": "vscode", "log": "VS Code came forward once I stopped typing" },
+                { "node": "chat", "log": "I type the alert's step. The chat works again" },
+                { "node": "detect", "log": "Next scan sees new output. Item cleared" }
               ]
             },
             {
               "label": "Snooze it",
-              "log": "Snoozed for an hour with one command on the Mac",
+              "log": "Snoozed for an hour from the Mac",
               "route": [
                 { "node": "snooze", "log": "Quiet for an hour" },
-                { "node": "risky", "log": "Snooze over, still stuck. Nudges used up, so no third one" },
+                { "node": "risky", "log": "Snooze over, still stuck. No nudges left" },
                 { "node": "alert", "log": "Alert again at once: self heal already tried" },
                 { "node": "me", "log": "Back to me" }
               ],
               "then": "again"
             },
-            { "label": "Ignore", "log": "Ignored for now", "tone": "drop", "route": [{ "node": "remind", "log": "One reminder 30 minutes later, then silence while the minute scan keeps watching" }] }
+            { "label": "Ignore", "log": "Ignored for now", "tone": "drop", "route": [{ "node": "remind", "log": "One reminder 30 minutes later, then silence" }] }
           ]
         }
       }
-    ]
+    ],
+    "crew": ["scan", "hooks", "detect", "risky", "nudge", "chat", "alert", "usage", "me"]
   },
   {
     "id": "trading-lab",
