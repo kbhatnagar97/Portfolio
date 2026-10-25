@@ -1,0 +1,1260 @@
+// flipp-tripp: ink on flap black, board rows with a time column; the stepped tempo lives in the content file, read by the stage module.
+
+// #region World
+.case--flipp-tripp {
+  --accent-2: #1a1816; // flap black: tiles, the stage panels, board rows; the fold shade is black over it, never a paint
+  --gap-chapter: var(--s-9); // two 48px tile units at every width
+  --row-label: 160px;
+  --row-in: calc(var(--row-label) + var(--s-7));
+  --panel-pad: var(--s-7);
+  --housing-pad: var(--s-3);
+  --tile-gap: 4px;
+  --board-cols: 12;
+  --board-tile: 48px;
+}
+
+@media (width < 700px) {
+  .case--flipp-tripp {
+    --panel-pad: var(--s-4);
+    --housing-pad: var(--s-2);
+    --board-cols: 8;
+    --board-tile: 40px;
+  }
+}
+
+// the board's mono labels: row times and drawing names (the kit styles version names alike); and the smaller heads of tables and findings
+.ft-row,
+.ft-side__you,
+.ft-side__name,
+.ft-pool__name {
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ft-table thead th,
+.ft-finds dt,
+.ft-finds__sev {
+  font: 500 11px / 1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+// the label sits 8px under its heading; from 1100px it moves into the time column, level with the heading
+.ft-row {
+  margin-top: calc(-1 * var(--s-4));
+}
+
+@media (width >= 1100px) {
+  .case--flipp-tripp :is(.ch, .stage) > * {
+    grid-column: wide;
+    margin-left: var(--row-in);
+  }
+
+  .case--flipp-tripp .stage > :is(.stage__frame, .ft-panel) {
+    grid-column: max;
+    margin-left: 0;
+  }
+
+  .case--flipp-tripp .ch > :is(h2, .ft-row) {
+    grid-row: 1;
+    align-self: baseline;
+  }
+
+  .case--flipp-tripp .ch > .ft-row {
+    width: var(--row-label);
+    margin: 0;
+  }
+}
+// #endregion
+
+// #region Tiles: two static halves, and two leaves only while a tile moves
+.ft-tile {
+  --tile-h: calc(var(--tile-w) * 1.4);
+  --tile-r: clamp(4px, var(--tile-w) / 6, 12px); // 8px on a 48px tile; an enlarged tile keeps a flap's small corner
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--tile-w);
+  height: var(--tile-h);
+  perspective: calc(var(--tile-h) * 5);
+
+  // the split between the two halves
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: 3;
+    inset-inline: 0;
+    top: calc(50% - 0.5px);
+    height: 1px;
+    background: var(--bg);
+  }
+}
+
+.ft-half,
+.ft-leaf {
+  position: absolute;
+  inset-inline: 0;
+  height: 50%;
+  overflow: hidden;
+  background: var(--accent-2);
+
+  &::before {
+    content: attr(data-g);
+    display: block;
+    height: var(--tile-h);
+    // a line box 0.1em short lifts Geist's capitals onto the hinge; a transform here made Chrome count each flip as a layout shift
+    font: 500 calc(var(--tile-h) * 0.62) / calc(var(--tile-h) - 0.1em) var(--sans);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--accent);
+  }
+}
+
+.ft-half--top,
+.ft-leaf--fold {
+  top: 0;
+  border-radius: var(--tile-r) var(--tile-r) 0 0;
+  transform-origin: 50% 100%;
+}
+
+.ft-half--bottom,
+.ft-leaf--land {
+  top: 50%;
+  border-radius: 0 0 var(--tile-r) var(--tile-r);
+  transform-origin: 50% 0;
+
+  &::before {
+    margin-top: calc(var(--tile-h) / -2);
+  }
+}
+
+.ft-leaf {
+  z-index: 2;
+  backface-visibility: hidden;
+}
+
+// black over flap black; only its opacity ever changes
+.ft-shade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+}
+
+// a housing in the page colour, so flap black tiles read as flaps on a flap black panel
+.ft-housing,
+.ft-view {
+  border-radius: var(--r-2);
+  background: var(--bg);
+}
+
+.ft-housing {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: var(--s-6);
+  padding: var(--housing-pad);
+}
+
+// the board's tiles shrink until a row fits the panel, at any width
+.ft-board {
+  --tile-w: min(var(--board-tile), (100vw - 2 * var(--gutter) - 2 * var(--panel-pad) - 2 * var(--housing-pad) - (var(--board-cols) - 1) * var(--tile-gap)) / var(--board-cols));
+  display: grid;
+  gap: var(--s-2);
+}
+
+.ft-board__row {
+  display: flex;
+  gap: var(--tile-gap);
+}
+
+.ft-board--8,
+.ft-narrow {
+  display: none;
+}
+
+@media (width < 700px) {
+  .ft-board--12,
+  .ft-wide {
+    display: none;
+  }
+
+  .ft-board--8 {
+    display: grid;
+  }
+
+  .ft-narrow {
+    display: inline;
+  }
+}
+// #endregion
+
+// #region Stage panels and the cut away
+.stage--flipp-tripp .stage__frame,
+.ft-panel {
+  padding: var(--panel-pad);
+  border-radius: var(--r-1);
+  background: var(--accent-2);
+
+  > h3:first-child {
+    margin-top: 0;
+  }
+}
+
+.ft-panel,
+.ft-ms {
+  margin-top: var(--s-7);
+}
+
+.ft-cut__example,
+.ft-help,
+.ft-cap,
+.ft-nojs,
+.ft-error,
+.ft-rows__l,
+.ft-finds dd,
+.stage--flipp-tripp .storyboard__frame p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.ft-cut__live {
+  display: grid;
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+}
+
+.ft-view {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-5) var(--s-6);
+  padding: 56px var(--s-5) var(--s-5);
+}
+
+.ft-view__badges {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  display: flex;
+  gap: var(--s-2);
+  margin: 0;
+}
+
+.ft-front {
+  position: relative;
+  padding-inline: 28px;
+}
+
+.ft-tile--big {
+  --tile-w: 240px;
+}
+
+// one ink circle numbers the drawing's parts and the timeline's marks
+.ft-callout,
+.ft-axis__dot,
+.ft-axis__n {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font: 500 10px / 1 var(--mono);
+  color: var(--accent-2);
+  background: var(--accent);
+}
+
+.ft-front .ft-callout {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  translate: 0 -50%;
+
+  // a short leader to the tile's edge
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 12px;
+    height: 1px;
+    background: var(--muted);
+  }
+}
+
+.ft-front :is(.ft-callout--3, .ft-callout--4)::after {
+  right: 100%;
+  left: auto;
+}
+
+.ft-callout--1 {
+  top: 25%;
+}
+
+.ft-callout--2 {
+  top: 75%;
+}
+
+.ft-front .ft-callout--3,
+.ft-front .ft-callout--4 {
+  right: 0;
+  left: auto;
+}
+
+.ft-callout--3 {
+  top: 50%;
+}
+
+.ft-callout--4 {
+  top: 31%;
+}
+
+.ft-side {
+  position: relative;
+  width: 220px;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+// the side view's strokes and caps are attributes in the SVG; only the colours, tokens, live here
+.ft-side__face {
+  stroke: var(--line-strong);
+}
+
+.ft-side__leaf {
+  stroke: var(--accent);
+}
+
+.ft-side__eye {
+  stroke: var(--muted);
+}
+
+.ft-side__hinge {
+  fill: var(--muted);
+}
+
+.ft-side__you {
+  position: absolute;
+  top: 79%;
+  right: 0;
+}
+
+.ft-side__name {
+  display: block;
+  margin-top: var(--s-3);
+}
+
+// every key on the page: a mark, then its words
+.ft-key li,
+.ft-pool__key li,
+.ft-axis__keys > li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.ft-key {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  gap: var(--s-3) var(--s-5);
+  font: 500 14px / 1.2 var(--sans);
+  color: var(--muted);
+}
+
+.ft-pool__name {
+  margin: 0 0 var(--s-2);
+}
+
+.ft-pool__cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+
+  li {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 30px;
+    border-radius: 4px;
+    font: 500 15px / 1 var(--sans);
+    color: var(--muted);
+    background: var(--bg);
+  }
+}
+
+// the example's three glyphs: where it starts (ring), the random one it passes (dashed ring), where it lands (ink)
+.ft-pool__cells :is(.is-from, .is-random) {
+  color: var(--text);
+}
+
+.ft-pool__cells .is-from,
+.ft-pool__key .is-from::before {
+  outline: 1px solid var(--muted);
+  outline-offset: -1px;
+}
+
+.ft-pool__cells .is-random,
+.ft-pool__key .is-random::before {
+  outline: 1px dashed var(--muted);
+  outline-offset: -1px;
+}
+
+.ft-pool__cells .is-to,
+.ft-pool__key .is-to::before {
+  color: var(--accent-2);
+  background: var(--accent);
+}
+
+.ft-pool__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-5);
+  margin-top: var(--s-3);
+  font: 400 13px / 1.4 var(--mono);
+  color: var(--muted);
+
+  li::before {
+    content: '';
+    width: 11px;
+    height: 15px;
+    border-radius: 2px;
+  }
+}
+
+// the readout leads the controls, like an instrument's display
+.ft-cut__ctl {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+}
+
+// both readouts hold two lines from the start, so a new phase or timing never moves what sits under them
+.stage--flipp-tripp .stage__readout {
+  min-height: calc(2 * 1.2em + 12px);
+  white-space: pre-line;
+}
+
+// a 2px track in --edge, the thumb in ink: the calculator's slider, so every case's sliders look alike
+.ft-range {
+  appearance: none;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: linear-gradient(var(--edge), var(--edge)) 0 50% / 100% 2px no-repeat;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--accent-2);
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent-2);
+    border-radius: 50%;
+    background: var(--accent);
+  }
+}
+
+// the slider's time scale: the start, the end of the first step at its middle, and the end of the second
+.ft-scale {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  width: 100%;
+  max-width: none; // as wide as the slider, past the prose measure, so 110 sits at its middle
+  margin: calc(-1 * var(--s-3)) 0 0;
+  font: 400 12px / 1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--faint);
+
+  :last-child {
+    text-align: right;
+  }
+}
+
+.ft-play,
+.ft-flip {
+  min-height: 44px;
+  padding: 0 var(--s-5);
+  font: 500 15px / 1 var(--sans);
+  cursor: pointer;
+}
+
+.ft-play {
+  min-width: 15em; // both labels fit, so the button never resizes mid play
+  justify-content: center;
+  background: none;
+}
+
+.ft-play:disabled,
+.ft-flip:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.ft-error {
+  color: var(--text);
+}
+
+@media (width >= 1100px) {
+  .ft-cut__live {
+    grid-template-columns: minmax(0, 620px) minmax(260px, 1fr);
+    align-items: center;
+    column-gap: var(--s-7);
+  }
+
+  .ft-pool,
+  .ft-error {
+    grid-column: 1 / -1;
+  }
+
+  .ft-cut__ctl {
+    grid-row: 1;
+    grid-column: 2;
+  }
+}
+
+@media (width < 700px) {
+  .ft-view {
+    gap: var(--s-4) var(--s-3);
+    padding-inline: var(--s-3);
+  }
+
+  // the callouts move onto the tile, so the tile and its side view share one row
+  .ft-front {
+    padding-inline: 0;
+
+    .ft-callout {
+      left: 6px;
+
+      &::after {
+        display: none;
+      }
+    }
+
+    :is(.ft-callout--3, .ft-callout--4) {
+      right: 6px;
+      left: auto;
+    }
+  }
+
+  .ft-tile--big {
+    --tile-w: 144px;
+  }
+
+  // the side view narrows rather than wrap under the tile, so nothing parts the tile from its controls
+  .ft-side {
+    flex: 1 1 0;
+    max-width: 132px;
+  }
+
+  // the legend leads the drawing, for the same reason
+  .ft-key {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    order: -1;
+  }
+
+  // slow play's longer second line wraps on a phone, so a third line is held and Pause never moves under the finger
+  .ft-cut__ctl .stage__readout {
+    min-height: calc(3 * 1.2em + 12px);
+  }
+}
+
+// the step texts under the drawing; the one that holds the slider's value stays bright
+.stage--flipp-tripp .stage__steps li {
+  position: relative;
+  padding-left: var(--s-5);
+
+  &[aria-current]::before {
+    content: '';
+    position: absolute;
+    top: 0.6em;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+}
+
+html.js .stage--flipp-tripp .stage__steps:has([aria-current]) li:not([aria-current]) {
+  color: var(--muted);
+}
+
+// without JavaScript the storyboard stands in for the live cut away; keyed on html.js so the first paint never swaps
+html:not(.js) :is(.ft-cut__live, .ft-type .stage__readout),
+html.js .stage--flipp-tripp .storyboard,
+html.js .ft-cut__story-cap,
+html.js .ft-nojs {
+  display: none;
+}
+
+.stage--flipp-tripp .storyboard {
+  margin-top: var(--s-5);
+
+  @media (width >= 900px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.stage--flipp-tripp .storyboard__frame {
+  background: var(--bg);
+
+  p {
+    margin-top: var(--s-3);
+  }
+}
+
+.ft-mini .ft-tile {
+  --tile-w: 120px;
+}
+
+.ft-cut__story-cap,
+.ft-nojs,
+.ft-type .ft-cap {
+  margin-top: var(--s-3);
+}
+// #endregion
+
+// #region Type a word
+.ft-form {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 640px;
+
+  label {
+    font: 500 15px / 1.4 var(--sans);
+  }
+}
+
+.ft-form__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+.ft-form input {
+  flex: 1 1 14ch;
+  min-width: 0;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-1);
+  font: 500 17px / 1 var(--sans);
+  color: var(--text);
+  background: var(--bg);
+
+  &[aria-invalid='true'] {
+    border-color: var(--warn);
+  }
+
+  // without JS the field ships disabled with the example, and stays readable
+  &:disabled {
+    opacity: 1;
+    color: var(--muted);
+    -webkit-text-fill-color: var(--muted);
+  }
+}
+
+.ft-form__error {
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--warn);
+  border-radius: var(--r-1);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+// a plain caption under the board: what it times, then, after the reader's first flip, the timing
+.ft-type .stage__readout {
+  display: block;
+  margin-top: var(--s-3);
+  padding: 0;
+  color: var(--muted);
+  background: none;
+}
+
+// beside its form only where the twelve column board and the form both fit at full size
+@media (width >= 1280px) {
+  .ft-type {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: var(--s-7);
+
+    > * {
+      grid-column: 1;
+    }
+  }
+
+  .ft-type__view {
+    grid-row: 1 / span 6;
+    grid-column: 2;
+    align-self: center;
+
+    .ft-housing {
+      margin-top: 0;
+    }
+  }
+}
+
+// one line held open, so the announcement never moves the caption under it
+.ft-status {
+  min-height: 1.4em;
+  margin: var(--s-3) 0 0;
+  font: 500 15px / 1.4 var(--sans);
+}
+
+// #endregion
+
+// #region Measured on the review build: two timelines, one axis each; a phone lists the labels, wider screens set each at its mark
+.ft-axis {
+  margin: var(--s-7) 0;
+}
+
+.ft-axis__title {
+  margin: 0 0 var(--s-3);
+}
+
+.ft-axis__plot {
+  position: relative;
+  height: 24px;
+  margin-bottom: 36px;
+
+  > * {
+    position: absolute;
+  }
+}
+
+.ft-axis__line {
+  inset-inline: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.ft-axis__band {
+  top: 6px;
+  left: var(--a);
+  width: calc(var(--b) - var(--a));
+  height: 12px;
+  border-radius: 4px;
+  background: var(--accent);
+  opacity: 0.35;
+}
+
+.ft-axis__band--still {
+  border: 1px solid var(--muted);
+  background: none;
+  opacity: 1;
+}
+
+.ft-axis__ref {
+  top: -8px;
+  bottom: -8px;
+  left: var(--x);
+  border-left: 1px dashed var(--muted);
+}
+
+.ft-axis__dot {
+  top: 50%;
+  left: var(--x);
+  outline: 2px solid var(--bg);
+  translate: -50% -50%;
+}
+
+.ft-axis__tick {
+  top: calc(100% + 12px);
+  left: var(--x);
+  translate: -50% 0;
+  font: 400 12px / 1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--faint);
+}
+
+.ft-axis__tick--start {
+  translate: none;
+}
+
+.ft-axis__tick--end {
+  translate: -100% 0;
+}
+
+.ft-axis__unit {
+  display: none;
+}
+
+.ft-axis__keys {
+  display: grid;
+  gap: var(--s-2);
+
+  > li {
+    font: 400 14px / 18px var(--sans);
+    color: var(--muted);
+  }
+}
+
+.ft-axis__v {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.ft-axis__sw {
+  flex: none;
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.ft-axis__sw--band {
+  background: var(--accent);
+  opacity: 0.35;
+}
+
+.ft-axis__sw--still {
+  border: 1px solid var(--muted);
+}
+
+.ft-axis__sw--ref {
+  width: 1px;
+  height: 16px;
+  margin-inline: 7px;
+  border-left: 1px dashed var(--muted);
+}
+
+@media (width >= 700px) {
+  .ft-axis__chart {
+    --above: 40px;
+    --plot: 24px;
+    position: relative;
+    padding: var(--above) 0 64px;
+  }
+
+  .ft-axis__plot {
+    margin: 0;
+  }
+
+  .ft-axis__dot {
+    width: 8px;
+    height: 8px;
+    font-size: 0; // the number belongs to the phone list
+  }
+
+  .ft-axis__tick {
+    top: calc(100% + 44px);
+  }
+
+  .ft-axis__unit {
+    display: inline;
+  }
+
+  .ft-axis__n,
+  .ft-axis__sw {
+    display: none;
+  }
+
+  // every label shares one specificity, so its alignment modifier below always wins
+  .ft-axis__key {
+    position: absolute;
+    left: var(--x);
+    white-space: nowrap;
+
+    // a stem from the label to its mark on the axis
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 1px;
+      background: var(--line-strong);
+    }
+  }
+
+  .ft-axis__key--above {
+    top: 0;
+
+    &::after {
+      top: 100%;
+      height: calc(var(--above) + var(--plot) / 2 - 18px);
+    }
+  }
+
+  .ft-axis__key--below {
+    top: calc(var(--above) + var(--plot) + 8px);
+
+    &::after {
+      bottom: 100%;
+      height: calc(var(--plot) / 2 + 8px);
+    }
+  }
+
+  .ft-axis__key--start {
+    padding-left: var(--s-2);
+  }
+
+  .ft-axis__key--end {
+    padding-right: var(--s-2);
+    translate: -100% 0;
+
+    &::after {
+      right: 0;
+      left: auto;
+    }
+  }
+
+  .ft-axis__key--mid {
+    translate: -50% 0;
+
+    &::after {
+      left: 50%;
+    }
+  }
+}
+
+.ft-ms .fig {
+  max-width: var(--read);
+}
+
+.ft-privacy {
+  margin-bottom: 0;
+}
+// #endregion
+
+// #region Static boards: research rows, scores, findings, checks, the gate's message, each a stack of flaps
+.ft-rows ul,
+.ft-finds {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border-radius: var(--r-1);
+  background: var(--bg);
+}
+
+.ft-rows ul {
+  grid-template-columns: max-content minmax(0, 1fr);
+
+  li {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    column-gap: 1px;
+  }
+}
+
+// a value cell is a flap: a 1px seam at half height, drawn behind the figure so its strokes cover it
+.ft-rows__v {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  padding: var(--s-3) var(--s-4);
+  font: 500 24px / 1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  background: linear-gradient(var(--bg), var(--bg)) 0 50% / 100% 1px no-repeat, var(--accent-2);
+}
+
+.ft-rows__l {
+  padding: var(--s-3) var(--s-4);
+  background: var(--accent-2);
+}
+
+@media (width < 700px) {
+  .ft-rows__v {
+    padding-inline: var(--s-3);
+    font-size: 20px;
+  }
+
+  .ft-rows__l {
+    padding-inline: var(--s-3);
+  }
+}
+
+.ft-table {
+  margin: var(--s-4) 0;
+
+  table {
+    width: 100%;
+    border-spacing: 0 1px;
+    font-size: 15px;
+  }
+
+  caption {
+    caption-side: bottom;
+    margin-top: var(--s-3);
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+    color: var(--muted);
+  }
+
+  th,
+  td {
+    padding: var(--s-2) var(--s-3);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  tbody :is(th, td) {
+    height: 48px;
+    background: var(--accent-2);
+  }
+
+  tbody th {
+    font-weight: 500;
+    border-radius: var(--r-1) 0 0 var(--r-1);
+  }
+
+  tbody td:last-child {
+    border-radius: 0 var(--r-1) var(--r-1) 0;
+  }
+
+  .ft-num {
+    text-align: right;
+  }
+}
+
+.ft-val {
+  display: inline-block;
+  min-width: 3ch;
+  white-space: nowrap;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font: 500 clamp(17px, 2vw, 24px) / 1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+// the winning concept's scores and every passed group sit on ink chips
+.is-won .ft-val,
+.ft-val--ink {
+  color: var(--accent-2);
+  background: var(--accent);
+}
+
+.ft-val--ink {
+  font: 500 12px / 1 var(--mono);
+  letter-spacing: 0.08em;
+}
+
+.ft-note {
+  display: block;
+  margin-top: 2px;
+  font: 400 13px / 1.4 var(--sans);
+  color: var(--muted);
+}
+
+// the scores and checks still fit a 320px screen
+@media (width < 480px) {
+  .ft-table {
+    :is(th, td) {
+      padding-inline: 6px;
+    }
+
+    thead th {
+      font-size: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    tbody th {
+      font-size: 14px;
+    }
+  }
+
+  .ft-val {
+    padding-inline: 6px;
+    font-size: 17px;
+  }
+}
+
+.ft-finds {
+  margin: var(--s-4) 0;
+
+  li {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-5);
+    background: var(--accent-2);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--s-2);
+    margin: var(--s-1) 0 0;
+  }
+
+  dl div {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+
+  dt {
+    padding-top: 4px;
+  }
+
+}
+
+.ft-finds__sev {
+  align-self: start;
+  justify-self: start;
+  margin: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  color: var(--text);
+}
+
+.ft-finds__what {
+  margin: 0;
+  font: 500 17px / 1.45 var(--sans);
+}
+
+@media (width >= 900px) {
+  .ft-finds li {
+    grid-template-columns: 96px minmax(0, 1fr);
+    column-gap: var(--s-5);
+
+    > :not(.ft-finds__sev) {
+      grid-column: 2;
+    }
+  }
+
+  .ft-finds__sev {
+    grid-row: 1 / span 2;
+  }
+}
+
+.ft-code__box {
+  position: relative;
+  padding: 52px var(--s-5) var(--s-5);
+  border-radius: var(--r-1);
+  background: var(--accent-2);
+
+  .badge {
+    position: absolute;
+    top: var(--s-3);
+    left: var(--s-3);
+  }
+
+  pre {
+    margin: 0;
+    font: 400 14px / 1.7 var(--mono);
+    white-space: pre-wrap;
+    color: var(--text);
+  }
+}
+// #endregion
+
+// #region Milestones as board rows: from 1100px each date and time takes the time column
+.case--flipp-tripp .milestones {
+  .milestone__why {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-1) var(--s-2);
+  }
+
+  .milestone__when {
+    text-transform: uppercase;
+  }
+}
+
+@media (width >= 1100px) {
+  .case--flipp-tripp .milestones {
+    margin-left: 0;
+    padding-left: 0;
+
+    &::before {
+      left: calc(var(--row-label) + var(--s-5));
+    }
+
+    .milestone {
+      display: grid;
+      grid-template-columns: var(--row-label) var(--s-7) minmax(0, 1fr);
+
+      &::before {
+        left: calc(var(--row-label) + var(--s-5) - 4px);
+      }
+    }
+
+    .milestone__body {
+      grid-column: 3;
+    }
+
+    .milestone__time {
+      display: block;
+      margin: 0;
+    }
+  }
+}
+// #endregion
+
+// #region Reduced motion, forced colours, print
+@media (prefers-reduced-motion: reduce) {
+  .ft-play {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .ft-tile,
+  .ft-val,
+  .ft-callout,
+  .ft-pool__cells li {
+    outline: 1px solid CanvasText;
+  }
+}
+
+@media print {
+  .ft-cut__live,
+  .ft-type .stage__readout,
+  .ft-status {
+    display: none !important;
+  }
+
+  .stage--flipp-tripp .storyboard {
+    display: grid !important;
+  }
+
+  .ft-cut__story-cap {
+    display: block !important;
+  }
+
+  // flap black turns white on paper, so each tile keeps an edge
+  .ft-half,
+  .ft-leaf,
+  .ft-rows__v,
+  .ft-rows__l,
+  .ft-table tbody :is(th, td),
+  .ft-finds li,
+  .ft-code__box {
+    background: #fff !important;
+  }
+
+  .ft-tile {
+    outline: 1px solid #999;
+  }
+
+  .ft-housing,
+  .ft-axis__chart {
+    break-inside: avoid;
+  }
+}
+// #endregion

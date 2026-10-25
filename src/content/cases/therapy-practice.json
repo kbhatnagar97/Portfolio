@@ -1,0 +1,389 @@
+{
+  "slug": "therapy-practice",
+  "draft": false,
+  "title": "Shivantika Saxena",
+  "kicker": "Therapy website and booking",
+  "industry": "Counselling practice",
+  "client": "Shivantika Saxena, Counselling Psychologist",
+  "anonymised": false,
+  "role": "Design, code and booking setup",
+  "year": "2026",
+  "published": "2026-10-25",
+  "status": "Live since 5 Aug 2026, booking checked 25 Oct 2026",
+  "accent": "#f2a8ae",
+  "purposes": ["saves-time", "saves-money", "opens-reach", "reduces-risk"],
+  "seoTitle": "Shivantika Saxena: therapy site with booking",
+  "description": "How I turned Shivantika Saxena's draft into a live counselling practice site: clients book on Cal.com's free plan and pay her by UPI, with no gateway fee.",
+  "deck": "Her draft had a warm editorial look and no way to book; now clients book on their own and pay her by UPI.",
+  "summary": [
+    "A counselling psychologist sent me her one file HTML draft. It had a warm editorial look, placeholders where her details belonged, and no way for clients to book.",
+    "I rebuilt it as plain files any host can serve, then moved it closer to her own design document, version by version. Clients book on Cal.com's free plan and pay her by UPI with no gateway, and a paid session waits until she confirms the money landed. A script set up both session types, so her side of the setup became 7 short steps.",
+    "Her own calendar was wired into the page 4 days after my first commit. No gateway takes ₹35.40 of each ₹1,500 fee, modelled at Razorpay's standard 2% plus 18% GST on that 2%."
+  ],
+  "impact": [
+    {
+      "value": "0 to 2",
+      "label": "session types a client can book without messaging her first: a free 20 minute consult and a 50 minute session.",
+      "kind": "measured",
+      "source": "calpages"
+    },
+    {
+      "value": "₹35.40",
+      "label": "stays with her on each ₹1,500 session, with no gateway taking Razorpay's standard 2% plus 18% GST on that 2%.",
+      "kind": "modelled",
+      "source": "razorpay",
+      "note": "Razorpay's page offered new accounts 0% for their first 90 days, so a first year would save less."
+    },
+    {
+      "value": "7 steps",
+      "label": "on her side of the booking setup, down from 14 checklist items and 6 questions typed by hand.",
+      "kind": "measured",
+      "source": "guides"
+    },
+    {
+      "value": "4 days",
+      "label": "from my first commit to the commit that put her own calendar on the page, 3 to 7 Aug 2026.",
+      "kind": "measured",
+      "source": "git"
+    }
+  ],
+  "poster": {
+    "src": "/case-studies/therapy-practice/media/poster.jpg",
+    "webp": "/case-studies/therapy-practice/media/poster.webp",
+    "alt": "The header and hero of Shivantika Saxena's live site, with an arch drawing of a rose sun over sage hills and the heading “You don't need to have it all figured out. You just need a place to begin.” Below it, six steps joined by one rose line: read the page, choose a session, pick a time, answer her questions, pay her by UPI, join on Google Meet.",
+    "width": 1280,
+    "height": 800
+  },
+  "stack": [
+    "HTML, CSS and JavaScript with no build step",
+    "Cal.com free plan, embedded",
+    "Cal.com API v2 through a Node script",
+    "Google Calendar and Google Meet",
+    "Vercel static hosting and one function",
+    "UPI and Google Pay, outside the site"
+  ],
+  "links": [{ "label": "Live site", "href": "https://therapy-site-ten.vercel.app" }],
+  "project": "therapy-site",
+  "offer": {
+    "who": "Solo practitioners, such as therapists, coaches and tutors, who have a draft or a clear idea for their site and no way for clients to book.",
+    "gets": "A one page site in your own look and words. Self serve booking on a free scheduler plan, with your intake questions asked before the first call. Payment by UPI with no gateway fee, each paid slot held until you confirm. A WhatsApp or email line in case the calendar fails, and copy that makes no outcome claims.",
+    "needs": "Your draft or brief, your palette and copy, a Cal.com account connected to Google Calendar and Google Meet, and your UPI ID.",
+    "setup": "I write the site and a script that sets up your sessions, limits and intake questions. Your part is a short list of steps, with a direct link to each screen you need. Here, her own calendar was wired into the page a few days after my first commit."
+  },
+  "credits": [{ "text": "Captures of Shivantika Saxena's site, live and rendered from earlier commits, made 25 Oct 2026." }],
+  "sources": [
+    {
+      "id": "git",
+      "text": "Git history of the site's repository, read with git log on 25 Oct 2026: 23 commits on 9 distinct days from 3 Aug to 24 Sep 2026. Dates and times are IST, here and everywhere on this page. 3 Aug: first commit 6230e23 at 16:17 and her real details in 66ce058 at 18:14. 6 Aug: the first setup checklist in 973718b at 16:14, the setup script in 05ca2b7 at 16:34 and direct links into Cal.com in 54dac92 at 17:11. 7 Aug: her own Cal.com page wired into main.js in 3fcc4d9 at 14:33 and a WhatsApp alert function in 85013ca at 15:02. 12 Aug: the redesign in d6b5d0c at 01:46 and drawn illustrations in b123aa7 at 02:51. 13 Aug: the rebuild to her document's flow in 40ae237 at 15:46, sampled colours in 46e35d9 at 16:12 and her exact palette in b4c4fbd at 17:17. 24 Sep: two typefaces and no dashes in 3d4a802 at 20:29. Commit times, not deploy times."
+    },
+    {
+      "id": "calpages",
+      "text": "The practice's public Cal.com pages, read on 25 Oct 2026 without booking anything: two visible session types, Free Initial Consultation (20 minutes, confirmed at once) and Therapy Session (50 minutes, needs her confirmation, Google Meet, a rolling booking window of 7 days on Asia/Kolkata time, stored as ROLLING_WINDOW). Before: her draft had no booking (project notes), and my first commit's booking section rendered as an empty box."
+    },
+    {
+      "id": "guides",
+      "text": "The Cal.com setup guide kept in the site's repository, in two versions: the first (commit 973718b, 6 Aug 2026) has 16 checklist lines, 2 of them optional, and 6 booking questions to type by hand; the current one (commit 54dac92, the same day) has 7 steps, 6 of them with a direct link into Cal.com and 1 a message to me, and estimates about 5 minutes. Lines counted on 25 Oct 2026. The minutes are the guide's estimate, not a timing."
+    },
+    {
+      "id": "razorpay",
+      "text": "Razorpay pricing page, read 25 Oct 2026: 2% per transaction plus GST, and the same 2% platform fee on UPI payments taken through the gateway; new accounts were offered 0% for their first 90 days. Her fee of ₹1,500 a session is from her site. Model: ₹1,500 × 2% = ₹30; GST of 18% on ₹30 = ₹5.40; ₹35.40 a session.",
+      "url": "https://razorpay.com/pricing/"
+    },
+    {
+      "id": "live",
+      "text": "Headless Chromium render of the live site on 25 Oct 2026: 0 forms and 0 input, textarea or select elements. Response headers read the same day: frame options, content type options, referrer policy, permissions policy and strict transport security; no content security policy.",
+      "url": "https://therapy-site-ten.vercel.app"
+    },
+    {
+      "id": "calcom",
+      "text": "Cal.com pricing page, read 25 Oct 2026: the Individuals plan is free, with unlimited event types and templated workflows.",
+      "url": "https://cal.com/pricing"
+    },
+    {
+      "id": "firstbuild",
+      "text": "My first commit (6230e23, 3 Aug 2026), rendered in headless Chromium on 25 Oct 2026: the booking section is an empty box with placeholder WhatsApp and email links. 30 placeholder slots counted by pattern in its index.html (bracketed fields plus placeholder domain, phone, email and handle values: 29 single line matches and 1 that wraps a line), plus a placeholder booking link in main.js."
+    },
+    {
+      "id": "gst",
+      "text": "Razorpay's pricing explainer, published 13 Feb 2026 and read 25 Oct 2026: GST at 18% applies to the platform fee only.",
+      "url": "https://razorpay.com/blog/razorpay-payment-gateway-pricing-explained/"
+    },
+    {
+      "id": "calendly",
+      "text": "Calendly pricing page, read 25 Oct 2026: Free includes one event type and leaves out automated reminders; Standard costs $10 per seat per month billed yearly, or $12 billed monthly. Model: 12 × $10 = $120 and 12 × $12 = $144 a year for one seat. US dollars as listed; no conversion made.",
+      "url": "https://calendly.com/pricing"
+    },
+    {
+      "id": "notes",
+      "text": "The project notes kept with the site's code, not published, written during the build: payment first planned as a prepaid gateway; her answers of 6 Aug 2026 (UPI with no gateway, two session types, 15 minutes after each, 4 a day, a week ahead, a 24 hour email reminder); Cal.com chosen for its free reminder workflows; her 3 hand made duplicate session types hidden through the API, not deleted; colours first sampled from her document's pixels (Linen read as #f0e7de, Tea Rose as #ecb4b3), then replaced by the exact #EEE7DD and #EBB4B2 from her PDF; her rules of no dashes and two typefaces; the site live on Vercel since 5 Aug 2026, with no domain bought yet."
+    },
+    {
+      "id": "script",
+      "text": "The setup script kept in the site's repository (90 lines, Cal.com API v2, Node's built in fetch), read 25 Oct 2026: 7 settings on the consultation (title, address, length, description, Google Meet, intake questions, 15 minutes after) and 10 on the paid session (the same 7, plus at most 4 a day, a 7 day rolling window and a confirmation policy that keeps the slot held while pending), 17 in all, with 6 intake questions on each. Cal.com rejects a second event at the same address, so a rerun only prints that refusal for each one."
+    },
+    {
+      "id": "herrules",
+      "text": "Commit 3d4a802 (24 Sep 2026) and headless renders on 25 Oct 2026: just before that commit, index.html held 13 em or en dashes and 12 hyphenated compounds in its visible text, title and meta; the live index.html holds 0 in the same places, the viewport meta aside. Fonts loaded: Courier Prime, Fraunces and Mulish at commit b4c4fbd; Fraunces and Mulish live."
+    },
+    {
+      "id": "files",
+      "text": "The site's own files, read 25 Oct 2026: wc -c of index.html, styles.css, main.js, favicon.svg and three SVG drawings gives 29,804 bytes, with no framework and no build step; the README says any static host works. main.js loads Calendly or Cal.com from one BOOKING_URL value and leaves only the WhatsApp and email line when it is empty (lines 14 to 23); index.html keeps that line under the calendar, with a note for readers without JavaScript (lines 199 to 211); .gitignore keeps env files out of git, and the setup script reads its key from the environment."
+    }
+  ],
+  "gaps": [
+    "Her original draft file and the date she sent it are not on record.",
+    "The deploy time of the commit that wired in her calendar is not recorded.",
+    "The slot hold, the buffer and the daily cap come from the setup script and are not yet confirmed live.",
+    "Whether the 24 hour reminder is switched on is not yet confirmed.",
+    "Whether the WhatsApp alert function is wired up is not yet confirmed.",
+    "The booking window is stored as a rolling window; its span in calendar days is not yet confirmed.",
+    "The free consult's meeting location comes from the setup script only.",
+    "The hosting plan and its cost are not recorded.",
+    "Traffic, booking counts and session volume are not yet available.",
+    "Time saved per booking is not measured.",
+    "Why the 12 Aug redesign happened is not recorded."
+  ],
+  "blocks": {
+    "stage": {
+      "h2": "Six steps from reading to a session",
+      "intro": "This is the path a client takes on her site today, from the first read to a session. Each step was checked against her public pages and my setup script on 25 Oct 2026, without booking anything.",
+      "steps": [
+        {
+          "label": "Read the page",
+          "text": ["The site itself has ", { "n": "0 forms and 0 inputs", "kind": "measured", "source": "live" }, ". Everything a client types goes to her Cal.com booking."]
+        },
+        {
+          "label": "Choose a session",
+          "text": [{ "n": "0 to 2 session types", "kind": "measured", "source": "calpages" }, " a client can book without messaging her: a free 20 minute consult or a 50 minute session."]
+        },
+        {
+          "label": "Pick a time",
+          "text": ["Paid sessions open in ", { "n": "a rolling window of 7 days", "kind": "measured", "source": "calpages" }, ", on India time. The scheduler's free plan costs ", { "n": "$0 a month", "kind": "reported", "source": "calcom" }, "."]
+        },
+        {
+          "label": "Answer her questions",
+          "text": "Her intake questions arrive with the booking, so she can read them before the first call."
+        },
+        {
+          "label": "Pay her by UPI",
+          "text": ["No gateway, so ", { "n": "₹35.40 of each ₹1,500 fee", "kind": "modelled", "source": "razorpay" }, " stays with her. The booking waits until she confirms the payment."]
+        },
+        {
+          "label": "Join on Google Meet",
+          "text": "Both session types run on Google Meet. The free consult skips the payment and confirms at once."
+        }
+      ]
+    },
+    "draft": {
+      "id": "draft",
+      "index": "Her draft",
+      "h2": "Her draft had a design, but no booking",
+      "lede": "She sent me one HTML file: an editorial layout, a warm palette and a CBT thought record card in the hero. Every detail was a placeholder, and clients had no way to book.",
+      "p": [
+        "I kept the calendar choice open, with one line that could load Calendly or Cal.com, until I understood how a session should work for her: which sessions, how long, how many a day, a gap after each, how far ahead, the reminder, and how she takes money. Her answers on 6 Aug 2026 became the settings in the path above.",
+        ["I kept her look and rebuilt it as plain files that any host can serve. My first commit, on 3 Aug 2026, still had ", { "n": "30 placeholder slots", "kind": "measured", "source": "firstbuild" }, ", and the booking section was an empty box. Her real details went into the page ", { "n": "about 2 hours later", "kind": "measured", "source": "git" }, "."]
+      ],
+      "figure": {
+        "width": "read",
+        "img": {
+          "src": "/case-studies/therapy-practice/media/booking-before-1280.webp",
+          "alt": "An empty box where the booking calendar should be, with one line under it: Having trouble with the calendar? Message on WhatsApp or email me and we'll find a slot together.",
+          "width": 1280,
+          "height": 854
+        },
+        "srcset": "/case-studies/therapy-practice/media/booking-before-640.webp 640w, /case-studies/therapy-practice/media/booking-before-1280.webp 1280w",
+        "caption": "The booking section on 3 Aug 2026, rendered from my first commit. Both links under the box were placeholders.",
+        "credit": "Capture: commit 6230e23, rendered 25 Oct 2026"
+      }
+    },
+    "gateway": {
+      "id": "gateway",
+      "index": "No gateway",
+      "h2": "The gateway she did not need",
+      "turn": {
+        "expected": "A prepaid booking: Calendly for the calendar and a payment gateway, such as Stripe or Razorpay, for the fee. My own notes from the first days called it the likely fit.",
+        "cost": "A gateway keeps a share of every fee, UPI payments included. Calendly's free plan allows one session type and no automatic reminders, and she wanted two session types and a reminder the day before.",
+        "costMetric": {
+          "value": "₹35.40",
+          "label": "a session to Razorpay at its standard rate: 2% of her ₹1,500 fee, plus 18% GST on that 2%.",
+          "kind": "modelled",
+          "source": "razorpay"
+        },
+        "moreMetrics": [
+          {
+            "value": "$120 to $144",
+            "label": "a year for Calendly Standard, one seat: $10 a month billed yearly, or $12 billed monthly.",
+            "kind": "modelled",
+            "source": "calendly"
+          }
+        ],
+        "line": "She already took UPI. The booking only had to wait for her.",
+        "built": "Cal.com's free plan, which allows both session types and templated reminders. The paid session asks for her confirmation: the client books, pays her by UPI, and she confirms when the money lands. I set the slot to stay held meanwhile, so nobody else can take it. The free consult confirms at once."
+      },
+      "math": ["₹1,500 × 2% = ₹30 · ₹30 × ", { "n": "18% GST", "kind": "reported", "source": "gst" }, " = ₹5.40 · ₹35.40 a session", { "kind": "modelled", "source": "razorpay" }],
+      "note": ["Razorpay's page offered new accounts ", { "n": "0% for their first 90 days", "kind": "reported", "source": "razorpay" }, " when I read it on 25 Oct 2026, so the saving in a first year would be smaller."]
+    },
+    "setup": {
+      "id": "setup",
+      "index": "Her setup",
+      "h2": "Seven steps on her side",
+      "lede": ["Setting up Cal.com by hand meant ", { "n": "14 checklist items and 6 questions to type", "kind": "measured", "source": "guides" }, ". I moved the session settings and the intake questions into a script, so her part became ", { "n": "7 steps", "kind": "measured", "source": "guides" }, ", and each step inside Cal.com has a direct link."],
+      "fold": {
+        "caption": ["Her side of the Cal.com setup before and after the script, both written on 6 Aug 2026. Struck rows left her list.", { "kind": "measured", "source": "guides" }],
+        "before": {
+          "title": "First checklist",
+          "rows": [
+            { "do": "Install and allow Google Calendar", "tag": "Kept as step 02", "struck": false },
+            { "do": "Install Google Meet", "tag": "Kept as step 03", "struck": false },
+            { "do": "Create the 50 minute session with the fee note", "tag": "Script", "struck": true },
+            { "do": "Create the free 20 minute consult", "tag": "Script", "struck": true },
+            { "do": "Leave 15 minutes after each session", "tag": "Script", "struck": true },
+            { "do": "Allow at most 4 bookings a day", "tag": "Script", "struck": true },
+            { "do": "Open booking up to 1 week ahead", "tag": "Script", "struck": true },
+            { "do": "Set the time zone to IST", "tag": "Kept as step 04", "struck": false },
+            { "do": "Set her available days and times", "tag": "Kept as step 04", "struck": false },
+            { "do": "Put the UPI payment note in each description", "tag": "Script", "struck": true },
+            { "do": "Note her cancellation policy", "tag": "Note", "struck": true },
+            { "do": "Create the 24 hour client reminder", "tag": "Kept as step 07", "struck": false },
+            { "do": "Check her own booking alerts", "tag": "Note", "struck": true },
+            { "do": "Copy the booking link and send it to me", "tag": "Me", "struck": true },
+            { "do": "Type 6 booking questions by hand", "tag": "Script", "struck": true }
+          ]
+        },
+        "after": {
+          "title": "The guide now",
+          "rows": [
+            { "n": "01", "do": "Create a Cal.com account", "who": "Owner" },
+            { "n": "02", "do": "Connect Google Calendar", "who": "Owner" },
+            { "n": "03", "do": "Connect Google Meet", "who": "Owner" },
+            { "n": "04", "do": "Set hours and the time zone (IST)", "who": "Owner" },
+            { "n": "05", "do": "Create an API key", "who": "Owner" },
+            { "n": "06", "do": "Send me the key privately, with the UPI details, and confirm the booking window", "who": "Owner" },
+            { "n": "07", "do": "After the script runs, switch on the 24 hour email reminder", "who": "Owner" }
+          ],
+          "mine": "My part: run the setup script once. It needs nothing beyond Node."
+        }
+      },
+      "sum": [{ "n": "7 steps", "kind": "measured", "source": "guides" }, ". ", { "n": "About 5 minutes", "kind": "reported", "source": "guides" }, ", by the guide's own estimate."],
+      "p": [
+        ["One run of the script sets ", { "n": "17 settings", "kind": "measured", "source": "script" }, " across the two session types, intake questions included. Run it twice and nothing doubles: Cal.com refuses a second event at the same address, and the script prints that refusal."],
+        ["She had already made ", { "n": "3 session types", "kind": "reported", "source": "notes" }, " by hand that overlapped these. I hid them through the API instead of deleting them, so one call each brings them back."]
+      ],
+      "timeline": ["6 Aug 2026 · 16:14 IST first checklist · 16:34 the script · 17:11 direct links into Cal.com", { "kind": "measured", "source": "git" }],
+      "back": "The way back: booking runs from one line in the site's script. Point it at another calendar to switch provider or account, or empty it and only the WhatsApp and email line remains."
+    },
+    "versions": {
+      "id": "versions",
+      "index": "Versions",
+      "h2": "Closer to her document each time",
+      "lede": ["Her own calendar was wired into the page ", { "n": "4 days", "kind": "measured", "source": "git" }, " after my first commit. The look took longer. In all, the site took 23 commits over 9 days of work, from 3 Aug to 24 Sep 2026.", { "kind": "measured", "source": "git" }],
+      "items": [
+        {
+          "label": "V1",
+          "date": "3 Aug 2026",
+          "time": "16:17 IST",
+          "ref": "6230e23",
+          "change": "Her draft's look, rebuilt as plain files any host can serve.",
+          "why": "Starting from her own file meant no guessing yet. The booking box and her details were still empty.",
+          "img": {
+            "src": "/case-studies/therapy-practice/media/v1-2240.webp",
+            "alt": "My first build, 3 Aug 2026: a serif headline, a paragraph, two square buttons and a thought record card on the right, with bracketed placeholders below.",
+            "width": 1120,
+            "height": 596
+          },
+          "srcset": "/case-studies/therapy-practice/media/v1-1120.webp 1120w, /case-studies/therapy-practice/media/v1-2240.webp 2240w",
+          "thumb": { "src": "/case-studies/therapy-practice/media/v1-thumb.webp", "width": 256, "height": 136 }
+        },
+        {
+          "label": "V2",
+          "date": "12 Aug 2026",
+          "time": "01:46 IST",
+          "ref": "d6b5d0c",
+          "change": "A redesign in warm sage, cream and blush: arched frames, a running line and typewriter labels.",
+          "why": "The photo slot became a drawing the same night, and the arch is still on the live page.",
+          "img": {
+            "src": "/case-studies/therapy-practice/media/v2-2240.webp",
+            "alt": "The redesign of 12 Aug 2026: a serif headline, a paragraph that introduces her and rounded buttons on the left, and a tall green arch on the right that reads Your photo here.",
+            "width": 1120,
+            "height": 596
+          },
+          "srcset": "/case-studies/therapy-practice/media/v2-1120.webp 1120w, /case-studies/therapy-practice/media/v2-2240.webp 2240w",
+          "thumb": { "src": "/case-studies/therapy-practice/media/v2-thumb.webp", "width": 256, "height": 136 }
+        },
+        {
+          "label": "V3",
+          "date": "13 Aug 2026",
+          "time": "15:46 IST",
+          "ref": "40ae237",
+          "change": "Rebuilt to the Website flow tab of her document.",
+          "why": "Her document sets the order of the page, not my guess.",
+          "img": {
+            "src": "/case-studies/therapy-practice/media/v3-2240.webp",
+            "alt": "The rebuild of 13 Aug 2026 to her document's flow: an arch with a drawn sun, hills and a plant on the left, her headline on the right.",
+            "width": 1120,
+            "height": 596
+          },
+          "srcset": "/case-studies/therapy-practice/media/v3-1120.webp 1120w, /case-studies/therapy-practice/media/v3-2240.webp 2240w",
+          "thumb": { "src": "/case-studies/therapy-practice/media/v3-thumb.webp", "width": 256, "height": 136 }
+        },
+        {
+          "label": "V4",
+          "date": "13 Aug 2026",
+          "time": "17:17 IST",
+          "ref": "b4c4fbd",
+          "change": "Her exact palette and her button labels.",
+          "why": ["Colours sampled from her document's pixels were ", { "n": "1 to 2 units off", "kind": "measured", "source": "notes" }, " in some channels, so the named hex values from her PDF replaced them the same day."],
+          "img": {
+            "src": "/case-studies/therapy-practice/media/v4-2240.webp",
+            "alt": "The same layout later on 13 Aug 2026 in her exact palette, with typewriter style labels and her button labels.",
+            "width": 1120,
+            "height": 596
+          },
+          "srcset": "/case-studies/therapy-practice/media/v4-1120.webp 1120w, /case-studies/therapy-practice/media/v4-2240.webp 2240w",
+          "thumb": { "src": "/case-studies/therapy-practice/media/v4-thumb.webp", "width": 256, "height": 136 }
+        },
+        {
+          "label": "V5",
+          "date": "24 Sep 2026",
+          "time": "20:29 IST",
+          "ref": "3d4a802",
+          "change": "Two typefaces instead of three, and no dashes in the copy.",
+          "why": ["Her feedback was that the fonts did not match. 13 dashes and 12 hyphenated words came out of the copy, and none remain in the live page's own text.", { "kind": "measured", "source": "herrules" }],
+          "img": {
+            "src": "/case-studies/therapy-practice/media/v5-2240.webp",
+            "alt": "The live page, captured 25 Oct 2026: the same layout in two typefaces, with a Get Started button and a Jump to schedule button.",
+            "width": 1120,
+            "height": 596
+          },
+          "srcset": "/case-studies/therapy-practice/media/v5-1120.webp 1120w, /case-studies/therapy-practice/media/v5-2240.webp 2240w",
+          "thumb": { "src": "/case-studies/therapy-practice/media/v5-thumb.webp", "width": 256, "height": 136 }
+        }
+      ],
+      "credit": "Captures: the live site and renders of four earlier commits, 25 Oct 2026"
+    },
+    "lasting": {
+      "id": "lasting",
+      "index": "Built to last",
+      "h2": "Small enough to keep running",
+      "lede": ["The page is built from three hand written files, an icon and three drawings: ", { "n": "29,804 bytes in all", "kind": "measured", "source": "files" }, ", with no framework and no build step."],
+      "rows": [
+        { "k": "Runs on", "v": "Vercel, as plain files with no build step, so any static host can serve them." },
+        { "k": "Costs to run", "v": "Cal.com's free plan and no gateway fees. No domain is bought yet; the site runs on a vercel.app address. The Vercel plan and its cost are not recorded." },
+        { "k": "Moving parts", "v": "The page, her Cal.com account, and one optional function that can send her a WhatsApp note for each new booking." },
+        { "k": "If the calendar fails", "v": "The WhatsApp and email line under it still works, with or without JavaScript." },
+        { "k": "Switching", "v": "One line in the site's script picks the calendar. Paste a Calendly or a Cal.com link and the page loads the right one." },
+        { "k": "Client data", "v": "The site has no forms. Intake answers reach her through Cal.com, and keys stay out of git." },
+        { "k": "Her rules", "v": "No dashes, two typefaces and her exact palette are written into the project notes, so the next edit keeps them." },
+        { "k": "Headers", "v": ["The live page sends ", { "n": "5 security headers", "kind": "measured", "source": "live" }, ". A content security policy is not set yet."] }
+      ]
+    },
+    "learned": {
+      "id": "learned",
+      "index": "What it taught me",
+      "h2": "What this taught me",
+      "p": [
+        "The hard part was never the calendar. It was asking how she already took payment, which removed the gateway, and finding the setting that holds a slot until she confirms. After that the work was listening: her document set the order, her PDF set the colours, and her rules now sit in the notes where the next edit will find them."
+      ]
+    }
+  }
+}

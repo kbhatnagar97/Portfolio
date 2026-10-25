@@ -1,0 +1,267 @@
+// Opt in: a case with a calculator adds @use '../shared/calculator'; to its case.scss, so other pages never load these rules.
+@use 'disclosure';
+
+// #region Calculator
+.calc {
+  display: grid;
+  gap: var(--s-6);
+  margin: var(--gap-block) 0;
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--bg-raise);
+
+  > h3 {
+    margin: 0;
+  }
+}
+
+// a chapter's 16px row gap plus 32px makes the 48px between blocks
+.ch > .calc {
+  margin-block: var(--s-6);
+}
+
+@media (width >= 900px) {
+  .calc {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+    column-gap: var(--s-7);
+
+    > h3,
+    .calc__math,
+    .calc__leaves,
+    .calc__foot {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.calc__fields {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.calc__field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+
+  label {
+    font: 500 15px / 1.4 var(--sans);
+  }
+}
+
+.calc__ctl,
+.calc__help,
+.calc__error {
+  grid-column: 1 / -1;
+}
+
+.calc__ctl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 10ch auto;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.calc input[type='number'] {
+  width: 10ch;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-1);
+  font: 500 17px / 1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  background: var(--bg);
+
+  &[aria-invalid='true'] {
+    border-color: var(--warn);
+  }
+}
+
+// a 2px track in --edge, the filled part in the accent, a 16px thumb with a 2px ring
+.calc input[type='range'] {
+  appearance: none;
+  height: 44px;
+  margin: 0;
+  background:
+    linear-gradient(var(--accent), var(--accent)) 0 50% / var(--fill, 0%) 2px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 0 50% / 100% 2px no-repeat;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+    background: var(--text);
+  }
+
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+    background: var(--text);
+  }
+}
+
+// without JS the inputs ship disabled with the example values, and stay readable
+.calc input:disabled {
+  opacity: 1;
+  color: var(--muted);
+  -webkit-text-fill-color: var(--muted);
+  cursor: default;
+}
+
+.calc__unit {
+  font: 400 15px / 1 var(--sans);
+  color: var(--muted);
+}
+
+.calc__help {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.calc__error {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--warn);
+  border-radius: var(--r-1);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+
+  &::before {
+    content: '!';
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    font: 500 9px / 1 var(--mono);
+    color: var(--bg);
+    background: var(--warn);
+  }
+}
+
+.calc__out {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--s-3);
+}
+
+.calc__figure {
+  margin: 0;
+  font: 500 clamp(56px, 7vw, 88px) / 1 var(--sans);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// the unit line says per what, so a monthly figure never reads as a total
+.calc__figure[data-unit]::after {
+  content: attr(data-unit);
+  display: block;
+  margin-top: var(--s-2);
+  font: 400 15px / 1.4 var(--sans);
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.calc__sentence {
+  display: block;
+  font: 400 clamp(19px, 1.7vw, 22px) / 1.55 var(--sans);
+}
+
+.calc.is-stale .calc__out > :not(.calc__stale) {
+  opacity: 0.6;
+}
+
+.calc__stale {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.calc__math {
+  border-top: 1px solid var(--line);
+  @include disclosure.chevron;
+
+  summary {
+    min-height: 44px;
+    font: 500 15px / 1 var(--sans);
+  }
+}
+
+.calc__lines {
+  padding-bottom: var(--s-3);
+  font: 400 13px / 1.7 var(--mono);
+  color: var(--text);
+}
+
+.calc__leaves li {
+  position: relative;
+  margin: var(--s-1) 0;
+  padding-left: 16px;
+  font-size: 15px;
+  color: var(--muted);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0.7em;
+    left: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--faint);
+  }
+}
+
+.calc__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-4);
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+}
+
+.calc__reset {
+  min-height: 44px;
+  font: 500 14px / 1 var(--sans);
+  cursor: pointer;
+  background: none;
+}
+
+html:not(.case-ready) .calc__reset,
+html.case-ready .calc__nojs {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .calc__reset {
+    transition-property: color, border-color, transform;
+    transition-duration: var(--dur-press);
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+// #endregion

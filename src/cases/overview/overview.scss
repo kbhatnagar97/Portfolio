@@ -1,0 +1,436 @@
+// The overview at /case-studies/, on the kit's tokens; the crumbs, hero, filter and cards share one left edge.
+
+.overview {
+  // #region Hero: the case hero's type, no ledger, chips or image
+  .ov-hero {
+    margin-top: var(--s-5);
+
+    .deck {
+      margin-top: var(--s-4);
+    }
+
+    .case-meta {
+      margin-top: var(--s-5);
+    }
+
+    // the hero is wide for the title, but the lede keeps the read column, as on every case page
+    .lede {
+      max-width: var(--read);
+      margin: var(--s-6) 0 0;
+
+      & + .lede {
+        margin-top: var(--s-4);
+      }
+    }
+  }
+  // #endregion
+
+  // #region Filter: radios that look like purpose chips
+  .ofilter {
+    // a fieldset is min-content wide by default, which would push the chip row past a phone screen
+    min-width: 0;
+    margin: var(--s-8) 0 0;
+    padding: 0;
+    border: 0;
+
+    legend {
+      padding: 0;
+    }
+  }
+
+  .ofilter__opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .ofilter label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px 0 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    font: 500 13px / 1 var(--sans);
+    white-space: nowrap;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    transition:
+      color var(--dur-tip),
+      border-color var(--dur-tip),
+      background-color var(--dur-tip);
+
+    .glyph {
+      color: var(--muted);
+    }
+
+    // the visible chip is 32px; the hit area reaches 44px
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -6px 0;
+    }
+  }
+
+  .ofilter__n {
+    font: 500 11px / 1 var(--mono);
+    color: var(--faint);
+  }
+
+  .ofilter input:checked + label {
+    border-color: var(--text);
+    color: var(--bg);
+    background: var(--text);
+
+    .glyph,
+    .ofilter__n {
+      color: var(--bg);
+    }
+  }
+
+  // the radio stays focusable but invisible, so its ring moves to the chip it names
+  .ofilter input:focus-visible + label {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  .ofilter__count {
+    // reserved, so the cards never move when the count appears
+    min-height: 20px;
+    margin: var(--s-3) 0 0;
+    font: 500 12px / 20px var(--mono);
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  // #endregion
+
+  // #region Cards
+  .ocards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+    margin-top: var(--s-2);
+  }
+
+  .ocard {
+    position: relative;
+    display: grid;
+    // poster, text and proofs share three rows with the card beside them, so the numbers line up
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-3);
+    background: var(--surface);
+    transition:
+      border-color 300ms var(--ease),
+      transform var(--dur-press) var(--ease);
+  }
+
+  .ocard__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--r-2);
+    background: var(--bg-raise);
+
+    // the picture only chooses the file; the image fills the frame as if it stood alone
+    picture {
+      display: contents;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .ocard__text {
+    margin-top: 20px;
+  }
+
+  .ocard__meta {
+    margin: 0;
+    font: 500 12px / 1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .ocard__title {
+    margin: var(--s-2) 0 0;
+    font: 500 clamp(24px, 2.4vw, 32px) / 1.1 var(--sans);
+    letter-spacing: -0.025em;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      text-decoration: none;
+
+      &::before {
+        content: '';
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--a);
+      }
+
+      // stretched over the card, so the whole card is the target while the link's name stays the title
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: var(--r-3);
+      }
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      &:focus-visible::after {
+        outline: 2px solid var(--gold);
+        outline-offset: 3px;
+      }
+    }
+  }
+
+  // the kind of work the page shows, in the case's own two to five words
+  .ocard__kicker {
+    margin: 6px 0 0;
+    font: 500 15px / 1.45 var(--sans);
+  }
+
+  .ocard__deck {
+    margin: var(--s-3) 0 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+    // no single word left alone on the last line at any card width
+    text-wrap: pretty;
+  }
+
+  .ocard .case-status,
+  .ocard .purposes {
+    margin-top: var(--s-4);
+  }
+
+  .ocard__proofs {
+    display: grid;
+    align-content: start;
+    row-gap: var(--s-4);
+    padding-top: var(--s-5);
+
+    .metric {
+      padding-top: var(--s-4);
+      border-top: 1px solid var(--line);
+    }
+
+    .metric__line {
+      max-width: none;
+      margin: 0;
+    }
+  }
+
+  // the chips are a card's only other links, so they sit above the stretched title link
+  .ocard .prov {
+    position: relative;
+    z-index: 1;
+  }
+
+  // the flagship's proofs read as a ledger, at the ledger's figure size
+  .ocard--flagship {
+    .ocard__title {
+      font-size: clamp(32px, 3.6vw, 48px);
+    }
+
+    .ocard__deck {
+      font-size: 17px;
+    }
+
+    .metric__value {
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+  }
+
+  @media (width >= 640px) {
+    .ocards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ocard--flagship {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (width >= 1024px) {
+    .ocards {
+      gap: var(--s-5);
+    }
+
+    .ocard {
+      padding: var(--s-5);
+    }
+
+    // poster 7 columns, text 5, and the proofs in one row under both
+    .ocard--flagship {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      column-gap: var(--s-6);
+
+      // a stretched grid item would drop its 16:10 ratio and crop the poster
+      .ocard__media {
+        align-self: start;
+      }
+
+      .ocard__text {
+        margin-top: 0;
+      }
+
+      .ocard__proofs {
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        column-gap: var(--s-5);
+      }
+    }
+  }
+  // #endregion
+
+  // #region How I work and the enquiry
+  .how {
+    margin-top: var(--s-10);
+
+    h2 {
+      margin: 0 0 var(--s-6);
+      font: 500 clamp(28px, 3vw, 40px) / 1.1 var(--sans);
+      letter-spacing: -0.03em;
+    }
+  }
+
+  .how__steps {
+    display: grid;
+    gap: var(--s-6) var(--s-5);
+
+    li {
+      padding-top: var(--s-4);
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      margin: var(--s-3) 0 var(--s-2);
+      font: 500 20px / 1.3 var(--sans);
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+  }
+
+  .how__n {
+    font: 500 12px / 1 var(--mono);
+    letter-spacing: 0.08em;
+    color: var(--faint);
+  }
+
+  @media (width >= 640px) {
+    .how__steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 900px) {
+    .how__steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .enquiry {
+    margin-top: var(--s-9);
+  }
+
+  .enquiry__text {
+    max-width: 32ch;
+    margin: 0;
+    font: 400 clamp(20px, 2vw, 26px) / 1.4 var(--sans);
+    letter-spacing: -0.01em;
+  }
+  // #endregion
+
+  // #region Pointer feedback
+  @media (hover: hover) and (pointer: fine) {
+    .ocard:hover {
+      border-color: var(--line-strong);
+    }
+
+    .ofilter label:hover {
+      border-color: var(--text);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ocard:active {
+      transform: scale(0.98);
+    }
+  }
+  // #endregion
+}
+
+// #region Filtering: CSS only, one rule per purpose id in src/cases/build/terms.ts; a purpose no case claims has no radio to match
+@media screen {
+  @each $id in saves-time, saves-money, grows-reach, opens-reach, reduces-risk {
+    .overview:has(#for-#{$id}:checked) .ocard:not([data-for~='#{$id}']) {
+      display: none;
+    }
+  }
+}
+
+// a browser without :has would show a filter that changes nothing, so it gets none and every case shows
+@supports not selector(:has(a)) {
+  .overview :is(.ofilter, .ofilter__count) {
+    display: none;
+  }
+}
+// #endregion
+
+// #region Forced colours and print
+@media (forced-colors: active) {
+  .overview .ofilter label {
+    border-color: ButtonBorder;
+  }
+
+  .overview .ofilter input:checked + label {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    color: HighlightText;
+    background: Highlight;
+
+    .glyph,
+    .ofilter__n {
+      color: HighlightText;
+    }
+  }
+}
+
+@media print {
+  .overview :is(.ofilter, .ofilter__count) {
+    display: none;
+  }
+
+  // the kit's paper rule: light accents vanish on white, so every case dot prints dark; it must beat the inline accent
+  .overview .ocard {
+    --a: #111 !important;
+    break-inside: avoid;
+  }
+}
+// #endregion

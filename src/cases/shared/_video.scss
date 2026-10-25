@@ -1,0 +1,147 @@
+// Opt in: a case that shows a video adds @use '../shared/video'; to its case.scss, so other pages never load these rules.
+
+// #region Video
+.vid__media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+
+  img,
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.vid__open {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  transition: opacity 120ms linear;
+
+  &.is-gone {
+    opacity: 0;
+  }
+}
+
+// once the player exists it sits under the poster until it plays
+.vid__media > video ~ .vid__open {
+  position: absolute;
+  inset: 0;
+}
+
+.vid__play,
+.vid__toggle {
+  position: absolute;
+  bottom: var(--s-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 14px / 1 var(--sans);
+  color: var(--text);
+  background: rgba(11, 10, 9, 0.86); // --bg at 86%, solid under reduced transparency below
+}
+
+.vid__play {
+  left: var(--s-4);
+}
+
+.vid__toggle {
+  right: var(--s-3);
+  bottom: var(--s-3);
+  cursor: pointer;
+}
+
+.vid__meta {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  padding: 4px 8px;
+  border-radius: var(--r-1);
+  font: 400 13px / 1.2 var(--mono);
+  color: var(--text);
+  background: rgba(11, 10, 9, 0.86); // --bg at 86%, solid under reduced transparency below
+}
+
+.vid__wait {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-4);
+  margin: 0;
+  font: 500 14px / 1.4 var(--sans);
+}
+
+.vid--loop .vid__media {
+  display: grid;
+
+  > img,
+  > video {
+    grid-area: 1 / 1;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.vid__text {
+  margin-top: var(--s-3);
+  font-size: 15px;
+  color: var(--muted);
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+  }
+}
+
+.vid__t {
+  flex: none;
+  font: 400 13px / 1.2 var(--mono);
+  color: var(--text);
+}
+
+button.vid__t {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vid__play,
+  .vid__toggle {
+    transition: transform var(--dur-press);
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .vid__play,
+  .vid__toggle,
+  .vid__meta {
+    background: var(--bg);
+  }
+}
+
+// the poster and the text list print instead of the play facade
+@media print {
+  .vid__play,
+  .vid__meta {
+    display: none !important;
+  }
+}
+// #endregion

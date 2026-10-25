@@ -1,6 +1,6 @@
 // Usage: node scripts/seo/check.mjs <distDir>. Asserts the crawlable identity and SEO contract on a built site.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { extname, join, relative } from 'node:path'
 
 const dist = process.argv[2]
 if (!dist || !existsSync(join(dist, 'index.html'))) {
@@ -63,9 +63,9 @@ check(!!aboutHtml, 'about/index.html exists')
 
 const missing = new Set()
 for (const f of htmlFiles)
-  for (const [, p] of read(f).matchAll(/href="(\/projects\/[^"#?]*)"/g))
+  for (const [, p] of read(f).matchAll(/href="(\/(?:projects|case-studies)\/[^"#?]*)"/g))
     if (!existsSync(join(dist, p.endsWith('/') ? `${p}index.html` : p))) missing.add(`${p} (from ${relative(dist, f)})`)
-check(missing.size === 0, 'every /projects/ link resolves to a dist file', [...missing].join(', '))
+check(missing.size === 0, 'every /projects/ and /case-studies/ link resolves to a dist file', [...missing].join(', '))
 
 const badJson = []
 const faqPages = []
@@ -102,6 +102,10 @@ check(count(aboutText) === 1, `/about/ visible text names the employer once (${c
 
 const dashed = files.filter((f) => /\.(html|txt)$/.test(f) && /[–—]/.test(read(f))).map((f) => relative(dist, f))
 check(dashed.length === 0, 'no en or em dashes in HTML or txt files', dashed.join(', '))
+
+// the site is public, so nothing built may carry a path from the machine that built it
+const local = files.filter((f) => /\.(html|txt|xml|js|css|json)$/.test(f) && /\/Users\/|\/private\/(tmp|var)\/|\/var\/folders\/|\.agent\//.test(read(f))).map((f) => relative(dist, f))
+check(local.length === 0, 'no local file paths in built files', local.join(', '))
 
 const sitemap = existsSync(join(dist, 'sitemap.xml')) ? read(join(dist, 'sitemap.xml')) : ''
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
@@ -186,6 +190,64 @@ check(staticPages.length > 1 && hostIssues.length === 0, `playground hosts are e
 check(imgIssues.length === 0, 'every image on the about and project pages has width and height', imgIssues.join(', '))
 check(playIssues.length === 0, 'about and project pages load one play script with matching play data', playIssues.slice(0, 8).join(', '))
 check(!home.includes('/assets/play-'), 'home does not load the playground')
+
+// case studies: static pages emitted from src/cases, one case script each, readable without the home or the playground
+const overviewFile = join(dist, 'case-studies', 'index.html')
+const overviewHtml = existsSync(overviewFile) ? read(overviewFile) : ''
+const caseFiles = htmlFiles.filter((f) => /^case-studies[/\\][^/\\]+[/\\]index\.html$/.test(relative(dist, f)))
+const casePages = [...caseFiles, ...(overviewHtml ? [overviewFile] : [])]
+const slugOf = (f) => relative(join(dist, 'case-studies'), f).split(/[/\\]/)[0]
+check(!!overviewHtml && caseFiles.length > 0, `case-studies/index.html and the case pages exist (${caseFiles.length} cases)`)
+check(home.includes('href="/case-studies/"'), 'home links /case-studies/')
+const unlisted = caseFiles.map(slugOf).filter((s) => !overviewHtml.includes(`href="/case-studies/${s}/"`))
+check(unlisted.length === 0, 'the overview links every case page', unlisted.join(', '))
+
+const mediaMissing = new Set()
+for (const f of htmlFiles)
+  for (const [, , value] of read(f).matchAll(/\s(src|href|data-src|data-poster|srcset)="([^"]*)"/g))
+    for (const u of value.split(',').map((x) => x.trim().split(/\s+/)[0]))
+      if (/^\/case-studies\/[^/]+\/media\//.test(u) && !existsSync(join(dist, decodeURIComponent(u)))) mediaMissing.add(`${u} (from ${relative(dist, f)})`)
+check(mediaMissing.size === 0, 'every case media src and href exists in dist', [...mediaMissing].join(', '))
+
+const caseIssues = []
+const ldIssues = []
+for (const f of casePages) {
+  const html = read(f)
+  const name = relative(dist, f)
+  const scripts = [...html.matchAll(/<script type="module"[^>]*\ssrc="([^"]+)"/g)].map((m) => m[1])
+  if (scripts.length !== 1 || !/^\/assets\/case-[\w-]+\.js$/.test(scripts[0])) caseIssues.push(`${name}: module scripts ${scripts.join(' ') || 'none'}`)
+  if (html.includes('/assets/play-')) caseIssues.push(`${name}: loads the playground`)
+  for (const [, u] of html.matchAll(/\s(?:href|src)="(\/assets\/[^"]+)"/g)) if (!existsSync(join(dist, u))) caseIssues.push(`${name}: ${u} is missing`)
+  for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) if (!attr(tag, 'width') || !attr(tag, 'height')) caseIssues.push(`${name}: img ${attr(tag, 'src')} has no width or height`)
+  for (const [tag] of html.matchAll(/<video\b[^>]*>/g))
+    if (/\sposter=/.test(tag) || attr(tag, 'preload') !== 'none') caseIssues.push(`${name}: a video with a poster attribute or without preload="none"`)
+  const description = decode(html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '')
+  if (description.length > 160) caseIssues.push(`${name}: description is ${description.length} chars`)
+  const og = html.match(/<meta property="og:image" content="([^"]*)"/)?.[1] ?? ''
+  if (og.startsWith(SITE) && !existsSync(join(dist, decodeURIComponent(og.slice(SITE.length))))) caseIssues.push(`${name}: og:image ${og} is missing`)
+  const graph = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap((m) => {
+    try {
+      return nodes(JSON.parse(m[1]))
+    } catch {
+      return []
+    }
+  })
+  const types = new Set(graph.map((n) => n['@type']))
+  const needs = f === overviewFile ? ['CollectionPage', 'BreadcrumbList'] : ['Article', 'BreadcrumbList']
+  const lacking = [...needs.filter((t) => !types.has(t)), ...(graph.some((n) => n['@id'] === `${SITE}/#person`) ? [] : ['the Person id'])]
+  if (lacking.length) ldIssues.push(`${name}: missing ${lacking.join(', ')}`)
+}
+check(casePages.length > 0 && caseIssues.length === 0, `case pages load one case script, no playground, sized images, lazy videos, short descriptions (${casePages.length} pages)`, caseIssues.slice(0, 8).join(', '))
+check(casePages.length > 0 && ldIssues.length === 0, 'case pages carry Article and BreadcrumbList, the overview CollectionPage, all with the Person id', ldIssues.join(', '))
+
+// metadata can name a place, a camera or a person, and the anonymised case must leak none of it
+const METADATA = { '.jpg': ['Exif'], '.jpeg': ['Exif'], '.avif': ['Exif'], '.webp': ['EXIF', 'XMP '], '.png': ['eXIf'] }
+const media = files.filter((f) => /case-studies[/\\][^/\\]+[/\\]media[/\\]/.test(f) && extname(f).toLowerCase() in METADATA)
+const tagged = media.filter((f) => {
+  const bytes = readFileSync(f)
+  return [...METADATA[extname(f).toLowerCase()], 'http://ns.adobe.com/xap/1.0/'].some((m) => bytes.includes(m))
+})
+check(tagged.length === 0, `case media carry no Exif or XMP metadata (${media.length} checked)`, tagged.map((f) => relative(dist, f)).join(', '))
 
 const portraits = files.filter((f) => /images[/\\]kshitij-bhatnagar[^/\\]*\.jpg$/.test(f))
 const exif = portraits.filter((f) => readFileSync(f).includes('Exif')).map((f) => relative(dist, f))

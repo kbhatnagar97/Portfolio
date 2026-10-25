@@ -1,0 +1,37 @@
+// A details row that reads as a control. A flex summary loses the browser's marker in Chromium but keeps it in Safari,
+// so this hides it and draws one chevron that turns when the row opens. Include it on the details element.
+@mixin chevron {
+  > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      flex: none;
+      width: 8px;
+      height: 8px;
+      margin-right: 4px;
+      border-right: 1.25px solid var(--muted);
+      border-bottom: 1.25px solid var(--muted);
+      transform: translateY(-2px) rotate(45deg);
+    }
+  }
+
+  &[open] > summary::after {
+    transform: translateY(2px) rotate(225deg);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    > summary::after {
+      transition: transform var(--dur-state) var(--ease);
+    }
+  }
+}

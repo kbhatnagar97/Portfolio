@@ -5,6 +5,7 @@ import { PROFILE } from '../data';
 const LINKS = [
   { href: '#skills', label: 'Skills' },
   { href: '#work', label: 'Work' },
+  { href: '#case-studies', label: 'Case studies' },
   { href: '#automations', label: 'Automations' },
   { href: '#journey', label: 'Journey' },
   { href: '#process', label: 'Process' },

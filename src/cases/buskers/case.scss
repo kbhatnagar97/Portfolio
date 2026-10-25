@@ -1,0 +1,1011 @@
+// buskers: stage orange marks the new side only, the old side stays faint, spotlight cream is only ever light
+@use '../shared/compare';
+
+// #region World tokens
+.case--buskers {
+  --accent-2: #fff3e6; // spotlight cream, as light only
+  // the race's blocks and the gap between its two columns
+  --cell: 16px;
+  --cell-gap: 3px;
+  --col-gap: 24px;
+  // the header, the switch above the frame and some air, so a whole frame fits one screen
+  --chrome: 176px;
+}
+
+@media (width >= 640px) {
+  .case--buskers {
+    --cell: 24px;
+    --cell-gap: 4px;
+    --col-gap: 32px;
+  }
+}
+
+// from 1100px every chapter heading starts on the wide track's edge, as the phrases' headings do
+@media (width >= 1100px) {
+  .case--buskers .ch > :is(h2, .lede, p) {
+    grid-column: wide;
+  }
+}
+// #endregion
+
+// #region Stage: pool A lights the head and the top of the frame
+.stage--buskers {
+  overflow-x: clip; // the floor light may reach past the screen edge, the page must not scroll sideways
+  background:
+    radial-gradient(60% 45% at 50% 0, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 70%) 50% 0 / 100% 960px no-repeat,
+    var(--stage-bg);
+}
+// #endregion
+
+// #region The two screens and their switch
+.views {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.views__switch {
+  justify-self: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  text-align: center;
+  visibility: hidden; // live only once the script runs; the space stays so nothing moves when it does
+}
+
+html.case-ready .views__switch {
+  visibility: visible;
+}
+
+.views__legend {
+  margin: 0 auto var(--s-2);
+  padding: 0;
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.views__opts {
+  display: flex;
+  gap: var(--s-2);
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    font: 500 14px / 1 var(--sans);
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      color var(--dur-tip),
+      border-color var(--dur-tip),
+      background-color var(--dur-state),
+      transform var(--dur-press);
+  }
+}
+
+.views__radio:checked + label {
+  border-color: var(--text);
+  color: var(--bg);
+  background: var(--text);
+}
+
+.views__radio:focus-visible + label {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+// before the script runs, and without it, the screen width picks the pair; after, the reader's choice wins
+.views__pane--phone {
+  display: none;
+}
+
+@media (width < 700px) {
+  .views__pane--desktop {
+    display: none;
+  }
+
+  .views__pane--phone {
+    display: block;
+  }
+}
+
+html.case-ready .views[data-view] .views__pane {
+  display: none;
+}
+
+html.case-ready .views[data-view='desktop'] .views__pane--desktop,
+html.case-ready .views[data-view='phone'] .views__pane--phone {
+  display: block;
+}
+
+// the figure takes the frame's width, so the caption lines up under it; ratios are the captures' own
+.views .cmp {
+  margin: 0 auto;
+}
+
+.views__pane--desktop .cmp {
+  width: min(100%, var(--max), calc((100vh - var(--chrome)) * 1440 / 900));
+  width: min(100%, var(--max), calc((100svh - var(--chrome)) * 1440 / 900));
+}
+
+.views__pane--phone .cmp {
+  width: min(100%, calc(min(760px, 100vh - var(--chrome)) * 390 / 844));
+  width: min(100%, calc(min(760px, 100svh - var(--chrome)) * 390 / 844));
+}
+
+.views .cmp__frame {
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+}
+
+// above the floor light, which is positioned
+.views .cmp > figcaption {
+  position: relative;
+
+  .badge {
+    display: flex;
+    width: fit-content;
+    margin-bottom: var(--s-3);
+  }
+
+  .fig__credit {
+    display: block;
+    margin-top: var(--s-1);
+  }
+}
+
+// pool B: the floor light follows the handle by the same percentage, from its own box the frame's width
+.pool {
+  position: relative;
+  height: 0;
+}
+
+.pool__light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  transform: translateX(calc(var(--start) * 1%));
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -240px;
+    width: 480px;
+    height: 96px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent);
+  }
+}
+// #endregion
+
+// #region What to look for
+// the frame shares the stage's column lines, so the label can start where the beat texts below it do
+.stage--buskers .stage__frame {
+  display: grid;
+  grid-template-columns: subgrid;
+
+  > .views {
+    grid-column: 1 / -1;
+  }
+}
+
+.stage--buskers .look__label {
+  grid-column: wide;
+  margin: var(--s-7) 0 0;
+}
+
+@supports not (grid-template-columns: subgrid) {
+  .stage--buskers .stage__frame {
+    display: block;
+  }
+}
+
+.stage--buskers .stage__steps {
+  grid-column: wide;
+  display: grid;
+  gap: var(--s-4) var(--s-6);
+  margin-top: 0;
+
+  li {
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  li + li {
+    margin-top: 0;
+  }
+}
+
+.look__term {
+  display: block;
+  margin-bottom: var(--s-2);
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+@media (width >= 900px) {
+  .stage--buskers .stage__steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+// #endregion
+
+// #region The weight race, counted in blocks
+.stage--buskers > .race {
+  margin-top: var(--s-9);
+}
+
+.race {
+  display: grid;
+  gap: var(--s-6);
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.case--buskers .race__text > *,
+.case--buskers .race__facts > * {
+  margin: 0;
+}
+
+.race__text,
+.race__facts {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+}
+
+.race__stage {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-5);
+  padding: var(--s-7) var(--s-4) var(--s-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+}
+
+// rows land on the floor bottom up; pool C rises from the floor behind the blocks
+.race__cols {
+  --row-w: calc(var(--per) * var(--cell) + (var(--per) - 1) * var(--cell-gap));
+  --floor: calc(var(--rows) * (var(--cell) + var(--cell-gap)) - var(--cell-gap));
+  display: grid;
+  grid-template-columns: repeat(2, var(--row-w));
+  grid-template-rows: var(--floor) 1px auto auto;
+  column-gap: var(--col-gap);
+  background: radial-gradient(50% 60% at 50% 100%, color-mix(in srgb, var(--accent-2) 6%, transparent), transparent 70%) 0 0 / 100% var(--floor) no-repeat;
+}
+
+.race__col {
+  display: grid;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+}
+
+.race__stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-self: end;
+  gap: var(--cell-gap);
+}
+
+.race__row {
+  display: flex;
+  gap: var(--cell-gap);
+}
+
+.race--playing .race__row {
+  will-change: transform, opacity;
+}
+
+.race__cell {
+  flex: none;
+  width: var(--cell);
+  height: var(--cell);
+  border-radius: 2px;
+  background: var(--faint);
+}
+
+// the last block is an outline in its colour, filled to its share of 100 KB
+.race__cell--part {
+  position: relative;
+  border: 1px solid var(--faint);
+  background: none;
+
+  > span {
+    position: absolute;
+    inset: 0;
+    background: var(--faint);
+    transform-origin: left center;
+  }
+}
+
+.race__col--new {
+  .race__cell,
+  .race__cell--part > span,
+  .race__dots > span {
+    background: var(--accent);
+  }
+
+  .race__cell--part {
+    border-color: var(--accent);
+    background: none;
+  }
+}
+
+// one floor under both columns: each half reaches across the gap to meet the other
+.race__floor {
+  grid-row: 2;
+  background: var(--line-strong);
+}
+
+.race__col--old .race__floor {
+  margin: 0 calc(var(--col-gap) / -2) 0 -12px;
+}
+
+.race__col--new .race__floor {
+  margin: 0 -12px 0 calc(var(--col-gap) / -2);
+}
+
+.case--buskers .race__label {
+  max-width: none;
+  margin: var(--s-3) 0 0;
+  font: 500 13px / 1.4 var(--sans);
+  color: var(--muted);
+}
+
+.race__value {
+  display: block;
+  margin-top: 2px;
+  font: 400 12px / 1.4 var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-wrap: balance;
+  color: var(--text);
+}
+
+.race__dots {
+  display: grid;
+  grid-template-columns: repeat(10, 6px);
+  gap: 4px;
+  align-content: start;
+  margin-top: var(--s-3);
+
+  > span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--faint);
+  }
+}
+
+// the readout and the replay exist only while the phrase can play; the end state needs neither
+.race .race__readout,
+.race .race__replay {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.case-ready .race .race__readout,
+  html.case-ready .race .race__replay {
+    display: inline-flex;
+  }
+}
+
+.race .race__readout {
+  gap: 0.7em;
+  padding: 6px 12px 14px;
+  text-transform: uppercase;
+}
+
+.race__digit {
+  position: relative;
+  color: var(--faint);
+
+  &.is-now {
+    color: var(--text);
+  }
+
+  // the count dot jumps to the current digit; no tween, so it lands on the beat
+  &.is-now::after {
+    content: '';
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+}
+
+.race__replay {
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 14px / 1 var(--sans);
+  color: var(--text);
+  background: none;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-tip),
+    opacity var(--dur-state),
+    transform var(--dur-press);
+
+  &[aria-disabled='true'] {
+    opacity: 0.55;
+    cursor: default;
+  }
+}
+
+.race__note,
+.race__caveat {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+// on a phone the panel runs edge to edge, so two 149px columns still fit at 360px wide
+@media (width < 640px) {
+  .race__stage {
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    border-inline: 0;
+    border-radius: 0;
+  }
+}
+
+@media (width < 360px) {
+  .race__cols {
+    grid-template-columns: var(--row-w);
+    grid-template-rows: none;
+    row-gap: var(--s-6);
+  }
+
+  .race__col {
+    grid-row: auto;
+    grid-template-rows: var(--floor) 1px auto auto;
+  }
+
+  .race__col--new {
+    grid-template-rows: auto 1px auto auto;
+  }
+
+  .race__col .race__floor {
+    margin-inline: -12px;
+  }
+}
+
+// two 220px columns, their gap and the panel need 506px, which the 7fr track only reaches from 1240px
+@media (width >= 1240px) {
+  .race {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas:
+      'stage text'
+      'stage facts';
+    column-gap: var(--s-8);
+    row-gap: var(--s-5);
+    align-items: start;
+  }
+
+  .race__text {
+    grid-area: text;
+  }
+
+  .race__stage {
+    grid-area: stage;
+  }
+
+  .race__facts {
+    grid-area: facts;
+  }
+}
+// #endregion
+
+// #region Phrases of eight: chapters alternate sides from 1100px
+.case--buskers {
+  // below 1100px the grid steps aside, so text and figure sit on the chapter's own tracks
+  .phrase__grid {
+    display: contents;
+  }
+
+  .phrase__text,
+  .phrase__aside {
+    grid-column: read;
+  }
+
+  .phrase__text {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+
+    > * {
+      margin: 0;
+    }
+  }
+
+  // with the chapter's 16px row gap, 32px under the text
+  .phrase__aside {
+    margin-top: var(--s-4);
+
+    > figure {
+      margin: 0;
+    }
+  }
+
+  .phrase__aside--wide {
+    grid-column: wide;
+  }
+
+  .phrase__aside--phone .fig {
+    max-width: 390px;
+  }
+}
+
+@media (width >= 1100px) {
+  .case--buskers {
+    .phrase > h2 {
+      grid-column: wide;
+    }
+
+    // the heading starts where the text column does: after the 5fr figure column and the gap
+    .phrase--right > h2 {
+      margin-left: calc((100% - var(--s-8)) * 5 / 12 + var(--s-8));
+    }
+
+    .phrase__grid {
+      display: grid;
+      grid-column: wide;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      column-gap: var(--s-8);
+      align-items: start;
+    }
+
+    .phrase--right .phrase__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+
+    .phrase__text,
+    .phrase__aside {
+      grid-column: auto;
+      margin-top: 0;
+    }
+
+    .phrase--right .phrase__text {
+      grid-area: 1 / 2;
+    }
+
+    .phrase--right .phrase__aside {
+      grid-area: 1 / 1;
+    }
+
+    // the phone capture sits beside the middle paragraph
+    .phrase__aside--phone {
+      align-self: center;
+      justify-self: center;
+    }
+  }
+}
+// #endregion
+
+// #region Try an old address
+.checker {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+}
+
+.case--buskers .checker > * {
+  margin: 0;
+}
+
+.case--buskers .checker > h3 {
+  margin-top: var(--s-4);
+}
+
+.checker__field {
+  display: grid;
+  gap: var(--s-2);
+
+  label {
+    font: 500 15px / 1.4 var(--sans);
+  }
+}
+
+.checker__select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 44px 0 14px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-1);
+  font: 500 15px / 1.2 var(--mono);
+  color: var(--text);
+  background: var(--bg-raise) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23a89e92' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center / 12px 12px;
+  appearance: none;
+  cursor: pointer;
+
+  // without JavaScript it shows the default address and stays readable
+  &:disabled {
+    opacity: 1;
+    color: var(--muted);
+    cursor: default;
+  }
+}
+
+// the chip keeps its own line, so a shorter or longer result never moves it
+.checker__result {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-2);
+}
+
+.checker__out {
+  font: 500 17px / 1.5 var(--sans);
+  overflow-wrap: anywhere;
+}
+
+.checker__open {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.checker__note,
+.checker__nojs {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+html.case-ready .checker__nojs {
+  display: none;
+}
+
+.checker__all {
+  border-top: 1px solid var(--line);
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    min-height: 48px;
+    font: 500 15px / 1.4 var(--sans);
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    // a drawn chevron that turns when the list opens
+    &::after {
+      content: '';
+      flex: none;
+      width: 8px;
+      height: 8px;
+      margin-right: 4px;
+      border-right: 1.25px solid var(--muted);
+      border-bottom: 1.25px solid var(--muted);
+      transform: translateY(-2px) rotate(45deg);
+      transition: transform var(--dur-state) var(--ease);
+    }
+  }
+
+  &[open] summary::after {
+    transform: translateY(2px) rotate(225deg);
+  }
+}
+
+.checker__table {
+  width: 100%;
+  margin: var(--s-2) 0 var(--s-4);
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.45;
+
+  th {
+    padding: 0 var(--s-3) var(--s-2) 0;
+    border-bottom: 1px solid var(--line-strong);
+    font: 500 11px / 1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  td {
+    padding: var(--s-2) var(--s-3) var(--s-2) 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--muted);
+  }
+
+  code {
+    font: 400 13px / 1.45 var(--mono);
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+}
+// #endregion
+
+// #region New ways in: the message and the door table
+.message {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.case--buskers .message {
+  margin: 0;
+
+  > figcaption {
+    margin: 0;
+    font: 500 12px / 1.4 var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+}
+
+.message__text {
+  margin: 0;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  font: 400 13px / 1.75 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--text);
+  background: var(--bg-raise);
+}
+
+.case--buskers .message__note {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.doors {
+  width: 100%;
+  border-collapse: collapse;
+
+  caption {
+    margin-bottom: var(--s-3);
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+    color: var(--muted);
+  }
+
+  th,
+  td {
+    padding: var(--s-4) var(--s-5) var(--s-4) 0;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.55;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    padding-block: 0 var(--s-3);
+    border-top: 0;
+    font: 500 11px / 1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  tbody th {
+    width: 26%;
+    font-weight: 500;
+  }
+
+  td {
+    color: var(--muted);
+  }
+
+  .doors__new {
+    color: var(--text);
+  }
+}
+
+// the new side's one mark: a dot before what the new site does
+.doors__mark::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: var(--s-2);
+  border-radius: 50%;
+  vertical-align: 0.15em;
+  background: var(--accent);
+}
+
+// each row becomes a card: the way in as its heading, then the old and new site under their own small labels
+@media (width < 700px) {
+  .doors,
+  .doors caption,
+  .doors tbody,
+  .doors tr,
+  .doors th,
+  .doors td {
+    display: block;
+  }
+
+  .doors thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .doors tbody tr {
+    padding: var(--s-4) 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .doors th,
+  .doors td {
+    padding: 0;
+    border: 0;
+  }
+
+  .doors tbody th {
+    width: auto;
+  }
+
+  .doors td {
+    margin-top: var(--s-3);
+
+    &::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 2px;
+      font: 500 11px / 1.4 var(--mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+  }
+}
+// #endregion
+
+// #region Built to keep running, the eight counts
+.phrase__aside .metrics {
+  margin: 0;
+
+  > .metric {
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (width >= 1100px) {
+  .phrase__aside .metrics {
+    grid-auto-flow: row;
+  }
+}
+// #endregion
+
+// #region Pointer feedback: hover only for a fine pointer, a press scale only when motion is welcome
+@media (hover: hover) and (pointer: fine) {
+  .views__opts label:hover,
+  .race__replay:not([aria-disabled='true']):hover {
+    border-color: var(--text);
+    color: var(--text);
+  }
+
+  .views__radio:checked + label:hover {
+    color: var(--bg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .views__opts label:active,
+  .race__replay:not([aria-disabled='true']):active {
+    transform: scale(0.97);
+  }
+}
+// #endregion
+
+// #region No JavaScript, forced colours, print
+html:not(.js) {
+  .views__switch,
+  .pool {
+    display: none;
+  }
+
+  // the kit stacks the two captures; the frame's border moves onto each of them
+  .views .cmp__frame {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .views .cmp img {
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+  }
+}
+
+@media (forced-colors: active) {
+  .stage--buskers,
+  .race__cols {
+    background: none;
+  }
+
+  .pool {
+    display: none;
+  }
+
+  .race__cell,
+  .race__cell--part > span,
+  .race__dots > span,
+  .race__floor {
+    forced-color-adjust: none;
+    background: GrayText;
+  }
+
+  .race__col--new :is(.race__cell, .race__cell--part > span, .race__dots > span),
+  .doors__mark::before,
+  .race__digit.is-now::after {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+
+  .race__cell--part,
+  .race__col--new .race__cell--part {
+    background: none;
+  }
+
+  .views__radio:checked + label {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    color: HighlightText;
+    background: Highlight;
+  }
+}
+
+// paper gets the desktop pair stacked; the kit's print sheet does the rest, and only an important rule outranks the switch
+@media print {
+  .views__pane--desktop {
+    display: block !important;
+  }
+
+  .views__pane--phone,
+  .views__switch,
+  .pool,
+  .race .race__readout {
+    display: none !important;
+  }
+
+  .stage--buskers,
+  .race__cols {
+    background: none;
+  }
+
+  .views .cmp__frame {
+    border: 0;
+  }
+}
+// #endregion

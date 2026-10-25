@@ -368,7 +368,7 @@
   {
     "id": "therapy-site",
     "name": "Therapy Practice",
-    "tagline": "A warm home for a CBT practice",
+    "tagline": "A therapist's site with self serve booking",
     "category": "Web Apps",
     "status": "Live",
     "live": true,
@@ -380,21 +380,22 @@
       "HTML",
       "CSS",
       "JavaScript",
-      "Calendly"
+      "Cal.com",
+      "Vercel"
     ],
-    "summary": "A calm, editorial one-page site for a CBT therapist, where clients learn about her approach and book a session, signature 'thought record' hero included.",
-    "spark": "My sister was starting her CBT practice, and every template site felt cold and clinical, or buried the one thing clients actually need: a way to book.",
-    "build": "I built a warm, editorial one-pager with a signature CBT 'thought record' hero and inline booking, so clients understand her approach and book in a couple of taps.",
+    "summary": "A one page site for a counselling psychologist, rebuilt from her own draft. Clients book on Cal.com's free plan and pay her by UPI, with no payment gateway.",
+    "spark": "A counselling psychologist was starting her practice, and every template site felt cold and clinical, or buried the one thing clients actually need: a way to book.",
+    "build": "I rebuilt her one file draft as plain files any host can serve, then moved it closer to her own design document, version by version. Clients book a free consult or a paid session on Cal.com's free plan, a paid session waits until she confirms the UPI payment, and a script set up both session types, so her side of the setup is 7 short steps.",
     "architecture": [
-      "Zero-build static site, deploys free",
-      "Accessible + SEO / OpenGraph ready",
-      "Booking auto-detects Calendly / Cal.com"
+      "Plain HTML, CSS and JavaScript with no build step",
+      "Cal.com free plan embedded, set up by a script on its API",
+      "Payment by UPI outside the site, so no gateway takes a share"
     ],
     "highlights": [
-      "Editorial warm-clinical design",
-      "Inline booking widget",
-      "Accessible + SEO-ready",
-      "Signature thought-record hero"
+      "Self serve booking for two session types",
+      "Payment by UPI with no gateway fee",
+      "Her own design document sets the look",
+      "Live since 5 Aug 2026"
     ],
     "poster": "/media/therapy-site.jpg",
     "video": "/media/therapy-site.mp4"
@@ -440,9 +441,9 @@
     "name": "Buskers",
     "tagline": "A new home for Jaipur's dance school since 1995",
     "category": "Web Apps",
-    "status": "In progress",
-    "live": false,
-    "url": "",
+    "status": "Live",
+    "live": true,
+    "url": "https://www.buskers.in",
     "repo": "",
     "year": "2026",
     "accent": "#ff6b3d",
@@ -456,20 +457,19 @@
     ],
     "summary": "A full rebuild of buskers.in for Buskers Dance Institute, replacing a 2018 WordPress theme with a fast static site built around three.js scroll scenes.",
     "spark": "The school's site was a 2018 WordPress theme run by outside developers. The goal was to own it end to end and make it feel as alive as a dance class.",
-    "build": "I rebuilt it from scratch as a static site the school owns end to end: three.js scenes that move with the scroll, GSAP and Lenis motion, a Leaflet location map, and Cloudflare in front, staged for the domain cutover.",
+    "build": "I rebuilt it from scratch as a static site whose copy the family edits in a Google Doc: three.js scenes that move with the scroll, GSAP and Lenis motion, a Leaflet location map, and Cloudflare in front. It went live on buskers.in on 2 Oct 2026.",
     "architecture": [
       "Static Vite build, no CMS to patch",
       "Scroll scenes on GSAP ScrollTrigger and Lenis",
       "Cloudflare in front, instant rollback to the old site"
     ],
     "highlights": [
-      "Client project, owner hosted",
+      "Client project, run for the institute",
       "three.js scroll scenes",
       "Leaflet location map",
-      "Launching on buskers.in"
+      "Live on buskers.in since 2 Oct 2026"
     ],
-    "poster": "/media/buskers.jpg",
-    "video": "/media/buskers.mp4"
+    "poster": "/case-studies/buskers/media/poster.jpg"
   },
   {
     "id": "linkedin-newsroom",

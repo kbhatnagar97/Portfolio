@@ -1,0 +1,383 @@
+// therapy-practice: breathing room, rose on deep sage. Only kit and shell tokens are used.
+
+// #region World tokens and rhythm
+// the grid tracks live on main.case, which also carries this class, so the narrower measure is set on it
+.case.case--therapy-practice {
+  --read: 640px;
+}
+
+.case--therapy-practice {
+  .case__story {
+    --accent-2: #5f8a78; // deep sage, 5.08:1: the unfilled track and the rings before they fill
+    --stage-bg: transparent;
+    --r-3: 24px; // this world's panels: the stage and the offer
+    // the stage's tempo, read by breath.ts
+    --breath: 1800ms;
+    --hold: 600ms;
+    --ring: 600ms;
+  }
+
+  // blocks in a chapter sit 48px from the text around them: the row gap plus this margin
+  .ch > :is(figure, .versions) {
+    margin-block: var(--s-6);
+  }
+
+  // headings never leave one word on a line of its own, and paragraphs avoid a lone last word
+  :is(.ch > h2, .stage__head h2, .turn__line) {
+    text-wrap: balance;
+  }
+
+  :is(.ch > p, .stage__intro) {
+    text-wrap: pretty;
+  }
+}
+// #endregion
+
+// #region Stage: six steps on one line
+// the stage has no surface of its own here, only the raised path, so the page rhythm alone spaces it
+.stage--therapy-practice {
+  padding-block: 0;
+
+  .stage__frame {
+    grid-column: wide;
+  }
+
+  .path {
+    display: grid;
+    row-gap: var(--s-6);
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: var(--r-3);
+    background: var(--bg-raise);
+  }
+
+  .path__step {
+    position: relative;
+    padding-left: var(--s-6);
+  }
+
+  .path__node {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    z-index: 1;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--accent-2);
+    border-radius: 50%;
+    background: var(--bg-raise);
+  }
+
+  // the filled state sits over the sage ring, so the script only ever changes its opacity
+  .path__on {
+    position: absolute;
+    inset: -2px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+  }
+
+  // the last node is the session itself, so it fills solid
+  .path__on--booked {
+    background: var(--accent);
+  }
+
+  // each segment runs from its node's centre to the next node's centre, across the row gap
+  .path__seg {
+    position: absolute;
+    top: 12px;
+    left: 7px;
+    width: 2px;
+    height: calc(100% + var(--s-6));
+    background: var(--accent-2);
+  }
+
+  .path__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: top;
+  }
+
+  .path__label {
+    margin: 0 0 var(--s-2);
+    font: 500 17px / 1.3 var(--sans);
+    color: var(--text);
+  }
+
+  .path__text {
+    margin: 0;
+    font: 400 15px / 1.5 var(--sans);
+    color: var(--muted);
+  }
+
+  // six columns need about 150px each, which the wide track gives from 1200px (breath.ts reads the same breakpoint)
+  @media (width >= 1200px) {
+    .path {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0 var(--s-5);
+    }
+
+    // labels share one row and texts the next, so a label that wraps never pushes its text out of line
+    .path__step {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      padding-top: 36px;
+      padding-left: 0;
+    }
+
+    .path__node {
+      top: 0;
+    }
+
+    .path__seg {
+      top: 7px;
+      left: 8px;
+      width: calc(100% + var(--s-5));
+      height: 2px;
+    }
+
+    .path__fill {
+      transform-origin: left;
+    }
+  }
+
+  .is-breathing {
+    .path__fill {
+      will-change: transform;
+    }
+
+    .path__on {
+      will-change: opacity;
+    }
+  }
+}
+// #endregion
+
+// #region No gateway
+.case--therapy-practice {
+  // the worked sum, one step per line
+  .gateway__math {
+    margin-top: var(--s-4);
+    font: 400 13px / 1.8 var(--mono);
+    color: var(--text);
+  }
+
+  .gateway__note {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  // the cost column is half the wide track, so its two tiles stand side by side only once it is wide enough
+  @media (width < 1200px) {
+    .turn__old--cost .metrics {
+      grid-auto-flow: row;
+    }
+  }
+}
+// #endregion
+
+// #region Her setup: the fold, its sum, the way back
+.case--therapy-practice {
+  .fold {
+    display: grid;
+    gap: var(--s-6) var(--s-7);
+  }
+
+  .fold > .fold__cap {
+    margin: 0;
+  }
+
+  .fold__title {
+    margin: 0 0 var(--s-3);
+    font: 500 12px / 1.4 var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .fold__rows {
+    border-top: 1px solid var(--line);
+  }
+
+  .fold__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .fold__do {
+    min-width: 0;
+  }
+
+  .fold__row--struck .fold__do {
+    color: var(--faint);
+    text-decoration: line-through 1px var(--faint);
+  }
+
+  .fold__tag {
+    flex: none;
+    font: 500 11px / 1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .fold__mine {
+    margin: var(--s-4) 0 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  @media (width >= 900px) {
+    .fold {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .fold__cap {
+      grid-column: 1 / -1;
+    }
+  }
+
+  // the chip stands beside the hero value, and the rest of the sentence takes the next line
+  .setup__total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--s-4);
+
+    .metric__label {
+      flex-basis: 100%;
+      margin-top: var(--s-2);
+    }
+  }
+
+  .setup__when {
+    font: 400 12px / 1.8 var(--mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+
+    li:first-child {
+      color: var(--faint);
+    }
+  }
+}
+// #endregion
+
+// #region Versions
+.case--therapy-practice {
+  // the captures are 1120 by 596, so the viewer and the thumbnails keep that shape instead of the kit's 16:10
+  .versions__shot {
+    aspect-ratio: 1120 / 596;
+  }
+
+  .versions__tab img {
+    aspect-ratio: 256 / 136;
+  }
+
+  .versions__item picture {
+    display: block;
+  }
+
+  .versions + .fig__credit {
+    max-width: none;
+  }
+}
+// #endregion
+
+// #region Built to last
+.case--therapy-practice {
+  .lasting {
+    border-top: 1px solid var(--line);
+
+    > div {
+      padding: var(--s-4) 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    dt {
+      font: 500 12px / 1.4 var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    dd {
+      margin: 6px 0 0;
+    }
+  }
+
+  @media (width >= 640px) {
+    .lasting > div {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      align-items: baseline;
+      column-gap: var(--s-5);
+    }
+
+    .lasting dd {
+      margin: 0;
+    }
+  }
+}
+// #endregion
+
+// #region Forced colours and print
+@media (forced-colors: active) {
+  // a pseudo element cannot sit inside :is(), so the dot inside each ring is listed on its own
+  .stage--therapy-practice {
+    .path__node,
+    .path__seg,
+    .path__fill,
+    .path__on,
+    .path__on::after {
+      forced-color-adjust: none;
+    }
+
+    .path__node {
+      border-color: GrayText;
+      background: Canvas;
+    }
+
+    .path__seg {
+      background: GrayText;
+    }
+
+    .path__on {
+      border-color: Highlight;
+    }
+
+    .path__fill,
+    .path__on::after,
+    .path__on--booked {
+      background: Highlight;
+    }
+  }
+}
+
+@media print {
+  .stage--therapy-practice {
+    break-inside: avoid;
+
+    // the raised fill turns white on paper, so the stage keeps its shape with a frame instead
+    .path {
+      border: 1px solid var(--line-strong);
+    }
+  }
+}
+// #endregion

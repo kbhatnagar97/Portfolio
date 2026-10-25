@@ -1,0 +1,1100 @@
+{
+  "slug": "buskers",
+  "draft": false,
+  "flagship": false,
+  "title": "Buskers",
+  "kicker": "Website takeover and rebuild",
+  "industry": "Dance education",
+  "client": "Buskers Dance Institute, Jaipur",
+  "anonymised": false,
+  "role": "Design and build",
+  "year": "2026",
+  "published": "2026-10-25",
+  "accent": "#ff6b3d",
+  "status": "Live since 2 Oct 2026",
+  "purposes": [
+    "opens-reach",
+    "reduces-risk"
+  ],
+  "project": "buskers",
+  "seoTitle": "Buskers Dance Institute website takeover",
+  "description": "How I took over a Jaipur dance school's 2018 WordPress site, kept it live as a static copy until sign off, and rebuilt it without breaking an old page address.",
+  "deck": "I took over a dance school's 2018 website, kept it live until sign off, and broke none of its old page addresses.",
+  "summary": [
+    "Buskers Dance Institute has taught dance in Jaipur since 1995. Its 2018 WordPress site had no security headers, and its newest page edit dated from April 2023.",
+    "I saved the old site first, kept it live as a static copy until sign off, moved DNS without dropping the company mail records, and sent every old page address to the matching section of one new static page.",
+    "36 of 36 old page addresses still land, security headers went from none to six, and WhatsApp enquiries start from three places instead of none. On a desktop lab load before any scrolling, the home page download went from 4.04 MB to 0.44 MB; the old side was measured on its static copy, which loads every image at once."
+  ],
+  "impact": [
+    {
+      "value": "36 of 36",
+      "label": "old page addresses land on the matching section of the new page, by permanent redirect.",
+      "kind": "measured",
+      "source": "redirects",
+      "note": "Checked on 25 Oct 2026, each address with the trailing slash WordPress used."
+    },
+    {
+      "value": "0 to 6",
+      "label": "security headers on the home page: none on the old WordPress server, six on buskers.in.",
+      "kind": "measured",
+      "source": "headers",
+      "note": "The old count is from my audit notes at the takeover. The new one was read from the live site on 25 Oct 2026."
+    },
+    {
+      "value": "0 to 3",
+      "label": "ways to start a WhatsApp enquiry: none on the 37 old pages I crawled, three on the new page.",
+      "kind": "measured",
+      "source": "whatsapp"
+    },
+    {
+      "value": "4.04 MB to 0.44 MB",
+      "label": "downloaded by the home page before any scrolling, desktop, lab median of 3 cold loads. The old side is the old site's static copy, which loads every image at once.",
+      "kind": "measured",
+      "source": "weight",
+      "note": "The original loaded its images and map embed later, as they came into view. The stage shows the scrolled totals too."
+    }
+  ],
+  "poster": {
+    "src": "/case-studies/buskers/media/poster.jpg",
+    "webp": "/case-studies/buskers/media/poster.webp",
+    "alt": "The old and new Buskers home pages split down the middle. Left, the old page on 26 Sep 2026: its headline printed over the menu, above the About text. Right, the new page on 25 Oct 2026: the red LED dance floor under spotlights, the end of its headline and the Call now and WhatsApp buttons.",
+    "width": 1280,
+    "height": 800
+  },
+  "stack": [
+    "Vite static build",
+    "Vanilla JavaScript",
+    "three.js",
+    "GSAP with ScrollTrigger",
+    "Lenis",
+    "Leaflet and OpenStreetMap",
+    "WhatsApp links",
+    "Vercel behind Cloudflare",
+    "Playwright",
+    "GitHub Actions and wget",
+    "Google Docs"
+  ],
+  "links": [
+    {
+      "label": "buskers.in",
+      "href": "https://www.buskers.in/"
+    }
+  ],
+  "offer": {
+    "who": "Small institutes, studios and family businesses whose website was built, and is still run, by someone else, often on WordPress.",
+    "gets": "A takeover that keeps your current site live until you sign off. I save every page and photo first, move the domain and DNS without dropping your company mail records, and send every old page address to its new home. Then I build a static site with WhatsApp enquiries, a nearest branch finder and copy you edit in a Google Doc.",
+    "needs": "Access to your domain's registrar account, whoever runs your company email, one person who signs off copy, photos you have consent to publish, the WhatsApp number enquiries should reach, and hosting and analytics accounts in your business's name.",
+    "setup": "Buskers took 6 days from my first commit to launch, 26 Sep to 2 Oct 2026, with the old site live as a copy until sign off [measured:dates]. Since then the family edits copy in a Google Doc, and changes go live only on an explicit go ahead to deploy."
+  },
+  "credits": [
+    {
+      "text": "Screenshots of the old Buskers site, from its original server on 26 Sep 2026 and from its static copy on 25 Oct 2026, and of buskers.in on 25 Oct 2026. Text, logo and photos belong to Buskers Dance Institute. The old site's design is by its original developers. Phone numbers, branch and studio counts and faces are blurred.",
+      "url": "https://www.buskers.in/"
+    }
+  ],
+  "sources": [
+    {
+      "id": "weight",
+      "text": "Lab measurement of each home page on desktop: headless Chromium 153 at 1440 by 900, three cold loads per site with the cache off and no CPU or network throttling, on 25 Oct 2026 (IST). Medians: old 4,036,739 bytes in 60 requests, new 444,297 bytes in 18 requests, which at 100 KB a block is 40.4 and 4.4 blocks. Transfer counted until the network went quiet, plus 1.5 seconds, in decimal KB and MB. The old side is the static copy of the old site, because the original server was never measured. The copy loads every image and the map embed at once, where the original loaded them later, and it skips the scripts the original held until the first input.",
+      "url": "https://www.buskers.in/"
+    },
+    {
+      "id": "headers",
+      "text": "Response headers of https://www.buskers.in/ read on 25 Oct 2026: HSTS with preload, a content security policy, frame options set to deny, content type options, a referrer policy and a permissions policy. The old count is from my audit notes at the takeover on 26 Sep 2026, which record no security headers on the WordPress server. The static copy sends headers of its own, so it cannot stand in for the original here.",
+      "url": "https://www.buskers.in/"
+    },
+    {
+      "id": "redirects",
+      "text": "Every old page address from the crawl of 26 Sep 2026, 36 in all, requested with its trailing slash on 25 Oct 2026. Each answers with permanent redirects (HTTP 308) and ends with HTTP 200 on the matching section of the new page. The old admin addresses lead to the home page. On the same day, the address of every one of the static copy's 215 pages, gallery posts included, matched a redirect rule in the new site's config. Old media file addresses have no redirect.",
+      "url": "https://www.buskers.in/"
+    },
+    {
+      "id": "whatsapp",
+      "text": "Old: every link on the 37 crawled pages searched for wa.me or WhatsApp, counted on 25 Oct 2026, with no match. New: the WhatsApp handoffs in the page source, which are the floating button, the enrol form and the D'Fest form; the form messages are built in one script."
+    },
+    {
+      "id": "captures",
+      "text": "Screenshots of the first screen, scrolled to the top. Old, desktop: the original server, captured by my crawl on 26 Sep 2026 before any input. Old, phone: the static copy, captured on 25 Oct 2026 before any tap; it matches the original server's phone capture of 26 Sep 2026. New: buskers.in, captured on 25 Oct 2026 in headless Chromium. On desktop the old hero stayed collapsed until the first mouse move, because its scripts waited for input.",
+      "url": "https://www.buskers.in/"
+    },
+    {
+      "id": "firstscreen",
+      "text": "Phone load of each home page at 390 by 844 on 25 Oct 2026, counting the call and WhatsApp links visible in the first screen. The original server's phone capture of 26 Sep 2026 shows the same old screen. Smoke checks 9 to 11 confirm that the new bar is fixed, full width and at least 44 px tall.",
+      "url": "https://www.buskers.in/"
+    },
+    {
+      "id": "scrolled",
+      "text": "Same lab setup, one run per site on 25 Oct 2026 (IST), each home page scrolled to the bottom and left until the network settled, with analytics hosts blocked. Old: the static copy's home page alone, without the scripts the original held until the first input. New: the whole site, which is one page, with its gallery photos and map tiles. Old 4,337 KiB, new 2,589 KiB as the script reports them, which is 4.44 MB and 2.65 MB in decimal units."
+    },
+    {
+      "id": "crawl",
+      "text": "My one off crawl of the old site on 26 Sep 2026, through its public WordPress REST API and a headless browser: 37 pages, 123 media library files and 74 desktop and phone screenshots, counted on 25 Oct 2026. Upload and edit dates from the same export: 121 of the 123 files were uploaded in 2018, and the newest page edit is dated 8 Apr 2023. My project notes say 129 images; the media list holds 123."
+    },
+    {
+      "id": "phonepages",
+      "text": "Pixel heights of the 37 phone screenshots from the crawl of 26 Sep 2026, read on 25 Oct 2026: 7 are exactly 844 px, one screen. I opened two of the seven, the beginner course and the Fusion event, and loaded the beginner course page on the static copy before and after a mouse input."
+    },
+    {
+      "id": "gallery",
+      "text": "Album data of the new site: 218 photos in 5 albums (Fusion 2018: 39, Fusion 2017: 50, D'Fest 2017: 53, BADC Show 2018: 20, More moments: 56), plus 28 photos on the 3D ring."
+    },
+    {
+      "id": "notes",
+      "text": "My project notes for the takeover, written from 26 Sep to 4 Oct 2026: that the old site ran a custom WordPress theme from 2018 on a cPanel style LiteSpeed host with no firewall in front, the request to keep the old site live until sign off, the reason for each decision, the founder photos found on the Wayback Machine, the first redirects that returned 404 for addresses ending in a slash, the dropped connections behind some office networks, the Google Doc workflow, the rule that nothing deploys without an explicit go ahead, and the launch and rollback steps."
+    },
+    {
+      "id": "mirror",
+      "text": "The mirror workflow and its output: a GitHub Actions runner pinned the domain to the old server's address, copied the site with wget and fetched every address in its four sitemaps, because some pages were linked only by short links. The copy holds 215 pages, gallery posts included, in 967 files of 71,089,079 bytes (71 MB), counted on 25 Oct 2026; my notes say 70 MB. Its hosting config sends four security headers. A static copy cannot run the old enquiry or D'Fest forms."
+    },
+    {
+      "id": "reach",
+      "text": "An external check from 40 test locations, recorded in my project notes on 26 Sep 2026: the copy on buskers.in loaded from 39 of them, India included. It was a one time reachability check, not an uptime record."
+    },
+    {
+      "id": "mail",
+      "text": "Lookup of buskers.in through Google public DNS on 25 Oct 2026: both Google mail (MX) records answer from Cloudflare DNS, and the SPF record includes Google's mail servers. My notes record that the old SPF record did not, and that the records went in before the name server switch on 26 Sep 2026.",
+      "url": "https://dns.google/resolve?name=buskers.in&type=MX"
+    },
+    {
+      "id": "build",
+      "text": "Line counts with wc on 25 Oct 2026: about 1,380 lines of the site's own code (1,376 in all: 613 of JavaScript in 10 modules, 296 of CSS and 467 of HTML), 4 front end libraries in the package file, and no server code."
+    },
+    {
+      "id": "finder",
+      "text": "Studio finder source: the place search is bounded to a box around Jaipur, with a code comment recording that an unbounded search for Vaishali resolved to Bihar; tiles and search come from OpenStreetMap without an API key; studios rank by distance. The old branch list and its embedded maps are in the original home page HTML."
+    },
+    {
+      "id": "search",
+      "text": "Old: a census of the HTML saved from the original server on 26 Sep 2026 found one meta description shared by all 37 crawled pages, and no share image on the home page, whose structured data was WebPage, BreadcrumbList, WebSite and Organization. New: the live page's tags read on 25 Oct 2026, with DanceSchool structured data giving the founding year, 1995, and the address, and a 1200 by 630 share card.",
+      "url": "https://www.buskers.in/"
+    },
+    {
+      "id": "optimised",
+      "text": "My optimisation notes of 4 Oct 2026: a Chrome DevTools CPU profile over 8 seconds at the hero, 0.69 ms busy per frame before and after, against a 16 ms frame budget; first load at a phone viewport, 1,647 KB before and 400 KB after the gallery ring moved to load within 800 px of the gallery, units as recorded; JavaScript from one 689 KB file (191.6 KB gzip) to three cached library files plus 5.6 KB gzip of site code."
+    },
+    {
+      "id": "smoke",
+      "text": "Smoke test of 13 Playwright checks at desktop and phone screen sizes and with WebGL switched off: 9 of 12 passed before the call buttons existed, the 3 failures being the buttons; 13 of 13 passed three runs in a row after, and 13 of 13 against the live site at the 4 Oct 2026 deploy."
+    },
+    {
+      "id": "alt",
+      "text": "Image census on 25 Oct 2026: 10 of the 51 images on the old home page, in the HTML saved on 26 Sep 2026, had no alt attribute; none of the 35 on the new page lacks one, and 6 of those carry an empty alt, which marks them as decorative. Empty alts are not counted as missing."
+    },
+    {
+      "id": "dates",
+      "text": "Git history and my project notes: first commit on 26 Sep 2026 at 02:05 IST with a preview live the same day, launch on the domain on 2 Oct 2026, and the call buttons and optimisation pass deployed on 4 Oct 2026."
+    }
+  ],
+  "gaps": [
+    "Traffic and enquiry numbers are not yet available.",
+    "No figures for money or time saved.",
+    "The original server was never timed or weighed; the old figures come from its static copy.",
+    "Scrolled totals are one run per site; cold load figures are medians of three.",
+    "No Lighthouse or PageSpeed Insights scores for either site.",
+    "Studio and branch counts are not confirmed, so they are blurred and never stated.",
+    "Captures before any input show the old gallery empty, so the page makes no claim about it.",
+    "No uptime monitor ran during the move.",
+    "No client quote is available.",
+    "The notes count 129 images and the media list 123; the page uses 123.",
+    "How the old enquiry forms delivered messages is unknown.",
+    "The new phone capture cuts the bottom call bar at the frame edge."
+  ],
+  "blocks": {
+    "index": [
+      {
+        "id": "saved",
+        "label": "Everything saved first"
+      },
+      {
+        "id": "turn",
+        "label": "The old site stayed on"
+      },
+      {
+        "id": "addresses",
+        "label": "Every old page address"
+      },
+      {
+        "id": "doors",
+        "label": "New ways in"
+      },
+      {
+        "id": "running",
+        "label": "Built to keep running"
+      },
+      {
+        "id": "counts",
+        "label": "Eight counts"
+      }
+    ],
+    "stage": {
+      "h2": "Old stage, new stage",
+      "intro": "Drag the handle across the home page, or switch to the phone screen. On the left, the old site before any tap or mouse move. On the right, buskers.in on 25 Oct 2026. Same screen, same scroll position.",
+      "views": {
+        "legend": "Screen",
+        "desktop": "Desktop",
+        "phone": "Phone"
+      },
+      "compare": {
+        "start": 50,
+        "rangeLabel": "Compare the old and new home page",
+        "valueText": "{v} percent old site, {w} percent new site",
+        "badge": "Blurred for privacy",
+        "before": {
+          "src": "/case-studies/buskers/media/compare-old-desktop-1440.webp",
+          "srcset": "/case-studies/buskers/media/compare-old-desktop-1120.webp 1120w, /case-studies/buskers/media/compare-old-desktop-1440.webp 1440w",
+          "sizes": "(min-width: 1320px) 1320px, 100vw",
+          "alt": "The old Buskers home page at 1440 by 900 before any mouse move: the headline YOUR WAY is printed over the menu, above an About Buskers section with justified text, four stat counters and a stage photo. The branch count and faces are blurred.",
+          "width": 1440,
+          "height": 900,
+          "label": "Old",
+          "captured": "26 Sep 2026",
+          "phone": {
+            "src": "/case-studies/buskers/media/compare-old-phone-780.webp",
+            "srcset": "/case-studies/buskers/media/compare-old-phone-390.webp 390w, /case-studies/buskers/media/compare-old-phone-780.webp 780w",
+            "sizes": "340px",
+            "alt": "The old home page on a 390 pixel phone screen, from its static copy: the headings overlap the logo, the About text is justified, stat counters follow, and there is no call or WhatsApp button. The branch count and faces are blurred.",
+            "width": 780,
+            "height": 1688,
+            "label": "Old copy",
+            "captured": "25 Oct 2026"
+          }
+        },
+        "after": {
+          "src": "/case-studies/buskers/media/compare-new-desktop-1440.webp",
+          "srcset": "/case-studies/buskers/media/compare-new-desktop-1120.webp 1120w, /case-studies/buskers/media/compare-new-desktop-1440.webp 1440w",
+          "sizes": "(min-width: 1320px) 1320px, 100vw",
+          "alt": "The new Buskers home page at the same size: DANCE YOUR WAY in large type over a red LED dance floor under spotlights, Start dancing and Find a studio near you buttons, and floating Call now and WhatsApp buttons. The phone number and studio count are blurred.",
+          "width": 1440,
+          "height": 900,
+          "label": "New",
+          "captured": "25 Oct 2026",
+          "phone": {
+            "src": "/case-studies/buskers/media/compare-new-phone-780.webp",
+            "srcset": "/case-studies/buskers/media/compare-new-phone-390.webp 390w, /case-studies/buskers/media/compare-new-phone-780.webp 780w",
+            "sizes": "340px",
+            "alt": "The new home page on the same phone screen: DANCE YOUR WAY over the LED floor, the Start dancing and Find a studio near you buttons, and a Call now and WhatsApp bar along the bottom. The studio count is blurred.",
+            "width": 780,
+            "height": 1688,
+            "label": "New",
+            "captured": "25 Oct 2026"
+          }
+        },
+        "caption": {
+          "desktop": "The first screen of the home page on desktop, scrolled to the top. Old: the original server on 26 Sep 2026, before any input; its theme showed the full screen photo hero and the gallery only after the first tap, scroll or mouse move. New: buskers.in on 25 Oct 2026. The branch count, the phone number, the studio count and faces are blurred.",
+          "phone": "The first phone screen of the home page, scrolled to the top. Old: the static copy on 25 Oct 2026, before any tap, which matches the original server's phone capture of 26 Sep 2026. New: buskers.in on 25 Oct 2026. The branch count, the studio count and faces are blurred."
+        },
+        "cite": [
+          {
+            "kind": "measured",
+            "source": "captures"
+          }
+        ]
+      },
+      "lookFor": {
+        "label": "What to look for",
+        "items": [
+          {
+            "term": "Headline",
+            "text": "Old: the scripts that built the hero waited for the first mouse move, so YOUR WAY sat on top of the menu. New: the headline is plain HTML, readable before any script runs.",
+            "trace": [
+              {
+                "source": "captures"
+              }
+            ]
+          },
+          {
+            "term": "Calling",
+            "text": "Old: no call or WhatsApp button on the first phone screen. New: Call now and WhatsApp stay on every phone screen. Switch to the phone screen to see it.",
+            "cite": [
+              {
+                "kind": "measured",
+                "source": "firstscreen"
+              }
+            ]
+          },
+          {
+            "term": "Weight",
+            "text": "Old copy: 4.04 MB before any scrolling. New: 0.44 MB. Counted in blocks below.",
+            "cite": [
+              {
+                "kind": "measured",
+                "source": "weight"
+              }
+            ]
+          }
+        ]
+      },
+      "race": {
+        "h3": "Counted in blocks of 100 KB",
+        "intro": "Desktop, a cold load before any scrolling, median of 3 lab runs. One block is 100 KB. One dot is one request.",
+        "blockBytes": 100000,
+        "perCount": 8,
+        "countMs": 500,
+        "readoutLabel": "Count",
+        "replay": "Count it again",
+        "old": {
+          "label": "Old home page, static copy",
+          "bytes": 4036739,
+          "requests": 60,
+          "display": "4.04 MB · 60 requests"
+        },
+        "new": {
+          "label": "New home page",
+          "bytes": 444297,
+          "requests": 18,
+          "display": "0.44 MB · 18 requests"
+        },
+        "summary": {
+          "text": "The static copy of the old home page downloaded 4,036,739 bytes in 60 requests, 40.4 blocks. The new home page downloads 444,297 bytes in 18 requests, 4.4 blocks: 89 percent fewer bytes and 70 percent fewer requests.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "weight"
+            }
+          ]
+        },
+        "scrolled": {
+          "caption": "Scrolled to the bottom, one run each",
+          "rows": [
+            {
+              "k": "Old",
+              "value": "4.44 MB",
+              "v": 1
+            },
+            {
+              "k": "New",
+              "value": "2.65 MB",
+              "v": 0.597
+            }
+          ],
+          "note": "The new figure is the whole site, gallery photos and map included. The old one is the static copy's home page alone.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "scrolled"
+            }
+          ]
+        },
+        "caveat": {
+          "text": "The old side is the static copy of the old site. It loads every image and the map embed at once, where the original loaded them later, and it skips the scripts the original held until the first tap or mouse move. The original server was never timed, so this page compares bytes and requests, not load times.",
+          "trace": [
+            {
+              "source": "weight"
+            }
+          ]
+        },
+        "introCite": [
+          {
+            "kind": "measured",
+            "source": "weight"
+          }
+        ]
+      }
+    },
+    "saved": {
+      "h2": "Everything saved first",
+      "side": "left",
+      "lede": "Before I changed a line, I saved the old site through its own public WordPress API and a headless browser.",
+      "paras": [
+        {
+          "text": "That gave me 37 pages, 123 media library files and 74 desktop and phone screenshots. 121 of those 123 files were uploaded in 2018, and the newest page edit dated from 8 Apr 2023.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "crawl"
+            }
+          ]
+        },
+        {
+          "text": "The screenshots showed what a visitor saw before any input. On desktop, the headline sat on top of the menu until the first mouse move. On a phone, 7 of the 37 pages captured as exactly one screen tall, and on the two I opened, the text started behind the header in small grey type.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "phonepages"
+            }
+          ],
+          "trace": [
+            {
+              "source": "captures"
+            }
+          ]
+        },
+        {
+          "text": "Some things were missing from the export. The founders' photos lived in the theme folder, so they came back from the Wayback Machine. Gallery post names did not match their photos, so I rebuilt the albums from the old category pages: 218 photos in 5 albums.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "gallery"
+            }
+          ],
+          "trace": [
+            {
+              "source": "notes"
+            }
+          ]
+        }
+      ],
+      "figure": {
+        "width": "read",
+        "img": {
+          "src": "/case-studies/buskers/media/old-course-page-phone-780.webp",
+          "srcset": "/case-studies/buskers/media/old-course-page-phone-390.webp 390w, /case-studies/buskers/media/old-course-page-phone-780.webp 780w",
+          "sizes": "(min-width: 430px) 390px, 92vw",
+          "alt": "The old beginner course page on a phone: four lines of small grey course text, the first two hidden behind the header, then the footer links straight after them.",
+          "width": 780,
+          "height": 500
+        },
+        "caption": "The old beginner course page on a phone, after a mouse move. Half of the course text sits behind the header, and the footer comes next.",
+        "credit": "Capture: static copy of the old site, 25 Oct 2026. The original server's capture of 26 Sep 2026 shows the same page.",
+        "trace": [
+          {
+            "source": "phonepages"
+          }
+        ]
+      }
+    },
+    "turn": {
+      "h2": "The old site stayed on stage",
+      "expected": "The old site had to stay live until the new one was signed off. The plain way to do that is to keep the old WordPress server answering until launch day.",
+      "cost": "Pointing the domain back would have kept every visitor on the old WordPress server, which sent no security headers, until launch.",
+      "line": "The old pages had to stay on screen, not the old server behind them.",
+      "built": "A static copy. A GitHub runner pointed the domain at the old server's address on its own machine, copied the site with wget, and fetched every address in its four sitemaps, because some pages were linked only by short links. 215 pages, gallery posts included, and 71 MB of plain files went back on buskers.in the same day, with four security headers the old server never sent.",
+      "builtMore": "An outside check from 40 test locations loaded the copy from 39, India included. The trade: a static copy cannot run the old enquiry forms. It held the domain until launch on 2 Oct 2026, and it is still kept for a rollback.",
+      "trace": [
+        {
+          "source": "notes"
+        }
+      ],
+      "builtCite": [
+        {
+          "kind": "measured",
+          "source": "mirror"
+        }
+      ],
+      "builtMoreCite": [
+        {
+          "kind": "reported",
+          "source": "reach"
+        }
+      ]
+    },
+    "addresses": {
+      "h2": "Every old page address still lands",
+      "side": "right",
+      "lede": "Search results and saved links pointed at the old WordPress page addresses. I sent each one to the matching section of the new page, so none of them breaks.",
+      "paras": [
+        {
+          "text": "My first redirects returned 404 for addresses ending in a slash, which is how WordPress writes them. Turning trailing slashes off fixed it, and the checks now always include the slash. On 25 Oct 2026, 36 of 36 old page addresses landed on their section by permanent redirect, and the old admin addresses led to the home page.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "redirects"
+            }
+          ],
+          "trace": [
+            {
+              "source": "notes"
+            }
+          ]
+        },
+        {
+          "text": "Company email ran on Google Workspace on the same domain. Its two mail records and a corrected SPF record went into Cloudflare before the name servers moved; the old SPF record had not included Google's servers. All of them were still in place on 25 Oct 2026.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "mail"
+            }
+          ]
+        },
+        {
+          "text": "Security headers went from none to six, among them a content security policy and HSTS with preload. With no CMS, plugin or admin login left, there is nothing on the server side to patch.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "headers"
+            }
+          ],
+          "trace": [
+            {
+              "source": "build"
+            }
+          ]
+        },
+        {
+          "text": "One bug only showed up behind some office networks: the site would not load there while every outside check passed. The cause was Encrypted Client Hello, which some network middleboxes drop, and switching it off for the domain fixed it.",
+          "trace": [
+            {
+              "source": "notes"
+            }
+          ]
+        }
+      ],
+      "toy": {
+        "h3": "Try an old address",
+        "label": "Old address",
+        "default": "/our-courses/beginner-course/",
+        "host": "www.buskers.in",
+        "result": "Lands on {section}: www.buskers.in/#{anchor}",
+        "open": "Open the old address on buskers.in",
+        "all": "All 36 old page addresses",
+        "head": [
+          "Old address",
+          "Lands on"
+        ],
+        "note": "Results from my check on 25 Oct 2026. Open an address to see it live.",
+        "noJs": "Turn on JavaScript to pick an address. The full list is below.",
+        "cite": [
+          {
+            "kind": "measured",
+            "source": "redirects"
+          }
+        ],
+        "sections": {
+          "about": "About",
+          "styles": "Styles",
+          "courses": "Courses",
+          "events": "Events",
+          "services": "Services",
+          "gallery": "Gallery",
+          "team": "Team",
+          "faq": "FAQ",
+          "enroll": "Enrol form"
+        },
+        "groups": [
+          "About",
+          "Dance forms",
+          "Courses",
+          "Events",
+          "Services",
+          "Gallery",
+          "Team, FAQ and contact"
+        ],
+        "redirects": [
+          {
+            "group": "About",
+            "from": "/home/about/",
+            "to": "about"
+          },
+          {
+            "group": "Dance forms",
+            "from": "/dance-forms/",
+            "to": "styles"
+          },
+          {
+            "group": "Dance forms",
+            "from": "/dance-forms/hip-hop/",
+            "to": "styles"
+          },
+          {
+            "group": "Dance forms",
+            "from": "/dance-forms/contemporary/",
+            "to": "styles"
+          },
+          {
+            "group": "Dance forms",
+            "from": "/dance-forms/jazz/",
+            "to": "styles"
+          },
+          {
+            "group": "Dance forms",
+            "from": "/dance-forms/bollywood/",
+            "to": "styles"
+          },
+          {
+            "group": "Dance forms",
+            "from": "/dance-forms/salsa/",
+            "to": "styles"
+          },
+          {
+            "group": "Courses",
+            "from": "/our-courses/",
+            "to": "courses"
+          },
+          {
+            "group": "Courses",
+            "from": "/our-courses/beginner-course/",
+            "to": "courses"
+          },
+          {
+            "group": "Courses",
+            "from": "/our-courses/intermediate-course/",
+            "to": "courses"
+          },
+          {
+            "group": "Courses",
+            "from": "/our-courses/badc-course/",
+            "to": "courses"
+          },
+          {
+            "group": "Courses",
+            "from": "/our-courses/bdc-course/",
+            "to": "courses"
+          },
+          {
+            "group": "Events",
+            "from": "/events/",
+            "to": "events"
+          },
+          {
+            "group": "Events",
+            "from": "/events/fusion/",
+            "to": "events"
+          },
+          {
+            "group": "Events",
+            "from": "/events/d-fest/",
+            "to": "events"
+          },
+          {
+            "group": "Events",
+            "from": "/events/badc-show/",
+            "to": "events"
+          },
+          {
+            "group": "Services",
+            "from": "/wedding-choreography/",
+            "to": "services"
+          },
+          {
+            "group": "Services",
+            "from": "/corparate-dance/",
+            "to": "services"
+          },
+          {
+            "group": "Services",
+            "from": "/dance-workshops/",
+            "to": "services"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery1/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/all/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/all/fusion-2018/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/all/fusion-2017/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/all/d-fest-2017/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/all/badc-2018/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/fusion/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/fusion/fusion-2018/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/fusion/d-fest-2018/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/d-fest/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/d-fest/d-fest-2017/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/badc/",
+            "to": "gallery"
+          },
+          {
+            "group": "Gallery",
+            "from": "/gallery/badc/badc-2018/",
+            "to": "gallery"
+          },
+          {
+            "group": "Team, FAQ and contact",
+            "from": "/artists/",
+            "to": "team"
+          },
+          {
+            "group": "Team, FAQ and contact",
+            "from": "/faq/",
+            "to": "faq"
+          },
+          {
+            "group": "Team, FAQ and contact",
+            "from": "/contact/",
+            "to": "enroll"
+          }
+        ]
+      }
+    },
+    "doors": {
+      "h2": "Ways in the old site never had",
+      "side": "left",
+      "lede": "The institute already runs on WhatsApp, so every enquiry form on the new page ends there, with the answers already typed.",
+      "paras": [
+        {
+          "text": "The enrol form and the D'Fest registration build the message and open WhatsApp, so there is no form backend to host, secure or watch. On a phone, Call and WhatsApp stay pinned to the bottom of every screen; the old home page's first phone screen had neither.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "firstscreen"
+            }
+          ],
+          "trace": [
+            {
+              "source": "whatsapp"
+            },
+            {
+              "source": "notes"
+            }
+          ]
+        },
+        {
+          "text": "Studios used to be a list of names with one map at a time. Now a visitor types an area or shares their location, and the studios rank by distance with directions. The place search is boxed to Jaipur, because unbounded, a search for Vaishali found a town in Bihar.",
+          "trace": [
+            {
+              "source": "finder"
+            }
+          ]
+        }
+      ],
+      "message": {
+        "label": "What the enrol form hands to WhatsApp",
+        "lines": [
+          "Hi Buskers, I'd like to enroll.",
+          "Name: [name]",
+          "Age group: [age group]",
+          "Course: [course]",
+          "Studio: [studio]"
+        ],
+        "note": "The visitor sends it from their own WhatsApp. Brackets mark what the form fills in.",
+        "trace": [
+          {
+            "source": "whatsapp"
+          }
+        ]
+      },
+      "doors": {
+        "caption": "Ways in, old site against new. Old from the crawl of 26 Sep 2026, new checked on 25 Oct 2026.",
+        "head": [
+          "Way in",
+          "Old site",
+          "New site"
+        ],
+        "rows": [
+          {
+            "door": "Start a WhatsApp enquiry",
+            "old": "None on the 37 pages I crawled",
+            "new": "3: the floating button, the enrol form and the D'Fest form",
+            "cite": [
+              {
+                "kind": "measured",
+                "source": "whatsapp"
+              }
+            ]
+          },
+          {
+            "door": "Call or WhatsApp from the first phone screen",
+            "old": "Neither",
+            "new": "Both, pinned to the bottom of every phone screen",
+            "cite": [
+              {
+                "kind": "measured",
+                "source": "firstscreen"
+              }
+            ]
+          },
+          {
+            "door": "Find the nearest studio",
+            "old": "A list of names, one embedded map at a time, no search",
+            "new": "Area search boxed to Jaipur or your location, nearest first, with directions",
+            "trace": [
+              {
+                "source": "finder"
+              }
+            ]
+          },
+          {
+            "door": "Read by search engines as",
+            "old": "WebPage, WebSite, Organization and breadcrumbs, with one description shared by all 37 crawled pages",
+            "new": "A DanceSchool, with its founding year and address",
+            "cite": [
+              {
+                "kind": "measured",
+                "source": "search"
+              }
+            ]
+          },
+          {
+            "door": "Preview when the link is shared",
+            "old": "No share image on the home page",
+            "new": "A 1200 by 630 share card",
+            "cite": [
+              {
+                "kind": "measured",
+                "source": "search"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "running": {
+      "h2": "Built to keep running",
+      "side": "right",
+      "lede": "The new site is one static page: about 1,380 lines of its own code and four front end libraries, with no server code, no database and no admin login.",
+      "tiles": [
+        {
+          "value": "0.69 ms",
+          "label": "of a 16 ms frame for the 3D stage, so it stayed as it was.",
+          "kind": "measured",
+          "source": "optimised"
+        },
+        {
+          "value": "1,647 KB to 400 KB",
+          "label": "first load at phone screen size, once the gallery photos waited for the gallery.",
+          "kind": "measured",
+          "source": "optimised"
+        },
+        {
+          "value": "13 of 13",
+          "label": "smoke checks passing on the live site at the 4 Oct 2026 deploy.",
+          "kind": "measured",
+          "source": "smoke"
+        }
+      ],
+      "paras": [
+        {
+          "text": "I measured before optimising. The 3D stage was cheap, so it stayed. The gallery ring was not: it fetched 28 photos at startup, so now it loads only when the gallery is near.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "optimised"
+            }
+          ]
+        },
+        {
+          "text": "The libraries ship as separate cached files, so after a site edit a returning visitor fetches about 5.6 KB of JavaScript instead of 191 KB. Map tiles and place search come from OpenStreetMap, with no key to expire and no bill.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "optimised"
+            }
+          ],
+          "trace": [
+            {
+              "source": "finder"
+            }
+          ]
+        },
+        {
+          "text": "The smoke test runs at desktop and phone screen sizes and with WebGL switched off. I wrote the call button checks before the buttons, so the run before them passed 9 of 12; after the buttons, 13 of 13, three runs in a row.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "smoke"
+            }
+          ]
+        },
+        {
+          "text": "The family edits copy in a Google Doc, as suggestions and comments, and nothing goes live without an explicit go ahead to deploy. Every image on the new page has alt text or is marked as decorative, where 10 of 51 on the old home page had no alt attribute. Each pitfall from the build is written down with its cause and fix.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "alt"
+            }
+          ],
+          "trace": [
+            {
+              "source": "notes"
+            }
+          ]
+        }
+      ],
+      "ledeCite": [
+        {
+          "kind": "measured",
+          "source": "build"
+        }
+      ]
+    },
+    "counts": {
+      "h2": "The handover, in eight counts",
+      "lede": "Each count is one change, with the reason it came next.",
+      "trace": [
+        {
+          "source": "notes"
+        }
+      ],
+      "sum": "8 counts, 26 Sep to 4 Oct 2026. Launch came 6 days after the first commit.",
+      "steps": [
+        {
+          "action": "Save the old site: 37 pages, 123 media files, 74 screenshots",
+          "who": "Me",
+          "time": "26 Sep 2026",
+          "note": "So the old site's own content was the source of truth before anything changed.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "crawl"
+            }
+          ]
+        },
+        {
+          "action": "Build the first version on a preview address",
+          "who": "Me",
+          "time": "26 Sep 2026",
+          "note": "So the school's site no longer depends on the developers who built the 2018 theme.",
+          "trace": [
+            {
+              "source": "dates"
+            }
+          ]
+        },
+        {
+          "action": "Carry everything over: the studio map, all the original text, D'Fest, 218 photos in albums",
+          "who": "Me",
+          "time": "26 Sep 2026",
+          "note": "Keep what the old site had, and make the studios findable.",
+          "cite": [
+            {
+              "kind": "measured",
+              "source": "gallery"
+            }
+          ]
+        },
+        {
+          "action": "Fix what the first look found",
+          "who": "Me",
+          "time": "26 Sep 2026",
+          "note": "Expanded event cards clipped their titles, the scroll library swallowed the mouse wheel in dialogs, and the crawl had missed the founders' photos.",
+          "trace": [
+            {
+              "source": "notes"
+            }
+          ]
+        },
+        {
+          "action": "Move DNS to Cloudflare, mail records first",
+          "who": "Me",
+          "time": "26 Sep 2026",
+          "note": "Take DNS off the old host without breaking company email, then switch off Encrypted Client Hello for the connections some office networks dropped.",
+          "trace": [
+            {
+              "source": "mail"
+            },
+            {
+              "source": "notes"
+            }
+          ]
+        },
+        {
+          "action": "Mirror the old site and put it back on the domain",
+          "who": "Me",
+          "time": "26 Sep 2026",
+          "note": "The old site had to stay live until sign off.",
+          "trace": [
+            {
+              "source": "mirror"
+            },
+            {
+              "source": "notes"
+            }
+          ]
+        },
+        {
+          "action": "Launch on buskers.in after sign off",
+          "who": "Me",
+          "time": "2 Oct 2026",
+          "note": "The share card and the family's Google Doc went in the same day, and the domain moved to the new site.",
+          "trace": [
+            {
+              "source": "dates"
+            },
+            {
+              "source": "notes"
+            }
+          ],
+          "launch": true
+        },
+        {
+          "action": "Call and WhatsApp on every screen, a smoke test, an optimisation pass",
+          "who": "Me",
+          "time": "4 Oct 2026",
+          "note": "Reaching the institute should take one tap from any screen. Then I measured what each part cost.",
+          "trace": [
+            {
+              "source": "dates"
+            },
+            {
+              "source": "smoke"
+            },
+            {
+              "source": "optimised"
+            }
+          ]
+        }
+      ],
+      "back": "swap the domain back to the copy of the old site. It is the same four calls as the launch, in reverse, and the copy is still there.",
+      "sumCite": [
+        {
+          "kind": "measured",
+          "source": "dates"
+        }
+      ],
+      "backCite": [
+        {
+          "kind": "measured",
+          "source": "notes"
+        }
+      ]
+    },
+    "learned": {
+      "h2": "What I learned",
+      "text": "Save first, change second: the crawl gave me the copy, the photo albums and the list of old addresses every redirect check runs against. Measure before you optimise: the 3D stage cost 0.69 ms of a 16 ms frame, while 28 gallery photos loading at startup were the real weight. And keep a way back: the old site is still one domain swap away.",
+      "cite": [
+        {
+          "kind": "measured",
+          "source": "optimised"
+        }
+      ],
+      "trace": [
+        {
+          "source": "crawl"
+        },
+        {
+          "source": "redirects"
+        },
+        {
+          "source": "notes"
+        }
+      ]
+    }
+  }
+}

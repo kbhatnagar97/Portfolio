@@ -162,7 +162,7 @@ const Work = ({ onOpen }: { onOpen: (id: string) => void }) => {
         </div>
       </div>
 
-      <div className='index'>
+      <div className='index' data-shape={SHAPE.field}>
         <div className='index__head'>
           <h3 data-split>Every project</h3>
           <div className='filters' role='group' aria-label='Filter projects'>

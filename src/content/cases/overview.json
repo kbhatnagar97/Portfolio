@@ -1,0 +1,41 @@
+{
+  "draft": false,
+  "title": "Case studies",
+  "kicker": "Built in 2026",
+  "deck": "I learn how the work runs, find the turn, build it to last, and show what changed.",
+  "seoTitle": "Case studies by Kshitij Bhatnagar",
+  "description": "Case studies where I learn how the work runs, find the turn and build a system that lasts, with every number traced to where it came from.",
+  "lede": [
+    "Each case is a different product: a post production startup's website, search and AI footage tagger; a transmittal product for practices that issue drawings; a brand film studio's first website; a dance school's website takeover; and self serve booking with UPI payment for a counselling practice.",
+    "Every number carries a label that says how it was found: measured, reported, modelled from inputs you can see, or an example. Each label links to its source."
+  ],
+  "how": [
+    {
+      "step": "Learn how it works",
+      "text": "I study how the work runs today: the steps people repeat by hand, the files that drift, the parts that break quietly."
+    },
+    {
+      "step": "Find the turn",
+      "text": "I write down the obvious fix and its cost, then look sideways for one that needs less: no licence to buy, no gateway fee, no showreel to wait for."
+    },
+    {
+      "step": "Build it to last",
+      "text": "Few moving parts, tests for what broke once, notes the owner can read, and a way back if something fails."
+    },
+    {
+      "step": "Show the impact",
+      "text": "I put each number beside the work that produced it. Where I cannot measure yet, I model it in the open, with every input shown."
+    }
+  ],
+  "cta": {
+    "text": "If one of these sounds like your business, write to me about how the work runs today.",
+    "subject": "Case studies enquiry"
+  },
+  "home": {
+    "index": "03 / Case studies",
+    "title": "Problems I took apart to learn how they worked.",
+    "line": "Each case shows how the work ran before, the turn I took, how small the setup is, and numbers that say where they came from.",
+    "cta": "All case studies"
+  },
+  "gaps": []
+}

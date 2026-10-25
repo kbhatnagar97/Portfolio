@@ -1,0 +1,1348 @@
+{
+  "slug": "post-aura",
+  "draft": false,
+  "flagship": true,
+  "title": "Post Aura",
+  "kicker": "Research, website, search, product",
+  "client": "Post Aura, a post production studio in Mumbai",
+  "anonymised": false,
+  "role": "Design and build, directing AI agents",
+  "year": "2026",
+  "published": "2026-10-25",
+  "accent": "#59d0ff",
+  "industry": "Video post production",
+  "purposes": ["saves-time", "saves-money", "opens-reach", "reduces-risk"],
+  "status": "Pre launch: site on test addresses, tagger tested on 10 real clips, schedule paused",
+  "seoTitle": "Post Aura: website, search and an AI tagger",
+  "description": "How I am building a Mumbai post production startup from scratch: the research, a website in five versions with search built in, and an AI footage tagger.",
+  "deck": "Building a startup from scratch: the research, a website in five versions, its search layer and an AI footage tagger.",
+  "summary": [
+    "A post production startup in Mumbai started from a single file wireframe and a pitch built on cost. Its editors tag every clip by hand in Premiere Pro, and those tags stay locked in project files that DaVinci Resolve never sees.",
+    "I researched the market, put five versions of the website live on test addresses over four days, with search built in from the first, and built an AI tagger that writes the studio's own tags into each video file.",
+    "Twelve days after the wireframe, the tagger's first production test tagged 10 real clips with no failures, on the Gemini fallback model. Its schedule was left paused, the editor tools wait on a test inside the apps, and the site waits on a domain."
+  ],
+  "impact": [
+    {
+      "value": "12 days",
+      "label": "from the starting wireframe on 12 Oct 2026 to the tagger's first production test on 24 Oct 2026, 23:15 IST.",
+      "kind": "measured",
+      "source": "span"
+    },
+    {
+      "value": "5 versions",
+      "label": "of the website over four calendar days, each frozen and kept live at its own address so the client could compare.",
+      "kind": "measured",
+      "source": "gitSite"
+    },
+    {
+      "value": "10 clips",
+      "label": "from a real studio folder tagged in the first production test, 0 failed. A second run tagged none of them again.",
+      "kind": "measured",
+      "source": "runProd",
+      "note": "Tagged by the Gemini fallback model, not Claude. Failed counts errors, not wrong tags. Four camera files over 1,400 MB were skipped."
+    },
+    {
+      "value": "About $12",
+      "label": "a month in model fees to tag an example 10,000 clips at the Claude Haiku 5.5 list price.",
+      "kind": "modelled",
+      "source": "fees",
+      "note": "About 7,000 input and 950 output tokens a clip, measured with thinking on, so an upper bound, at $0.10 and $0.50 per million tokens, read 25 Oct 2026. Vertex AI prices Claude separately."
+    }
+  ],
+  "poster": {
+    "src": "/case-studies/post-aura/media/poster.jpg",
+    "webp": "/case-studies/post-aura/media/poster.webp",
+    "alt": "Timeline of the Post Aura case: four labelled tracks, Research, Website, Search and Product, with dated clips from 12 to 24 Oct 2026 and a cyan playhead on the last product clip.",
+    "width": 1280,
+    "height": 800
+  },
+  "stack": [
+    "Next.js 16.3 static prerender",
+    "React 19.2",
+    "TypeScript",
+    "Tailwind CSS 4",
+    "motion 12",
+    "Vercel, one project per version",
+    "Python 3.12 with Flask",
+    "Google Cloud Run and Cloud Scheduler",
+    "Vertex AI with Claude Haiku 5.5 and a Gemini fallback",
+    "Google Drive and Sheets APIs",
+    "ffmpeg",
+    "exiftool and XMP",
+    "pytest",
+    "Premiere Pro CEP panel",
+    "DaVinci Resolve Python script",
+    "Playwright demo recorder"
+  ],
+  "links": [{"label": "post-aura.vercel.app", "href": "https://post-aura.vercel.app"}],
+  "offer": {
+    "who": "Post production studios and in house video teams that keep footage on Google Drive and edit in Premiere Pro or DaVinci Resolve.",
+    "gets": "New clips in your shared folders tagged on a schedule from your own classification sheet: year, country, place and camera from the folder path, the rest from five frames. The tags are written into each file, a review sheet sends your fixes back into the clips, and a read only check shows what the robot can open before it writes anything.",
+    "needs": "A Google Cloud project with billing, Claude Haiku 5.5 enabled in Vertex AI or the Gemini fallback until it is, MP4 or MOV footage in Drive folders you can share, and your classification sheet.",
+    "setup": "One deploy command from me, then you share your folders and your sheet. It runs on your own Google Cloud bill. Before the schedule goes on, we tag a sample of your clips and test the Premiere and Resolve steps with your editors.",
+    "also": "The research, the website and its search layer are an offer of their own, built the way this page shows. Ask about any of it in the same email."
+  },
+  "credits": [
+    {
+      "text": "V3 capture, hero photograph: infinity pool at dusk by Tommaso Ubezio, Unsplash License.",
+      "url": "https://unsplash.com/photos/infinity-pool-at-dusk-with-palm-trees-and-ocean-UA0p9yPn-QQ"
+    },
+    {"text": "V4 capture, hero video of a shoreline at dusk: Pixabay video 334242, Pixabay Content License."},
+    {"text": "V5 capture, hero video of gulls over water: Zulfugar Karimov, Pexels video 34791078, Pexels License."},
+    {
+      "text": "Tagger 2 frames: Rotunda and Lawn foggy sunrise timelapse by JuxtaposedJacob, CC0 1.0, via Wikimedia Commons.",
+      "url": "https://commons.wikimedia.org/wiki/File:Rotunda-And-Lawn-Foggy-Sunrise-Timelapse.webm"
+    },
+    {
+      "text": "Folder path figure frames: Aerial view of White Sand in Manila Bay (drone video) by AeroMark, licensed CC BY 3.0 (creativecommons.org/licenses/by/3.0), via Wikimedia Commons; frames cropped and resized for this page.",
+      "url": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_White_Sand_in_MANILA_BAY_(Drone_video).webm"
+    }
+  ],
+  "sources": [
+    {
+      "id": "span",
+      "text": "Twelve calendar days from the website project's start on 12 Oct 2026, when the wireframe arrived and the first commit landed at 01:08 IST, to the run report of the tagger's first production test, finished 24 Oct 2026 at 17:45:42 UTC (23:15 IST). Read from the website's project notes and git history and the tagger's run report on 25 Oct 2026."
+    },
+    {
+      "id": "gitSite",
+      "text": "Git history of the website, read 25 Oct 2026: V1 committed 12 Oct 2026, 01:08 IST; V2 at 02:17 IST; V3 at 05:59 IST; V4 at 06:26 IST; V5 on 15 Oct 2026, 07:29 IST. Times are author times, except V3, where an amend carried V2's author time over, so its commit time is given. V4's author time is 5 hours 18 minutes after V1's. Each version has its own Vercel project, and all five answered at their own addresses on 25 Oct 2026."
+    },
+    {
+      "id": "runProd",
+      "text": "Run reports returned by the tagging service on a real studio folder, capped at 10 clips for the test, read 25 Oct 2026. First run finished 24 Oct 2026, 23:15 IST: 10 processed, 0 failed, 4 skipped as over 1,400 MB, 228.95 s in all, so 22.9 s a clip on average. Frame extraction took 2.39 to 22.72 s a clip, 128.67 s or 56% of the run, and model calls 0.97 to 2.74 s. Failed counts processing errors, not wrong tags. The second run, in preview mode with a 1 clip limit, finished at 23:19 IST, skipped the 10 tagged clips and previewed one new clip without writing it. Every tagged clip records gemini-3.5-flash-lite, the fallback model."
+    },
+    {
+      "id": "fees",
+      "text": "Modelled model fees: clips times (7,000 input tokens at $0.10 plus 950 output tokens at $0.50) per million tokens, about $0.0012 a clip. Tokens: about 7,000 in and 950 out a clip, measured with the studio's tag list on five public clips with thinking on, so an upper bound; the live service turns thinking off (my tagger notes and the results document of 23 Oct 2026). Price: Claude Haiku 5.5 on the Claude API for prompts up to 100,000 tokens, checked on the Claude pricing page on 25 Oct 2026. Vertex AI prices Claude separately. Leaves out Google Cloud compute, review time and any service fee.",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+    },
+    {
+      "id": "measure",
+      "text": "Lab measurement made for this page: each version's own address loaded cold three times at 1440 by 900 in headless Chromium 153, cache off, no throttling, medians reported, bytes in decimal units, tags read from the HTML the server sent. 24 Oct 2026, 22:15 to 22:34 UTC. Desktop medians: V1 348,506 bytes and 16 requests, V2 305,980 and 13, V3 1,914,696 and 27, V4 6,340,056 and 17, V5 6,363,102 and 20. Every version made 0 third party requests, on desktop and on phone."
+    },
+    {
+      "id": "research",
+      "text": "Research files for the website, counted 25 Oct 2026: round one (5 tracks, 96 sources, 3 critic personas), the hero research (23 sources, and 13 frames ordered on one luminance arc that rises to a single bright peak) and round two (6 tracks, 130 sources, 4 critique lenses and a final verdict), 249 entries and 207 unique addresses in all. In round two the creative direction critique found the first V5 plan technically excellent but creatively undecided, with no single idea, and the final verdict named one: scroll is the edit. The research and the critiques ran as AI agent workflows that I directed."
+    },
+    {
+      "id": "notesSite",
+      "text": "My project notes for the website, read 25 Oct 2026: the wireframe and its fixes, what V2 cut and why, the elite houses studied publishing no prices and selling named people, review rounds (V1: 21 of 34 findings confirmed and all fixed; V2: 11 confirmed, 8 fixed, 3 overruled as the client's own copy), V2 at about 58% of V1's length (method not recorded), 121 font preloads of about 3.7 MB removed, the worst contrast of the hero text on desktop (V3 headline 5.99:1 across all 13 frames, measured by script; V4 headline 6.48:1 over 14 samples of the clips and dissolves; V5 6.94:1 across all clips and dissolves), a stale server once answering a measurement with an old build, and the open items: domain, Search Console, analytics and enquiry delivery."
+    },
+    {
+      "id": "siteCode",
+      "text": "Website source code, read 25 Oct 2026: the page metadata; ProfessionalService and WebSite data with an offer catalog, present since V1 and holding 4 services in V5; the sitemap, the robots file, llms.txt and the 1200x630 Open Graph image, all four present in every version commit; the enquiry form, with the archive size in four bands plus not sure; the copy file and its rule that every line must map to a fact the client has confirmed; the cull scene (100 frames, 90 struck, 10 selects); the Still switch; and 4 runtime dependencies."
+    },
+    {
+      "id": "siteCopy",
+      "text": "The studio's own case copy on its site, as the client supplied it: an archive culled from 100 TB to 10 TB of selects, every clip then tagged by hand in Premiere Pro (the site's copy file, read 25 Oct 2026). That cull is the studio's work, done by hand before the tagger existed, not mine and not the tagger's."
+    },
+    {
+      "id": "gitTagger",
+      "text": "Git history of the tagger, read 25 Oct 2026: Tagger 1 on 21 Oct 2026, 17:20 IST (it reads year, country, place and camera from the folder path), Tagger 2 on 22 Oct, Tagger 3 on 23 Oct, Tagger 4 on 24 Oct at 21:23 IST, Tagger 5 committed at 22:51 and 22:53 IST and deployed at 22:56 IST on 24 Oct, and Tagger 6 on 24 Oct: six builds over four calendar days. Commits and work in progress from 25 Oct are not part of this page."
+    },
+    {
+      "id": "notesTagger",
+      "text": "My project notes for the tagger, read 25 Oct 2026: the editors' pipeline from the kickoff, Premiere custom metadata locked in the project file, the proof of concept on five Wikimedia Commons clips (25 of 33 tags right, 6 wrong, 2 debatable, checked by a person against the frames and each clip's description; sunrise and timelapse missed on one clip), the first demo built on made up folders and the lesson that every demo value needs a source, about 7,000 input and 950 output tokens a clip with the studio's list, three adversarial review rounds (38, 13 and 13 findings, all fixed) and 259 checks passing on 23 Oct 2026."
+    },
+    {
+      "id": "pocDoc",
+      "text": "Proof of concept write up for the studio, 22 Oct 2026, read 25 Oct 2026: research on Premiere's Media Intelligence and Resolve's IntelliSearch, the review in which a person checked every tag against the five frames and the clip's Commons description, the limits of five frames, and the Wikimedia Commons credits."
+    },
+    {
+      "id": "specTagger",
+      "text": "Tagger build spec for the version tested on 24 Oct 2026, read 25 Oct 2026: the skip rule on checksum and tag version, editors' fixes written back, up to 3 attempts per file, folder path parsing, 5 frames a clip, answers limited to the tag list by a JSON schema, files over 1,400 MB skipped, and the guards on reading the classification sheet (a lost country, over 10% of values lost, or most of a category lost)."
+    },
+    {
+      "id": "deployTagger",
+      "text": "Tagger deploy guide, read 25 Oct 2026: one deploy command that is safe to run again, a schedule created paused, the one time steps after the first deploy, the client's original revision pinned before the first write, the duration and stream check before upload, a private service called only by the scheduler, one permission for model calls, no service account keys, a monthly budget alert, and a teardown script."
+    },
+    {
+      "id": "deployLog",
+      "text": "Deploy logs of 24 Oct 2026, read 25 Oct 2026: three Cloud Run revisions, the last at 22:56 IST with the Gemini fallback, which the log says needs no enable step, and the read only inspection; the 30 minute schedule was left paused."
+    },
+    {
+      "id": "tests",
+      "text": "Tagger test suite for the version tested on 24 Oct 2026: 304 functions named test_ in 12 files, counted 25 Oct 2026, including the pipeline end to end: tag, skip on a rerun, write back a human fix, isolate an error."
+    },
+    {
+      "id": "editorsReadme",
+      "text": "Editor tool guides, read 25 Oct 2026: the Premiere panel, the Dublin Core Subject search path, the Resolve script and the CSV route are built and documented; none has been run inside the studio's own Premiere or Resolve yet."
+    },
+    {
+      "id": "resultsDoc",
+      "text": "Results document written for the studio, 23 Oct 2026, read 25 Oct 2026: one time setup of about an hour, about 1 in 4 tags may need a fix, 4 of 5 public clips fully right with the studio's list, a 50 clip pilot still to run, and a cost model of $12.80 a month at an example 10,000 clips, of which about $1 is Google Cloud compute estimated at about 10 seconds a clip."
+    },
+    {
+      "id": "sampleRun",
+      "text": "Sample data for the demo video: two local runs of the cloud service's code on five public Wikimedia Commons clips, through the command line backend with Claude Haiku 5.5 (the run logs of 24 and 23 Oct 2026, read 25 Oct 2026). The tagging run processed 5 clips with 0 failed, 26,021 input and 3,785 output tokens, in 35.12 s; the second run skipped all 5 with 0 tokens. The people and the robot address in the demo are placeholders, and the tag words are withheld."
+    },
+    {
+      "id": "vocab",
+      "text": "Bundled tag list transcribed from the studio's classification sheet, counted 25 Oct 2026: 150 values across 7 fields the model fills, 17 values set only by hand, and 42 places in 7 countries. The list itself is not shown."
+    },
+    {
+      "id": "adobeCommunity",
+      "text": "Adobe Community, Premiere Pro discussions, Custom Metadata Export?, 10 Jan 2025: a user reports that the Project Metadata holding custom fields cannot be exported, and a reply knows no reliable way to export it. Read 25 Oct 2026.",
+      "url": "https://community.adobe.com/t5/premiere-pro-discussions/custom-metadata-export/m-p/15082864"
+    },
+    {
+      "id": "creativeCow",
+      "text": "Creative COW, 2012, quoting Adobe's documentation: Premiere Pro clip metadata lives in the project file. Cited in my tagger notes on 22 Oct 2026; not reopened for this page.",
+      "url": "https://creativecow.net/?p=330258"
+    },
+    {
+      "id": "adobeMi",
+      "text": "Adobe Blog, the Premiere Pro 25.2 announcement, 2 Apr 2025: Media Intelligence and the new Search panel find visuals, spoken words in dialog, or embedded metadata such as shoot date or camera type. Read 25 Oct 2026.",
+      "url": "https://blog.adobe.com/en/publish/2025/04/02/introducing-new-ai-powered-features-workflow-enhancements-premiere-pro-after-effects"
+    },
+    {
+      "id": "intellisearch",
+      "text": "Larry Jordan, The power of IntelliSearch in DaVinci Resolve 21, 30 Apr 2026: IntelliSearch finds dialog, faces and visual content, and knows only the media imported into the project that is open. Read 25 Oct 2026.",
+      "url": "https://larryjordan.com/articles/the-power-of-intellisearch-in-davinci-resolve-21/"
+    },
+    {
+      "id": "eu",
+      "text": "European Commission, adequacy decisions: the countries recognised as giving adequate protection do not include India. Read 25 Oct 2026.",
+      "url": "https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/adequacy-decisions_en"
+    },
+    {
+      "id": "forum",
+      "text": "Hand tagging at about 0.5 to 1 minute a clip: an estimate from public forum reports, as quoted in my notes for the tagging service, read 25 Oct 2026. The notes do not name the forum reports, and nobody has timed the studio's editors."
+    },
+    {
+      "id": "fueler",
+      "text": "Riten Debnath, Video editor salary in India 2026, a freelance and full time pay guide, fueler.io, 23 Aug 2026: Indian editors charge roughly $5 to $10 an hour at junior level for international freelance work. Read 25 Oct 2026.",
+      "url": "https://fueler.io/blog/video-editor-salary-in-india-freelance-and-full-time-pay-guide"
+    },
+    {
+      "id": "pocRun",
+      "text": "Proof of concept run, 22 Oct 2026: the first local tool on five public Wikimedia Commons clips with a draft tag list, through the Claude Code command line with Claude Haiku 5.5 (its run log, read back log and catalog, read 25 Oct 2026). Manila Bay clip: year, country, place and camera from the folder path; aerial, cityscape, beach, no people and sunny from the five frames, with no activity picked; 2,599 input and 428 output tokens. A person marked all five frame tags right in the proof of concept write up."
+    }
+  ],
+  "gaps": [
+    "Hand tagging time at the studio is not yet measured; the calculator uses a public estimate.",
+    "The studio's monthly clip volume is not known; 10,000 is an example.",
+    "Review time after AI tagging is not yet measured.",
+    "Accuracy on studio footage waits on a 50 clip pilot.",
+    "The Premiere panel and the Resolve script are not yet run inside the apps.",
+    "A production run on Claude Haiku 5.5 is not yet recorded.",
+    "The schedule state after 24 Oct 2026 is not recorded.",
+    "Clips over 1,400 MB are not yet handled.",
+    "Throughput per run needs a larger timed run.",
+    "The compute estimate assumed 10 s a clip; the test measured 22.9 s.",
+    "The model cost of the production test is not recorded.",
+    "The review sheet was not written during the production test.",
+    "The limits describe the version tested on 24 Oct 2026.",
+    "The demo joins two local sample runs, of 23 and 24 Oct 2026.",
+    "Traffic, enquiry and conversion numbers are not yet available.",
+    "No Lighthouse, LCP or INP results are recorded for V5.",
+    "The V5 grade wipe uses a simulated flat frame.",
+    "No photosensitivity check of the hero encodes is recorded.",
+    "The contributor of Pixabay video 334242 is not recorded.",
+    "Where the unverified mark sat in the wireframe is not recorded.",
+    "The date of the tagger kickoff is not recorded.",
+    "A website before this build is not recorded."
+  ],
+  "blocks": {
+    "index": [
+      {"href": "#the-brief", "label": "The brief"},
+      {"href": "#search", "label": "Search"},
+      {"href": "#tags-that-travel", "label": "Tags in the file"},
+      {"href": "#the-tagger", "label": "The tagger"},
+      {"href": "#the-math", "label": "The math"}
+    ],
+    "stage": {
+      "id": "stage",
+      "h2": "Twelve days, four tracks",
+      "intro": "The work laid out the way an editor would see it: four tracks, with the clips in the order the work happened, from the starting wireframe to the tagger's first run on real footage.",
+      "tracks": [
+        {"id": "research", "label": "Research", "total": "3 rounds"},
+        {"id": "website", "label": "Website", "total": "5 versions"},
+        {"id": "search", "label": "Search", "total": "All 5 versions"},
+        {"id": "product", "label": "Product", "total": "6 builds"}
+      ],
+      "ruler": {"in": "IN · 12 OCT", "out": "OUT · 24 OCT"},
+      "readoutOut": "12 TO 24 OCT 2026 · 12 DAYS",
+      "beats": [
+        {
+          "id": "beat-1",
+          "slate": "12 OCT 2026",
+          "h3": "A wireframe, taken apart and shipped",
+          "text": {
+            "sentences": [
+              {"t": "The brief was one HTML file with ten sections.", "source": ["notesSite"]},
+              {
+                "t": "I rebuilt it as a real site and fixed what did not hold up: a trademark sign nobody had verified, a formats column repeated in every row, case figures copied from the hero, an enquiry form missing a sector.",
+                "source": ["notesSite"]
+              },
+              {"t": "Search went in with the first version.", "source": ["gitSite", "siteCode"]},
+              {"t": "Then I stopped to study the market.", "source": ["research", "gitSite"]}
+            ],
+            "prov": [{"kind": "reported", "source": "notesSite"}]
+          },
+          "clips": [
+            {
+              "id": "in",
+              "track": "marker",
+              "label": "IN",
+              "date": "12 Oct 2026",
+              "readout": "12 OCT 2026 · THE BRIEF",
+              "title": "The brief",
+              "line": {"t": "One HTML file with ten sections, from the hero to the contact form, pasted from a chat.", "source": ["notesSite"]},
+              "source": "notesSite",
+              "frame": {"type": "panel", "panel": "brief"}
+            },
+            {
+              "id": "v1",
+              "track": "website",
+              "label": "V1",
+              "date": "12 Oct 2026, 01:08 IST",
+              "readout": "12 OCT 2026 · 01:08 IST · V1",
+              "title": "V1: the wireframe, built",
+              "change": {
+                "t": "A Next.js build of the wireframe with the enquiry form, a contrast cursor and the search tags.",
+                "source": ["gitSite", "siteCode"]
+              },
+              "why": {"t": "A five lens review by AI agents I directed confirmed 21 of 34 findings, and I fixed all 21.", "source": ["notesSite"]},
+              "figures": [
+                {"t": "21 of 34 findings confirmed, all fixed", "kind": "reported", "source": "notesSite"},
+                {"t": "349 KB and 16 requests on desktop", "kind": "measured", "source": "measure"}
+              ],
+              "source": "gitSite",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/v1-hero-1120.webp",
+                  "srcset": "/case-studies/post-aura/media/v1-hero-780.webp 780w, /case-studies/post-aura/media/v1-hero-1120.webp 1120w, /case-studies/post-aura/media/v1-hero-1600.webp 1600w",
+                  "width": 1600,
+                  "height": 899,
+                  "alt": "Version 1 of the Post Aura home page: the serif headline Your experience. Our edit. Your deadline. on off white, under the site's navigation."
+                },
+                "caption": "Capture of the V1 test address, 25 Oct 2026. Cropped to the headline column, as the column beside it names the client."
+              },
+              "href": "https://post-aura-v1.vercel.app"
+            },
+            {
+              "id": "search",
+              "track": "search",
+              "label": "SEARCH · ALL 5 VERSIONS",
+              "date": "12 to 15 Oct 2026",
+              "readout": "12 OCT 2026 · V1 · SEARCH LAYER",
+              "title": "Search, from the first version",
+              "line": {
+                "t": "Page title and description, canonical address, Open Graph image and schema.org data for a ProfessionalService, all in the HTML the server sends, plus a sitemap, a robots file and an llms.txt summary for AI assistants.",
+                "source": ["siteCode", "measure"]
+              },
+              "figures": [{"t": "Present in all 5 versions", "kind": "measured", "source": "measure"}],
+              "source": "measure",
+              "span": ["v1", "v5"],
+              "frame": {"type": "panel", "panel": "search"}
+            },
+            {
+              "id": "r1",
+              "track": "research",
+              "label": "R1",
+              "date": "Shaped V2",
+              "readout": "SHAPED V2 · RESEARCH, ROUND ONE",
+              "title": "Research, round one",
+              "line": {
+                "t": "Five tracks and 96 sources: high end edit houses, offshore and subscription rivals, travel and hospitality studios, luxury design language, and what EU buyers need. Three critic personas then read the plan.",
+                "source": ["research"]
+              },
+              "figures": [{"t": "5 tracks · 96 sources · 3 critics", "kind": "measured", "source": "research"}],
+              "source": "research",
+              "frame": {"type": "panel", "panel": "r1"}
+            }
+          ]
+        },
+        {
+          "id": "beat-2",
+          "slate": "12 OCT 2026",
+          "h3": "Three more versions, each kept live",
+          "text": {
+            "sentences": [
+              {"t": "The research changed what the site says.", "source": ["research", "notesSite"]},
+              {"t": "V2 dropped the cost pitch and led with the archive.", "source": ["notesSite"]},
+              {"t": "V3 tried 13 licensed photographs, and V4 replaced them with four locked off film clips.", "source": ["notesSite"]},
+              {"t": "By the commit clock, V4 landed 5 hours 18 minutes after V1.", "source": ["gitSite"]},
+              {
+                "t": "Every version stayed live at its own address, so the client could compare directions side by side.",
+                "source": ["gitSite", "notesSite"]
+              }
+            ],
+            "prov": [{"kind": "reported", "source": "notesSite"}, {"kind": "measured", "source": "gitSite"}]
+          },
+          "clips": [
+            {
+              "id": "v2",
+              "track": "website",
+              "label": "V2",
+              "date": "12 Oct 2026, 02:17 IST",
+              "readout": "12 OCT 2026 · 02:17 IST · V2",
+              "title": "V2: archive first",
+              "change": {
+                "t": "A new headline, “We turn years of footage into a library, and the library into films.”, one case panel, four services and two ways to work together, quoted on request. About 58% of V1's length.",
+                "source": ["notesSite"]
+              },
+              "why": {
+                "t": "The elite houses studied publish no prices and sell named editors, so the cost pitch and the pricing cards came off, and so did a sector claim the only case study did not support.",
+                "source": ["research", "notesSite"]
+              },
+              "figures": [
+                {"t": "about 58% of V1's length", "kind": "reported", "source": "notesSite"},
+                {"t": "306 KB and 13 requests on desktop", "kind": "measured", "source": "measure"}
+              ],
+              "source": "gitSite",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/v2-hero-1120.webp",
+                  "srcset": "/case-studies/post-aura/media/v2-hero-780.webp 780w, /case-studies/post-aura/media/v2-hero-1120.webp 1120w, /case-studies/post-aura/media/v2-hero-1600.webp 1600w",
+                  "width": 1600,
+                  "height": 900,
+                  "alt": "Version 2: a type only hero on off white that reads We turn years of footage into a library, and the library into films."
+                },
+                "caption": "Capture of the V2 test address, 25 Oct 2026. Cropped above the line that names the client."
+              },
+              "href": "https://post-aura-v2.vercel.app"
+            },
+            {
+              "id": "r2",
+              "track": "research",
+              "label": "R2",
+              "date": "Shaped V3",
+              "readout": "SHAPED V3 · HERO RESEARCH",
+              "title": "Hero research",
+              "line": {
+                "t": "23 sources on photo sequences, flash and pause rules, and load speed, then 13 licensed frames ordered on one luminance arc, from dark to a single bright peak and back.",
+                "source": ["research", "notesSite"]
+              },
+              "figures": [{"t": "23 sources", "kind": "measured", "source": "research"}],
+              "source": "research",
+              "frame": {"type": "panel", "panel": "r2"}
+            },
+            {
+              "id": "v3",
+              "track": "website",
+              "label": "V3",
+              "date": "12 Oct 2026, 05:59 IST",
+              "readout": "12 OCT 2026 · 05:59 IST · V3",
+              "title": "V3: photographs",
+              "change": {"t": "A photo hero of 13 licensed frames under one grade, each holding 4.5 seconds before a dissolve.", "source": ["notesSite"]},
+              "why": {
+                "t": "The client asked for HD images cutting every half second. In review the fast cut, the timecode and the pause button read as distracting, so the cut slowed down.",
+                "source": ["notesSite"]
+              },
+              "figures": [
+                {"t": "1.91 MB and 27 requests on desktop", "kind": "measured", "source": "measure"},
+                {"t": "worst headline contrast 5.99:1 across all 13 frames", "kind": "measured", "source": "notesSite"}
+              ],
+              "source": "gitSite",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/v3-hero-1120.webp",
+                  "srcset": "/case-studies/post-aura/media/v3-hero-780.webp 780w, /case-studies/post-aura/media/v3-hero-1120.webp 1120w, /case-studies/post-aura/media/v3-hero-1600.webp 1600w",
+                  "width": 1600,
+                  "height": 900,
+                  "alt": "Version 3: the same headline in white over a dark photograph of a pool at dusk."
+                },
+                "caption": "Capture of the V3 test address, 25 Oct 2026. Cropped above the line that names the client.",
+                "credit": "Photo in the capture: Tommaso Ubezio, Unsplash"
+              },
+              "href": "https://post-aura-v3.vercel.app"
+            },
+            {
+              "id": "v4",
+              "track": "website",
+              "label": "V4",
+              "date": "12 Oct 2026, 06:26 IST",
+              "readout": "12 OCT 2026 · 06:26 IST · V4",
+              "title": "V4: film",
+              "change": {
+                "t": "A film hero of four locked off stock clips, with the poster painted first and video playing only in view.",
+                "source": ["notesSite"]
+              },
+              "why": {
+                "t": "The next request was cinemagraph style video with letter by letter text colour over it. I declined the colour because it flickers over moving video, and set the type over calm areas instead.",
+                "source": ["notesSite"]
+              },
+              "figures": [
+                {"t": "6.34 MB and 17 requests on desktop", "kind": "measured", "source": "measure"},
+                {"t": "worst headline contrast 6.48:1 over 14 samples of the clips and dissolves", "kind": "measured", "source": "notesSite"}
+              ],
+              "source": "gitSite",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/v4-hero-1120.webp",
+                  "srcset": "/case-studies/post-aura/media/v4-hero-780.webp 780w, /case-studies/post-aura/media/v4-hero-1120.webp 1120w, /case-studies/post-aura/media/v4-hero-1600.webp 1600w",
+                  "width": 1600,
+                  "height": 900,
+                  "alt": "Version 4: the headline over a still from a film clip of waves on a shore at dusk."
+                },
+                "caption": "Capture of the V4 test address, 25 Oct 2026. Cropped above the line that names the client.",
+                "credit": "Video in the capture: Pixabay 334242"
+              },
+              "href": "https://post-aura-v4.vercel.app"
+            }
+          ]
+        },
+        {
+          "id": "beat-3",
+          "slate": "15 OCT 2026",
+          "h3": "Scroll is the edit",
+          "text": {
+            "sentences": [
+              {
+                "t": "In a second round of research, a creative direction critique found my first V5 plan was a list of features with no single idea, and named one: scroll is the edit.",
+                "source": ["research"]
+              },
+              {
+                "t": "The studio's one proof point was an archive it had culled by hand, from 100 TB of footage to 10 TB of selects.",
+                "source": ["siteCopy"]
+              },
+              {"t": "In V5 the visitor's own scroll performs that cull: 100 frames, 90 struck, 10 left in a row.", "source": ["siteCode"]},
+              {
+                "t": "Page weight rose from 349 KB in V1 to 6.36 MB in V5, because photographs arrived in V3 and looping video in V4.",
+                "source": ["measure"]
+              }
+            ],
+            "prov": [{"kind": "reported", "source": "siteCopy"}, {"kind": "measured", "source": "siteCode"}, {"kind": "measured", "source": "measure"}]
+          },
+          "clips": [
+            {
+              "id": "r3",
+              "track": "research",
+              "label": "R3",
+              "date": "Shaped V5",
+              "readout": "SHAPED V5 · RESEARCH, ROUND TWO",
+              "title": "Research, round two",
+              "line": {
+                "t": "Six tracks and 130 sources, then four critique lenses: creative direction, performance, accessibility and a luxury buyer.",
+                "source": ["research"]
+              },
+              "figures": [{"t": "6 tracks · 130 sources · 4 lenses", "kind": "measured", "source": "research"}],
+              "source": "research",
+              "frame": {"type": "panel", "panel": "r3"}
+            },
+            {
+              "id": "v5",
+              "track": "website",
+              "label": "V5",
+              "date": "15 Oct 2026, 07:29 IST",
+              "readout": "15 OCT 2026 · 07:29 IST · V5",
+              "title": "V5: scroll is the edit",
+              "change": {
+                "t": "The cull, reframe chips for four delivery formats, a grade wipe on licensed stock labelled as a demonstration, end credits, and a Still switch in the header that stops every moving part at once.",
+                "source": ["siteCode", "notesSite"]
+              },
+              "why": {
+                "t": "Motion that keeps running needs a way to stop, and visible controls on the video were ruled out, so one switch in the header does it for the whole page.",
+                "source": ["notesSite"]
+              },
+              "figures": [
+                {"t": "6.36 MB and 20 requests on desktop", "kind": "measured", "source": "measure"},
+                {"t": "worst hero text contrast 6.94:1 on desktop", "kind": "measured", "source": "notesSite"}
+              ],
+              "source": "gitSite",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/v5-hero-1120.webp",
+                  "srcset": "/case-studies/post-aura/media/v5-hero-780.webp 780w, /case-studies/post-aura/media/v5-hero-1120.webp 1120w, /case-studies/post-aura/media/v5-hero-1600.webp 1600w",
+                  "width": 1600,
+                  "height": 900,
+                  "alt": "Version 5: the headline over gulls crossing golden water, with a Still switch in the header."
+                },
+                "caption": "Capture of the V5 test address, 25 Oct 2026. Cropped above the line that names the client.",
+                "credit": "Video in the capture: Zulfugar Karimov, Pexels"
+              },
+              "frame2": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/v5-cull-700.webp",
+                  "width": 700,
+                  "height": 585,
+                  "alt": "Version 5's cull scene: a grid of dark frame cells with ten lighter selects settling into a row under the figure 10 TB, selects, tagged, and the note Illustrative: one frame stands for one terabyte."
+                },
+                "caption": "The cull scene from the V5 test address, 24 Oct 2026, UTC, cropped to the frame grid. The 100 TB to 10 TB cull it plays is the studio's own work, done by hand."
+              },
+              "href": "https://post-aura-v5.vercel.app"
+            }
+          ]
+        },
+        {
+          "id": "beat-4",
+          "slate": "21 TO 24 OCT 2026",
+          "h3": "A tagger that uses the studio's own words",
+          "text": {
+            "sentences": [
+              {"t": "At the kickoff I learned how the editors work.", "source": ["notesTagger"]},
+              {
+                "t": "They tag every clip by hand in Premiere Pro, and those tags live inside the project file, so DaVinci Resolve never sees them.",
+                "source": ["notesTagger"]
+              },
+              {"t": "Six builds over four days took the tagger from a local tool to a private cloud service.", "source": ["gitTagger"]},
+              {"t": "On 24 Oct it tagged 10 real clips with no failures.", "source": ["runProd"]},
+              {
+                "t": "That run used the Gemini fallback, which works without the manual step that turns Claude on in Vertex AI.",
+                "source": ["runProd", "deployLog", "deployTagger"]
+              }
+            ],
+            "prov": [{"kind": "measured", "source": "gitTagger"}, {"kind": "measured", "source": "runProd"}]
+          },
+          "clips": [
+            {
+              "id": "t1",
+              "track": "product",
+              "label": "T1",
+              "date": "21 Oct 2026, 17:20 IST",
+              "readout": "21 OCT 2026 · 17:20 IST · TAGGER 1",
+              "title": "Tagger 1: a local tool",
+              "line": {
+                "t": "Year, country, place and camera from the folder path, five frames to Claude Haiku 5.5, answers limited to the tag list, XMP keywords written into the file and a CSV for Resolve.",
+                "source": ["gitTagger"]
+              },
+              "source": "gitTagger",
+              "frame": {"type": "panel", "panel": "t1"}
+            },
+            {
+              "id": "t2",
+              "track": "product",
+              "label": "T2",
+              "date": "22 Oct 2026",
+              "readout": "22 OCT 2026 · TAGGER 2",
+              "title": "Tagger 2: an honest demo",
+              "line": {
+                "t": "My first demo used made up folders, so I rebuilt it on five Wikimedia Commons clips with folder paths taken from each clip's page. A person checked every tag: 25 of 33 right, 6 wrong, 2 debatable. On this timelapse the sunrise was not visible in the five frames, and still frames could not show that it was a timelapse.",
+                "source": ["notesTagger", "pocDoc"]
+              },
+              "figures": [{"t": "25 of 33 tags right", "kind": "measured", "source": "notesTagger"}],
+              "source": "gitTagger",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/t2-rotunda-1200.webp",
+                  "srcset": "/case-studies/post-aura/media/t2-rotunda-720.webp 720w, /case-studies/post-aura/media/t2-rotunda-1200.webp 1200w",
+                  "width": 1200,
+                  "height": 426,
+                  "alt": "Five frames from a public timelapse: a lit rotunda behind bare trees in fog, getting lighter from frame to frame."
+                },
+                "caption": "The five frames the model saw for one public clip in the proof of concept.",
+                "credit": "Frames: JuxtaposedJacob, CC0, Wikimedia Commons"
+              }
+            },
+            {
+              "id": "t3",
+              "track": "product",
+              "label": "T3",
+              "date": "23 Oct 2026",
+              "readout": "23 OCT 2026 · TAGGER 3",
+              "title": "Tagger 3: a cloud service",
+              "line": {
+                "t": "A private Cloud Run service built to run every 30 minutes with nothing installed on editors' machines, plus a Premiere panel and a Resolve script. Three review rounds found 38, 13 and 13 issues, all fixed, and 259 checks passed.",
+                "source": ["gitTagger", "notesTagger"]
+              },
+              "figures": [
+                {"t": "38, 13 and 13 issues, all fixed", "kind": "reported", "source": "notesTagger"},
+                {"t": "259 checks passed on 23 Oct", "kind": "reported", "source": "notesTagger"}
+              ],
+              "source": "gitTagger",
+              "frame": {"type": "panel", "panel": "t3"}
+            },
+            {
+              "id": "t4",
+              "track": "product",
+              "label": "T4",
+              "date": "24 Oct 2026, 21:23 IST",
+              "readout": "24 OCT 2026 · 21:23 IST · TAGGER 4",
+              "title": "Tagger 4: the studio's own rules",
+              "line": {
+                "t": "The tag rules come from the studio's classification sheet on every run. A reading that loses a country, more than 10% of values or most of a category is rejected, and the last good list stays in use.",
+                "source": ["specTagger", "deployTagger"]
+              },
+              "figures": [
+                {"t": "rejected above 10% of values lost", "kind": "reported", "source": "specTagger"},
+                {"t": "150 values in 7 fields, 42 places in 7 countries", "kind": "measured", "source": "vocab"}
+              ],
+              "source": "gitTagger",
+              "frame": {"type": "panel", "panel": "t4"}
+            },
+            {
+              "id": "t5",
+              "track": "product",
+              "label": "T5",
+              "date": "24 Oct 2026, 22:56 IST",
+              "readout": "24 OCT 2026 · 22:56 IST · TAGGER 5",
+              "title": "Tagger 5: look before it writes",
+              "line": {
+                "t": "A read only check of what the robot can open, a demo recorder that labels sample data on every frame, and a Gemini fallback that records which model answered for each clip.",
+                "source": ["gitTagger", "deployLog"]
+              },
+              "source": "deployLog",
+              "frame": {
+                "type": "image",
+                "img": {
+                  "src": "/case-studies/post-aura/media/t5-sample-1120.webp",
+                  "srcset": "/case-studies/post-aura/media/t5-sample-780.webp 780w, /case-studies/post-aura/media/t5-sample-1120.webp 1120w, /case-studies/post-aura/media/t5-sample-1280.webp 1280w",
+                  "width": 1280,
+                  "height": 720,
+                  "alt": "Sample data: a table titled The robot opens Post Aura sample footage, listing five public clips by folder path and size, each with no tags yet."
+                },
+                "caption": "A frame from the demo recorder, run on sample data: the robot lists every clip it can open after one share.",
+                "badge": "Sample data"
+              }
+            },
+            {
+              "id": "t6",
+              "track": "product",
+              "label": "T6",
+              "date": "24 Oct 2026, 23:15 IST",
+              "readout": "24 OCT 2026 · 23:15 IST · 10 TAGGED, 0 FAILED · GEMINI FALLBACK",
+              "title": "First production test",
+              "line": {
+                "t": "10 real clips tagged and 0 failed in 229 seconds; 4 camera files over 1,400 MB were skipped. At 23:19 a second run skipped all 10 tagged clips.",
+                "source": ["runProd"]
+              },
+              "note": {"t": "Tagged by the Gemini fallback model, not Claude.", "source": ["runProd"]},
+              "figures": [
+                {"t": "10 tagged · 0 failed · 4 skipped", "kind": "measured", "source": "runProd"},
+                {"t": "0 of 10 tagged again", "kind": "measured", "source": "runProd"}
+              ],
+              "source": "runProd",
+              "frame": {"type": "panel", "panel": "t6"}
+            }
+          ]
+        }
+      ],
+      "end": {
+        "figure": "12 days",
+        "sentence": {"t": "from the starting wireframe on 12 Oct 2026 to the tagger's first production test on 24 Oct 2026, 23:15 IST.", "source": ["span"]},
+        "kind": "measured",
+        "source": "span",
+        "totals": [
+          {"t": "Research: 3 rounds, 249 logged sources, 207 unique addresses", "kind": "measured", "source": "research"},
+          {"t": "Website: 5 versions, each still live at its own address", "kind": "measured", "source": "gitSite"},
+          {"t": "Search: the same layer in all 5 versions", "kind": "measured", "source": "measure"},
+          {"t": "Product: 6 builds and a production test on 10 real clips", "kind": "measured", "source": "gitTagger"}
+        ],
+        "site": "The site's main test address"
+      },
+      "panels": {
+        "brief": {
+          "badge": "Illustration, not a screenshot",
+          "title": "The brief",
+          "lines": ["One HTML file, ten sections", "A trademark sign nobody had verified"],
+          "sections": ["Hero", "Marquee", "Services", "Formats", "Extension", "Who we serve", "Case study", "Why India", "Pricing", "Contact"],
+          "flags": [
+            {"at": "Formats", "t": "Same text in every row"},
+            {"at": "Case study", "t": "Repeats the hero figures"},
+            {"at": "Contact", "t": "A sector missing from the form"}
+          ]
+        },
+        "search": {
+          "badge": "Recreated for this page",
+          "title": "In the HTML the server sends, all 5 versions",
+          "rows": ["Title", "Description", "Canonical address", "Open Graph image", "Structured data: ProfessionalService, WebSite"],
+          "files": ["sitemap.xml", "robots.txt", "llms.txt", "Open Graph image, 1200x630"]
+        },
+        "r1": {
+          "title": "Research, round one",
+          "tag": "Shaped V2",
+          "stats": ["5 tracks", "96 sources"],
+          "list": [
+            "High end edit houses",
+            "Offshore and subscription rivals",
+            "Travel and hospitality studios",
+            "Luxury design language",
+            "EU buyer trust and search"
+          ],
+          "peopleLabel": "Critics",
+          "people": ["A UK luxury hotel's head of brand", "A creative director", "A fact checker"]
+        },
+        "r2": {
+          "badge": "Illustration, not a screenshot",
+          "title": "Hero research",
+          "tag": "Shaped V3",
+          "stats": ["23 sources"],
+          "list": ["Photo sequences", "Flash and pause rules", "Load speed"],
+          "arc": "13 licensed frames on one luminance arc"
+        },
+        "r3": {
+          "title": "Research, round two",
+          "tag": "Shaped V5",
+          "stats": ["6 tracks", "130 sources"],
+          "peopleLabel": "Lenses",
+          "people": ["Creative direction", "Performance", "Accessibility", "A luxury buyer"],
+          "verdictLabel": "Final verdict",
+          "verdict": "One idea, scroll is the edit"
+        },
+        "t1": {
+          "badge": "Illustration, not a screenshot",
+          "title": "Tagger 1",
+          "steps": [
+            {"k": "Folder path", "v": "Year, country, place, camera"},
+            {"k": "Five frames", "v": "To Claude Haiku 5.5"},
+            {"k": "Answers", "v": "Only from the tag list"},
+            {"k": "Out", "v": "XMP keywords in the file, a CSV for Resolve"}
+          ]
+        },
+        "t3": {
+          "badge": "Illustration, not a screenshot",
+          "title": "Tagger 3, the service",
+          "flow": [
+            "Shared Drive folder",
+            "Robot account",
+            "Five frames",
+            "Claude Haiku 5.5",
+            "XMP in a new Drive revision",
+            "Review sheet",
+            "Fixes written back"
+          ],
+          "note": "Built to run every 30 minutes, nothing installed on editors' machines"
+        },
+        "t4": {
+          "badge": "Illustration, not a screenshot",
+          "title": "Rules from the studio's sheet",
+          "rules": [
+            "Read on every run; the model is asked only when the sheet changes",
+            "Rejected: a reading that loses a country, over 10% of values, or most of a category",
+            "Unreadable sheet: the last good list stays, retried after 24 hours"
+          ],
+          "counts": ["150 values in 7 fields", "17 set by hand", "42 places in 7 countries"]
+        },
+        "t6": {
+          "badge": "Recreated for this page",
+          "title": "First production test",
+          "when": "24 Oct 2026, 23:15 IST",
+          "tiles": [{"k": "Processed", "v": "10"}, {"k": "Failed", "v": "0"}, {"k": "Skipped", "v": "4", "note": "over 1,400 MB"}],
+          "lines": ["228.95 seconds in all", "Tagged by gemini-3.5-flash-lite, the fallback", "Second run, 23:19 IST: 0 of 10 tagged again"]
+        }
+      }
+    },
+    "the-brief": {
+      "id": "the-brief",
+      "h2": "Taking the brief apart",
+      "slate": "12 OCT 2026",
+      "frame": {
+        "type": "findings",
+        "title": "What the research found, and what it changed",
+        "headers": ["Found", "Changed"],
+        "rows": [
+          {
+            "found": {"t": "The elite edit houses studied publish no prices and sell the people who cut.", "source": ["research", "notesSite"]},
+            "changed": {"t": "No prices on the site. Two ways to work together, quoted on request.", "source": ["notesSite"]}
+          },
+          {
+            "found": {"t": "The subscription rivals studied sell volume and savings.", "source": ["research"]},
+            "changed": {"t": "The cost pitch came off, so the studio is not priced as a commodity.", "source": ["notesSite"]}
+          },
+          {
+            "found": {"t": "None of the rivals studied named archive structuring as a service.", "source": ["research"]},
+            "changed": {"t": "The site leads with the archive.", "source": ["notesSite"]}
+          },
+          {
+            "found": {
+              "t": "India has no EU adequacy decision, so EU buyers expect standard contractual clauses and a data processing agreement.",
+              "source": ["research", "eu"]
+            },
+            "changed": {"t": "The data terms went on the client's list of questions before launch.", "source": ["notesSite"]}
+          },
+          {
+            "found": {"t": "One sector listed on the wireframe did not match the only case study.", "source": ["research", "notesSite"]},
+            "changed": {"t": "Removed. A claim stays off the page until the client confirms it.", "source": ["notesSite", "siteCode"]}
+          }
+        ],
+        "caption": {
+          "t": "Findings from the first research round and its critics, and the changes they made to V2, 12 Oct 2026.",
+          "source": ["research", "notesSite"]
+        },
+        "prov": [{"kind": "measured", "source": "research"}, {"kind": "reported", "source": "eu"}]
+      },
+      "lede": {"t": "Between V1 and V2, I wanted to know who buys this work and what they need to hear.", "source": []},
+      "body": [
+        {
+          "sentences": [
+            {"t": "The wireframe sold the studio on cost.", "source": ["notesSite"]},
+            {
+              "t": "I ran five research tracks with 96 sources, then had three critic personas read the plan: a UK luxury hotel's head of brand, a creative director and a fact checker.",
+              "source": ["research"]
+            },
+            {"t": "The research and the critiques ran as AI agent workflows that I directed and checked.", "source": ["research", "notesSite"]}
+          ],
+          "prov": [{"kind": "measured", "source": "research"}]
+        },
+        {
+          "sentences": [
+            {"t": "What came back changed what the site says.", "source": ["notesSite"]},
+            {"t": "V2 dropped every line about cost, led with the archive, and came out at about 58% of V1's length.", "source": ["notesSite"]}
+          ],
+          "prov": [{"kind": "reported", "source": "notesSite"}]
+        },
+        {
+          "sentences": [
+            {"t": "Taking claims off the page was part of the job.", "source": ["notesSite"]},
+            {
+              "t": "A trademark sign nobody had verified, a sector the case study did not support and figures that only repeated the hero all went.",
+              "source": ["notesSite"]
+            },
+            {
+              "t": "The site's copy now lives in one file under one rule: every line must map to a fact the client has confirmed, and anything unconfirmed waits on a list of questions for the client.",
+              "source": ["siteCode", "notesSite"]
+            }
+          ],
+          "prov": []
+        },
+        {
+          "sentences": [
+            {"t": "Reviews ran in rounds.", "source": ["notesSite"]},
+            {"t": "On V1, five review lenses confirmed 21 of 34 findings, and I fixed all 21.", "source": ["notesSite"]},
+            {
+              "t": "On V2 I overruled three findings, because the reviewers had flagged the client's own wireframe copy as invented.",
+              "source": ["notesSite"]
+            },
+            {"t": "Since then I give reviewers the client's source copy first.", "source": ["notesSite"]}
+          ],
+          "prov": [{"kind": "reported", "source": "notesSite"}]
+        }
+      ]
+    },
+    "search": {
+      "id": "search",
+      "h2": "Search, from the first version",
+      "slate": "15 OCT 2026 · V5 · OPEN GRAPH IMAGE",
+      "frame": {
+        "type": "image",
+        "width": "wide",
+        "img": {
+          "src": "/case-studies/post-aura/media/og-1200.webp",
+          "srcset": "/case-studies/post-aura/media/og-720.webp 720w, /case-studies/post-aura/media/og-1200.webp 1200w",
+          "width": 1200,
+          "height": 630,
+          "alt": "A link preview card on an off white ground: Post Aura in a serif face, the headline We turn years of footage into a library, and the library into films., and the line Post production, Mumbai."
+        },
+        "caption": {
+          "t": "The Open Graph image the site generates at build: the card a shared link shows. It carries the headline and the city, and no client name.",
+          "source": ["siteCode"]
+        },
+        "credit": "Read from the V5 test address, 25 Oct 2026"
+      },
+      "lede": {"t": "Search went in with V1 and stayed in every version after it.", "source": ["measure", "gitSite"]},
+      "body": [
+        {
+          "sentences": [
+            {
+              "t": "Every version sends its page title, description, canonical address and Open Graph image in the HTML itself, with schema.org data for a ProfessionalService and its catalog of services.",
+              "source": ["measure", "siteCode"]
+            },
+            {
+              "t": "A sitemap and a robots file guide search engines, and an llms.txt summary tells AI assistants what the studio does.",
+              "source": ["siteCode"]
+            }
+          ],
+          "prov": [{"kind": "measured", "source": "measure"}, {"kind": "measured", "source": "siteCode"}]
+        }
+      ],
+      "tiles": [
+        {"value": "0", "label": "third party requests on any of the five versions, desktop and phone.", "kind": "measured", "source": "measure"},
+        {"value": "121", "label": "font preloads removed after an unused weight added them, about 3.7 MB.", "kind": "measured", "source": "notesSite"},
+        {
+          "value": "6.94:1",
+          "label": "worst contrast of the hero text across all V5 clips and dissolves, on desktop.",
+          "kind": "measured",
+          "source": "notesSite"
+        }
+      ],
+      "body2": [
+        {
+          "sentences": [
+            {
+              "t": "Enquiries ask for the archive size up front, in four bands from under 1 TB to over 100 TB, or not sure, so a reply can be sized before the first call.",
+              "source": ["siteCode"]
+            },
+            {
+              "t": "The form can be sent before its scripts load and keeps what the visitor typed if sending fails.",
+              "source": ["siteCode", "notesSite"]
+            },
+            {
+              "t": "A Still switch stops all motion, and reduced motion, Save Data and a browser without JavaScript each get a complete page.",
+              "source": ["siteCode", "notesSite"]
+            }
+          ],
+          "prov": [{"kind": "measured", "source": "siteCode"}]
+        },
+        {
+          "sentences": [
+            {"t": "Reach is what this page cannot show yet.", "source": []},
+            {
+              "t": "The site has no domain, so nothing is in Search Console, there is no analytics, and enquiry email waits on a sending domain and an inbox.",
+              "source": ["notesSite"]
+            },
+            {"t": "Those wait on the client, so there are no traffic numbers to report.", "source": ["notesSite"]}
+          ],
+          "prov": []
+        }
+      ]
+    },
+    "tags-that-travel": {
+      "id": "tags-that-travel",
+      "h2": "Tags that travel with the file",
+      "slate": "21 OCT 2026",
+      "turn": {
+        "expected": {
+          "t": "Speed up tagging inside Premiere Pro, where the editors already work: fill the studio's custom columns faster, or lean on the AI search built into Premiere and Resolve.",
+          "source": []
+        },
+        "cost": {
+          "sentences": [
+            {"t": "Premiere keeps custom column values inside the project file.", "source": ["notesTagger", "creativeCow"]},
+            {
+              "t": "They cannot be exported, Resolve never sees them, and the next project starts without them.",
+              "source": ["adobeCommunity", "notesTagger"]
+            },
+            {
+              "t": "The built in AI search writes nothing into the files and does not know the studio's words.",
+              "source": ["pocDoc", "intellisearch"]
+            },
+            {"t": "It finds a shoot date or camera type only when the file already carries one.", "source": ["adobeMi"]}
+          ],
+          "prov": [{"kind": "reported", "source": "adobeCommunity"}, {"kind": "reported", "source": "pocDoc"}, {"kind": "reported", "source": "adobeMi"}]
+        },
+        "line": "A clip goes to every project and every app. Its tags should go with it.",
+        "built": {
+          "sentences": [
+            {"t": "The tagger writes XMP keywords into each video file, as a new Drive revision.", "source": ["specTagger"]},
+            {
+              "t": "Premiere can search them through its Dublin Core Subject column, a documented path not yet tried in the studio's own Premiere, and a script or a CSV import is built to carry them into Resolve.",
+              "source": ["editorsReadme"]
+            },
+            {
+              "t": "The folder path already holds the year, country, place and camera, so the model only judges what five frames show.",
+              "source": ["specTagger", "pocRun"]
+            },
+            {
+              "t": "It can only answer with words from the studio's list, and it is told that a wrong tag is worse than none.",
+              "source": ["specTagger", "notesTagger"]
+            }
+          ],
+          "prov": [{"kind": "measured", "source": "specTagger"}]
+        }
+      }
+    },
+    "the-tagger": {
+      "id": "the-tagger",
+      "h2": "Sharing a folder is the setup",
+      "slate": "24 OCT 2026 · SAMPLE DATA",
+      "frame": {
+        "type": "video",
+        "src": "/case-studies/post-aura/media/tagger-demo.mp4",
+        "poster": {
+          "src": "/case-studies/post-aura/media/tagger-demo-poster-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "alt": "Sample data: a share dialog with a placeholder robot address and the Editor role, beside the folder's permission list with the robot added as an Editor."
+        },
+        "duration": "0:50",
+        "sound": false,
+        "size": "1.3 MB",
+        "caption": {
+          "t": "The tagger's own demo recorder, run on sample data from two local runs on 23 and 24 Oct 2026: five public Wikimedia Commons clips in a sample folder, tagged by Claude Haiku 5.5 through the command line. The people and the robot address are placeholders, and the tag words are withheld because they come from the studio's own list. The production test on studio footage used the Gemini fallback.",
+          "source": ["sampleRun", "runProd"]
+        },
+        "text": [
+          {"t": "0:00", "line": "Step 1: before the share, the robot cannot open the sample folder."},
+          {"t": "0:10", "line": "Step 2: one share adds the robot account as an Editor."},
+          {"t": "0:23", "line": "Step 3: the robot lists every clip it can now open. None has tags yet."},
+          {
+            "t": "0:32",
+            "line": "Step 4: a preview run classifies every clip and writes nothing, then the real run writes the tags into each file: 5 clips, 0 failed, 35 seconds. The tag words are withheld.",
+            "kind": "measured",
+            "source": "sampleRun"
+          },
+          {"t": "0:45", "line": "Second run: every tagged clip skipped, so nothing is paid for twice."}
+        ]
+      },
+      "lede": {
+        "t": "Adding footage takes one action: share a folder with the tagger's robot account as an Editor, and the next run finds it.",
+        "source": ["deployTagger"]
+      },
+      "figure": {
+        "id": "fig-path",
+        "title": "One clip, two sources of tags",
+        "badge": "Proof of concept",
+        "path": ["2020", "Philippines", "Manila Bay", "Drone", "manila_bay_aerial.mp4"],
+        "frames": [
+          {"src": "/case-studies/post-aura/media/manila-1.webp", "width": 240, "height": 136},
+          {"src": "/case-studies/post-aura/media/manila-2.webp", "width": 240, "height": 136},
+          {"src": "/case-studies/post-aura/media/manila-3.webp", "width": 240, "height": 136},
+          {"src": "/case-studies/post-aura/media/manila-4.webp", "width": 240, "height": 136},
+          {"src": "/case-studies/post-aura/media/manila-5.webp", "width": 240, "height": 136}
+        ],
+        "framesAlt": "Five frames from a public drone video of a white sand beach in Manila Bay with city towers behind it.",
+        "fromLabels": {"path": "From the folder path", "frames": "From the five frames"},
+        "fields": [
+          {"label": "Year", "value": "2020", "from": "path"},
+          {"label": "Country", "value": "Philippines", "from": "path"},
+          {"label": "Place", "value": "Manila Bay", "from": "path"},
+          {"label": "Camera", "value": "Drone", "from": "path"},
+          {"label": "Content type", "value": "aerial, cityscape, beach", "from": "frames"},
+          {"label": "Activity", "value": "none picked", "from": "frames"},
+          {"label": "People", "value": "no people", "from": "frames"},
+          {"label": "Mood", "value": "sunny", "from": "frames"}
+        ],
+        "keywordsLabel": "Written into the file as XMP keywords",
+        "keywords": ["2020", "Philippines", "Manila Bay", "Drone", "aerial", "cityscape", "beach", "no people", "sunny"],
+        "caption": {
+          "t": "Proof of concept run on 22 Oct 2026, with a draft tag list before the studio's own list replaced it. The year, country, place and camera come from the folder path, and the five frames decide the rest. A person checked the five frame tags against the frames and the clip's Commons description and marked all five right; no activity was picked, which is right for an empty beach.",
+          "source": ["pocRun", "pocDoc"]
+        },
+        "prov": [{"kind": "measured", "source": "pocRun"}, {"kind": "reported", "source": "pocDoc"}],
+        "credit": "Frames: Aerial view of White Sand in Manila Bay, by AeroMark, CC BY 3.0, via Wikimedia Commons; cropped and resized."
+      },
+      "body": [
+        {
+          "sentences": [
+            {"t": "Each run skips any clip whose checksum and tag version have not changed, so no clip is paid for twice.", "source": ["specTagger"]},
+            {"t": "Editors fix a tag in the review sheet, and the next run writes the fix back into the clip.", "source": ["specTagger"]},
+            {
+              "t": "A failure on one file never stops a run; the next run tries that file again, up to three attempts in all.",
+              "source": ["specTagger"]
+            }
+          ],
+          "prov": [{"kind": "measured", "source": "specTagger"}]
+        }
+      ],
+      "tiles": [
+        {
+          "value": "10 clips",
+          "label": "from a real studio folder tagged in the first production test, 0 failed.",
+          "kind": "measured",
+          "source": "runProd"
+        },
+        {"value": "22.9 s", "label": "a clip on average, more than half of it spent extracting frames.", "kind": "measured", "source": "runProd"},
+        {"value": "0 of 10", "label": "tagged again when the second run came through.", "kind": "measured", "source": "runProd"}
+      ],
+      "tilesNote": {
+        "t": "Tagged by the Gemini fallback model. Failed counts errors, not wrong tags. Four camera files over 1,400 MB were skipped.",
+        "source": ["runProd"]
+      },
+      "body2": [
+        {
+          "sentences": [
+            {"t": "Before the first write, the client's original revision is pinned.", "source": ["deployTagger"]},
+            {
+              "t": "After writing, the tagger compares the new file's duration and streams with the original and uploads nothing if they differ.",
+              "source": ["deployTagger"]
+            },
+            {
+              "t": "In Google Cloud the robot account holds one permission, to call the model, and no keys exist to leak.",
+              "source": ["deployTagger", "deployLog"]
+            },
+            {"t": "A monthly budget alert watches the bill.", "source": ["deployTagger"]}
+          ],
+          "prov": [{"kind": "measured", "source": "deployTagger"}]
+        },
+        {
+          "sentences": [
+            {
+              "t": "304 test functions cover the pipeline, from tagging and skipping on a rerun to writing back a human fix and isolating an error.",
+              "source": ["tests"]
+            },
+            {"t": "Three adversarial review rounds found 38, 13 and 13 issues, and every one was fixed.", "source": ["notesTagger"]}
+          ],
+          "prov": [{"kind": "measured", "source": "tests"}, {"kind": "reported", "source": "notesTagger"}]
+        }
+      ],
+      "setup": {
+        "total": {"value": "About an hour,", "label": "once.", "kind": "reported", "source": "resultsDoc"},
+        "steps": [
+          {"action": "Create or pick a Google Cloud project with billing", "who": "Your admin"},
+          {
+            "action": "Run one deploy command",
+            "who": "Me",
+            "note": "It creates the service, the robot account with its one permission, a paused schedule and a budget alert, and it is safe to run again."
+          },
+          {
+            "action": "Enable Claude Haiku 5.5 in Vertex AI Model Garden",
+            "who": "Your admin",
+            "note": "Until then the Gemini fallback can run the tests."
+          },
+          {"action": "Share each footage folder with the robot account as Editor", "who": "You", "note": "A new folder never needs more than this."},
+          {"action": "Share the review sheet as Editor and your classification sheet as Viewer", "who": "You"},
+          {"action": "Start the schedule and run it once", "who": "Me"}
+        ],
+        "back": "pause the schedule and nothing runs. A teardown script removes the jobs, the service and the accounts, and every tagged clip keeps its pinned original."
+      },
+      "limits": {
+        "h3": "What it does not do yet",
+        "sentences": [
+          {"t": "The schedule was left paused at the last deploy, on 24 Oct.", "source": ["deployLog"]},
+          {"t": "The Premiere panel and the Resolve script are built but have not been run inside the apps.", "source": ["editorsReadme"]},
+          {"t": "The deployed version skips clips over 1,400 MB.", "source": ["specTagger", "runProd"]},
+          {
+            "t": "Accuracy on the studio's own footage waits on a 50 clip pilot; on five public clips, a person found 25 of 33 tags right with a draft list, and the results document marks 4 of 5 clips fully right with the studio's list.",
+            "source": ["resultsDoc", "notesTagger"]
+          }
+        ],
+        "prov": [{"kind": "measured", "source": "deployLog"}, {"kind": "measured", "source": "notesTagger"}, {"kind": "reported", "source": "resultsDoc"}]
+      }
+    },
+    "the-math": {
+      "id": "the-math",
+      "h2": "What hand tagging costs, worked out",
+      "slate": "24 OCT 2026 · 23:19 IST · SECOND RUN",
+      "frame": {
+        "type": "image",
+        "width": "wide",
+        "img": {
+          "src": "/case-studies/post-aura/media/second-run-1120.webp",
+          "srcset": "/case-studies/post-aura/media/second-run-780.webp 780w, /case-studies/post-aura/media/second-run-1120.webp 1120w, /case-studies/post-aura/media/second-run-1280.webp 1280w",
+          "width": 1280,
+          "height": 720,
+          "alt": "A dark results panel headed Second run, 0 clips tagged again, with five figures: 10 skipped as already tagged and unchanged, 0 human fixes written back, 0 failed, 6,595 and 147 tokens, and a cost of 0.07 rupees."
+        },
+        "caption": {
+          "t": "The production test's second run skipped the 10 tagged clips, so none was paid for twice. The tokens and cost on screen are for one new clip it previewed without writing, priced at Claude Haiku 5.5 rates, though this run used the Gemini fallback.",
+          "source": ["runProd"]
+        }
+      },
+      "lede": {
+        "t": "Nobody has timed the studio's editors yet, so I do not quote a saving. Here is the model instead, with every input in the open.",
+        "source": ["forum"]
+      },
+      "body": [
+        {
+          "sentences": [
+            {"t": "Public forum estimates put hand tagging at half a minute to a minute a clip.", "source": ["forum"]},
+            {"t": "The model fees come from tokens I measured and Claude's published price.", "source": ["fees"]},
+            {"t": "Change any input; nothing leaves your browser.", "source": []}
+          ],
+          "prov": [{"kind": "reported", "source": "forum"}, {"kind": "modelled", "source": "fees"}]
+        }
+      ],
+      "calc": {
+        "id": "calc-tagging",
+        "title": "Work it out for your studio",
+        "inputs": [
+          {
+            "id": "clips",
+            "label": "Clips a month",
+            "unit": "clips",
+            "min": 0,
+            "max": 100000,
+            "step": 100,
+            "value": 10000,
+            "kind": "example",
+            "help": "Example volume from my cost model. The studio's real volume is not measured.",
+            "source": "resultsDoc"
+          },
+          {
+            "id": "fast",
+            "label": "Hand tagging, fastest",
+            "unit": "seconds a clip",
+            "min": 0,
+            "max": 600,
+            "step": 5,
+            "value": 30,
+            "kind": "example",
+            "help": "Public forum estimate: half a minute to a minute a clip. Not timed at the studio.",
+            "source": "forum"
+          },
+          {
+            "id": "slow",
+            "label": "Hand tagging, slowest",
+            "unit": "seconds a clip",
+            "min": 0,
+            "max": 600,
+            "step": 5,
+            "value": 60,
+            "kind": "example",
+            "help": "The same public estimate, upper end.",
+            "source": "forum"
+          },
+          {
+            "id": "rate",
+            "label": "Editor cost per hour",
+            "unit": "dollars",
+            "min": 0,
+            "max": 200,
+            "step": 0.5,
+            "value": 5,
+            "kind": "example",
+            "help": "Low end of junior freelance rates, $5 to $10 an hour, in fueler.io's India pay guide of 23 Aug 2026. Use your own.",
+            "source": "fueler"
+          }
+        ],
+        "constants": [
+          {"id": "tokensIn", "value": 7000, "label": "input tokens a clip", "kind": "measured", "source": "fees"},
+          {"id": "tokensOut", "value": 950, "label": "output tokens a clip", "kind": "measured", "source": "fees"},
+          {"id": "priceIn", "value": 0.1, "label": "dollars per million input tokens", "kind": "reported", "source": "fees"},
+          {"id": "priceOut", "value": 0.5, "label": "dollars per million output tokens", "kind": "reported", "source": "fees"}
+        ],
+        "figure": "{hoursLow} to {hoursHigh} h",
+        "figureSingle": "{hours} h",
+        "sentence": {
+          "example": "With these example inputs, hand tagging {clips} clips takes about {hoursLow} to {hoursHigh} hours a month, about ${costLow} to ${costHigh} of editor time. The tagger's model fees for the same clips come to about ${fees}.",
+          "yours": "With your numbers, hand tagging {clips} clips takes about {hoursLow} to {hoursHigh} hours a month, about ${costLow} to ${costHigh} of editor time. The tagger's model fees for the same clips come to about ${fees}.",
+          "single": "With your numbers, hand tagging {clips} clips takes about {hours} hours a month, about ${cost} of editor time. The tagger's model fees for the same clips come to about ${fees}.",
+          "zero": "With 0 clips there is nothing to tag, so hand tagging time and model fees are both zero."
+        },
+        "defaults": {
+          "figure": "83 to 170 h",
+          "sentence": "With these example inputs, hand tagging 10,000 clips takes about 83 to 170 hours a month, about $420 to $830 of editor time. The tagger's model fees for the same clips come to about $12."
+        },
+        "math": [
+          "Hours, fastest: {clips} clips × {fast} s ÷ 3,600 = {hoursLowExact} h",
+          "Hours, slowest: {clips} clips × {slow} s ÷ 3,600 = {hoursHighExact} h",
+          "Editor time: {clips} × {fast} s ÷ 3,600 × ${rate} = ${costLowExact}, and {clips} × {slow} s ÷ 3,600 × ${rate} = ${costHighExact}",
+          "Model fees a clip: (7,000 × $0.10 + 950 × $0.50) ÷ 1,000,000 = $0.001175",
+          "Model fees: {clips} × $0.001175 = ${feesExact}",
+          "Outputs round to two significant figures."
+        ],
+        "mathDefaults": [
+          "Hours, fastest: 10,000 clips × 30 s ÷ 3,600 = 83.3 h",
+          "Hours, slowest: 10,000 clips × 60 s ÷ 3,600 = 166.7 h",
+          "Editor time: 10,000 × 30 s ÷ 3,600 × $5 = $416.67, and 10,000 × 60 s ÷ 3,600 × $5 = $833.33",
+          "Model fees a clip: (7,000 × $0.10 + 950 × $0.50) ÷ 1,000,000 = $0.001175",
+          "Model fees: 10,000 × $0.001175 = $11.75",
+          "Outputs round to two significant figures."
+        ],
+        "leavesOut": [
+          {"t": "Review time: an editor still checks the tags, and about 1 in 4 may need a fix.", "source": ["resultsDoc"]},
+          {
+            "t": "Google Cloud compute and logs: about $1 a month at 10,000 clips in my cost model, which assumed about 10 seconds a clip; the production test measured 22.9.",
+            "source": ["resultsDoc", "runProd"]
+          },
+          {"t": "Setup, about an hour, once.", "source": ["resultsDoc"]},
+          {"t": "Any fee for running the service for you.", "source": []},
+          {"t": "Clips over 1,400 MB, which the deployed version skips.", "source": ["specTagger"]},
+          {"t": "Vertex AI's own price for Claude, which can differ from the list price used here.", "source": ["fees"]},
+          {"t": "Shots defined by movement, and short moments that five frames can miss.", "source": ["pocDoc", "notesTagger"]}
+        ],
+        "source": "fees",
+        "orderError": "The slowest time is below the fastest. Raise the slowest or lower the fastest."
+      }
+    },
+    "learned": {
+      "id": "learned",
+      "h2": "What I learned",
+      "body": [
+        {
+          "sentences": [
+            {"t": "Reviewers flag what they cannot check, so I now give them the client's own copy before they start.", "source": ["notesSite"]},
+            {
+              "t": "A demo is only honest when every value in it comes from a source; my first one did not, so I rebuilt it on public clips.",
+              "source": ["notesTagger"]
+            },
+            {
+              "t": "And a measurement is only as good as the build it ran on: once a stale server answered a contrast check with the old build, so I now confirm which build is being served before I measure.",
+              "source": ["notesSite"]
+            }
+          ],
+          "prov": []
+        }
+      ]
+    }
+  }
+}

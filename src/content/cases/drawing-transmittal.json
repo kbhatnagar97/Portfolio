@@ -1,0 +1,1275 @@
+{
+  "slug": "drawing-transmittal",
+  "draft": false,
+  "title": "Drawing Ledger",
+  "kicker": "Workflow product on Microsoft 365",
+  "client": "Product for practices that issue drawings",
+  "anonymised": true,
+  "industry": "Architecture and engineering",
+  "purposes": [
+    "saves-time",
+    "saves-money",
+    "reduces-risk"
+  ],
+  "status": "Built and tested, first live installation pending",
+  "role": "Product design and engineering",
+  "year": "2026",
+  "published": "2026-10-25",
+  "accent": "#c6ef6a",
+  "seoTitle": "Drawing Ledger: transmittal automation",
+  "description": "Drawing Ledger keeps a drawing transmittal current on Microsoft 365: it reads each PDF's title block, waits for the project lead's yes and never deletes a row.",
+  "deck": "The drawing fills in the transmittal. The lead still says yes.",
+  "summary": [
+    "A drawing transmittal is a practice's record of what it issued, which revision, to whom and when. Kept by hand, one missed update leaves that record a revision behind.",
+    "Drawing Ledger reads each PDF dropped in a project's issue folder, checks the file name against the drawing's own title block, and plans only the difference. The project lead approves from an email. Only then is the client copy replaced, with each drawing number linked to its PDF and old revisions struck through, never deleted.",
+    "It runs as one small Azure Functions app with no Power Automate licence, and it signs in to Microsoft Graph with a managed identity, so it stores no password or client secret for Microsoft Graph. It has 290 automated tests. It is built and tested, and the first live installation is pending."
+  ],
+  "impact": [
+    {
+      "value": "5 jobs to 1",
+      "label": "per drawing issued: five hand jobs move to the engine, and the project lead keeps one review.",
+      "kind": "reported",
+      "source": "spec",
+      "note": "Counted from the product specification. Not yet observed on a live installation."
+    },
+    {
+      "value": "₹1,250 a month",
+      "label": "per user, paid yearly, plus GST, for the Power Automate Premium licence this design does not need.",
+      "kind": "reported",
+      "source": "automateprice",
+      "note": "Microsoft's India list price, read 25 Oct 2026."
+    },
+    {
+      "value": "290",
+      "label": "automated tests, all run with no network; 33 of them came from an adversarial review.",
+      "kind": "measured",
+      "source": "tests"
+    },
+    {
+      "value": "About 45 minutes",
+      "label": "of one admin's time in one sitting to switch on the managed service, then one row per project.",
+      "kind": "reported",
+      "source": "service",
+      "note": "Planned in the setup guide, not yet timed on a live tenant."
+    }
+  ],
+  "poster": {
+    "src": "/case-studies/drawing-transmittal/media/poster.jpg",
+    "webp": "/case-studies/drawing-transmittal/media/poster.webp",
+    "alt": "Illustration on sample data: a drawing sheet with a lime scan bar over its title block, beside a transmittal where a new revision row is added and the old one is struck through in red.",
+    "width": 1280,
+    "height": 800
+  },
+  "stack": [
+    "Python standard library",
+    "pypdfium2",
+    "Azure Functions, Flex Consumption plan",
+    "Microsoft Graph",
+    "Microsoft Entra ID managed identity",
+    "SharePoint Online",
+    "Exchange Online RBAC for Applications",
+    "App Service Authentication",
+    "Word and Excel files",
+    "Application Insights"
+  ],
+  "links": [],
+  "offer": {
+    "who": "Architecture, engineering and construction practices on Microsoft 365 and SharePoint that issue PDF drawings and keep a drawing transmittal in Word.",
+    "gets": "A transmittal that keeps itself. Each PDF dropped in a project's issue folder becomes a checked row. The project lead approves from an email after a work account sign in. The client copy is replaced with every drawing number linked to its exact PDF, old revisions struck through, deleted files marked Removed, and no row ever deleted. A project list in plain words, a log and a health check come with it.",
+    "needs": "Microsoft 365 with SharePoint. PDF drawings whose title block prints the drawing number, project code and date as text. A file naming rule with serial, drawing number, project code and revision. A Word transmittal template. A shared mailbox, a small SharePoint site and one approver per project. If your title block or transmittal layout differs from the one it reads today, a small adapter comes first.",
+    "setup": "I can run it for you as a managed service, or install it in your own Azure on pay as you go. Your admin gives about 45 minutes in one sitting for the managed service, or about an hour for your own Azure, then Microsoft's own waits of up to about a day. After that, one row per project: tick Active to start, untick it to stop. These durations are planned, not yet timed on a live tenant."
+  },
+  "credits": [],
+  "sources": [
+    {
+      "id": "spec",
+      "text": "Drawing Ledger product docs: the README, the specification of its rules and the demo notes. They set the file name rule, title block reading, history rows, dates, status, links, approvals, emails and the check schedule; the five jobs per drawing issued are counted from these rules. Read 25 Oct 2026."
+    },
+    {
+      "id": "engine",
+      "text": "My engine source code: the name rules, the title block reader, the difference planner, the Word engine, the check runner, the approval page and its sign in, the Microsoft Graph client, the project list reader, and the list of pinned runtime packages. Read 25 Oct 2026."
+    },
+    {
+      "id": "tests",
+      "text": "Engine test suite: 290 test methods in 19 test files, 33 of them in the adversarial set, counted 25 Oct 2026. The suite runs with no network; fakes stand in for Microsoft Graph and Azure."
+    },
+    {
+      "id": "notes",
+      "text": "My build log: milestones from Day 1, the day the prototype passed, to Day 15; test counts at each milestone (189, 242, 290); review rounds (33 findings, then 4 low findings and 8 issues); the end to end rehearsal on a laptop; the next step, a rehearsal on a test tenant; the lessons about Microsoft's rules. Read 25 Oct 2026."
+    },
+    {
+      "id": "review",
+      "text": "Prototype review script output, Day 1: summary line of 58 checks passed and 16 defects logged. Read 25 Oct 2026."
+    },
+    {
+      "id": "optimised",
+      "text": "Optimisation record, Day 15: old and new code compared byte for byte on 176 output files, all identical, with random email boundaries and clock stamps masked and no test edited; longest function 86 lines before and 44 after, from a syntax tree scan. Read 25 Oct 2026."
+    },
+    {
+      "id": "guide",
+      "text": "Self hosted setup guide: browser only setup, about one hour of an admin's time on grant day, write on named sites only, one shared mailbox checked by a positive and a negative test, Microsoft's waits, the off switches, the cost section with its schedule arithmetic, and 15 open points with their checks. Read 25 Oct 2026."
+    },
+    {
+      "id": "service",
+      "text": "Managed service guide: one admin sitting of about 45 minutes, sign in through a managed identity with no client secret, logs kept 30 days, removal in about 15 minutes, and 19 open points with their checks. Planned durations, not yet timed on a live tenant. Read 25 Oct 2026."
+    },
+    {
+      "id": "automateprice",
+      "text": "Microsoft, Power Automate pricing for India: Power Automate Premium at ₹1,250.00 per user a month, paid yearly, GST extra as applicable. Read 25 Oct 2026.",
+      "url": "https://www.microsoft.com/en-in/power-platform/products/power-automate/pricing"
+    },
+    {
+      "id": "automatetypes",
+      "text": "Microsoft Learn, Types of Power Automate licenses (page updated 22 Sep 2026): the Free licence limits connector usage to standard connectors only; Power Automate Premium also covers the connectors outside that set, custom connectors included. Read 25 Oct 2026.",
+      "url": "https://learn.microsoft.com/en-us/power-platform/admin/power-automate-licensing/types"
+    },
+    {
+      "id": "graphexcel",
+      "text": "Microsoft Learn, Microsoft Graph v1.0, Get table in the Excel workbook API: application permissions are listed as not supported. Read 25 Oct 2026.",
+      "url": "https://learn.microsoft.com/en-us/graph/api/table-get?view=graph-rest-1.0"
+    },
+    {
+      "id": "graphshares",
+      "text": "Microsoft Learn, Microsoft Graph v1.0, Access shared items: an app needs Files.ReadWrite.All or Sites.ReadWrite.All, both tenant wide. Read 25 Oct 2026.",
+      "url": "https://learn.microsoft.com/en-us/graph/api/shares-get?view=graph-rest-1.0"
+    },
+    {
+      "id": "functionsprice",
+      "text": "Microsoft Azure, Azure Functions pricing for India: the Flex Consumption plan includes a monthly free grant of 250,000 executions and 100,000 GB seconds per subscription, on paid pay as you go subscriptions only. Read 25 Oct 2026.",
+      "url": "https://azure.microsoft.com/en-in/pricing/details/functions/"
+    },
+    {
+      "id": "computemodel",
+      "text": "Compute model for one practice, worked 25 Oct 2026: an example schedule of a check every 5 minutes for 11 hours a day is 132 checks; on 26 days a month that is 3,432 checks; at 2 GB and an estimated 5 seconds a check that is 34,320 GB seconds, about a third of the free grant. The 5 seconds stays an estimate until real run times are measured. Schedule and memory from the cost section of the self hosted setup guide."
+    },
+    {
+      "id": "calcmodel",
+      "text": "Calculator model, worked 25 Oct 2026: hours a month = drawings issued × (minutes by hand − minutes of review) ÷ 60. The defaults are examples: 50 drawings a month, and 12 minutes a drawing, my own estimate, not measured. Review time has no sourced default and starts at 0."
+    },
+    {
+      "id": "functionspython",
+      "text": "Microsoft Learn, Supported languages in Azure Functions: Python 3.12 is generally available with an expected end of support in October 2028 (page updated 22 Oct 2026). Read 25 Oct 2026.",
+      "url": "https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages"
+    }
+  ],
+  "gaps": [
+    "Not yet run on a live Microsoft 365 tenant: 19 open points for the managed service and 15 for a self hosted install wait for the first installation.",
+    "Hours saved, errors avoided and running cost are not measured yet; the 12 minute calculator default is an estimate.",
+    "Storage and log costs are not measured; only compute is modelled, and its 5 seconds a check is an estimate.",
+    "The five jobs count comes from the specification and is not yet observed on a live installation.",
+    "The demo's title block labels, transmittal headers and status words are drawn for this page; the engine reads one title block layout and one transmittal layout today.",
+    "Two review checks are still open: a warning on a revision jump such as R2 to R10, and a check that a revision date is not earlier than the one before.",
+    "Tests run locally on Python 3.14; the Azure build targets Python 3.12.",
+    "Microsoft figures on this page were read on 25 Oct 2026 and can change."
+  ],
+  "blocks": {
+    "order": [
+      "stage",
+      "the-drawing-decides",
+      "every-issue-stays",
+      "the-turn",
+      "five-jobs",
+      "safe-to-leave-running",
+      "switched-on"
+    ],
+    "stage": {
+      "layout": "bleed",
+      "h2": "Drop, read, record",
+      "intro": "A drawing transmittal is a practice's record of what it issued, which revision, to whom and when. Kept by hand, one missed update leaves the record people point to a revision behind. Pick a sample drawing, drop it in the issue folder, and play the project lead.",
+      "badges": [
+        "Sample data",
+        "Demo speed"
+      ],
+      "picker": {
+        "legend": "Pick a sample drawing",
+        "options": [
+          {
+            "id": "rev",
+            "label": "A revision",
+            "file": "02 A-120 SPVL R1 Ground Floor Plan.pdf",
+            "hint": "R1 replaces R0",
+            "checked": true
+          },
+          {
+            "id": "new",
+            "label": "A new drawing",
+            "file": "03 A-121 SPVL R0 First Floor Plan.pdf",
+            "hint": "Slots in at serial 03"
+          },
+          {
+            "id": "bad",
+            "label": "A misnamed file",
+            "file": "08_A-160_SPVL_R0_Door_Schedule.pdf",
+            "hint": "Underscores instead of spaces"
+          }
+        ]
+      },
+      "buttons": {
+        "drop": "Drop it in the issue folder",
+        "approve": "Approve and publish",
+        "reset": "Start again"
+      },
+      "status": {
+        "loading": "Loading the demo",
+        "idle": "Pick a sample drawing, then drop it in the issue folder.",
+        "name": "Reading the file name",
+        "scan": "Reading the title block",
+        "match": "Matching the drawing: the name and the title block agree",
+        "planRev": "Planning the change: R1 is added and R0 stays, marked Revoked",
+        "planNew": "Planning the change: a new row slots in at serial 03",
+        "draft": "Draft ready: waiting for the lead's approval",
+        "approved": "Approved: replacing the client copy",
+        "sent": "Sent: links to the lead and the notify list",
+        "refused": "Needs a look: the name uses underscores instead of spaces. Rename it with spaces and drop it again.",
+        "repeat": "Checked again: nothing new in the folder, so no change and no email.",
+        "reset": "Started again with the sample transmittal."
+      },
+      "readout": "Rows {rows} · Revoked {revoked} · Needs a look {look}",
+      "panels": {
+        "folder": "Issue folder · Sample Pavilion",
+        "approval": "Approval page",
+        "sent": "Email sent",
+        "draft": "Transmittal · draft",
+        "client": "Transmittal · client copy"
+      },
+      "sheet": {
+        "practice": "EXAMPLE STUDIO",
+        "job": "SAMPLE PAVILION",
+        "labels": {
+          "job": "JOB",
+          "code": "JOB CODE",
+          "title": "SHEET TITLE",
+          "sheet": "SHEET NO",
+          "issued": "FIRST ISSUE",
+          "revTable": [
+            "REV",
+            "DATE",
+            "CHANGE"
+          ]
+        }
+      },
+      "samples": {
+        "rev": {
+          "titleBlock": {
+            "code": "SPVL",
+            "title": "GROUND FLOOR PLAN",
+            "sheet": "A-120",
+            "issued": "12 JAN 2026",
+            "revisions": [
+              [
+                "R1",
+                "09 FEB 2026",
+                "ENTRANCE WALL MOVED"
+              ]
+            ]
+          },
+          "row": {
+            "no": "2",
+            "title": "Ground Floor Plan",
+            "dwg": "A-120",
+            "status": "For Construction",
+            "issued": "12 Jan 2026",
+            "rev": "R1",
+            "revDate": "09 Feb 2026"
+          },
+          "revokes": {
+            "dwg": "A-120",
+            "rev": "R0"
+          }
+        },
+        "new": {
+          "titleBlock": {
+            "code": "SPVL",
+            "title": "FIRST FLOOR PLAN",
+            "sheet": "A-121",
+            "issued": "02 FEB 2026",
+            "revisions": []
+          },
+          "row": {
+            "no": "3",
+            "title": "First Floor Plan",
+            "dwg": "A-121",
+            "status": "For Construction",
+            "issued": "02 Feb 2026",
+            "rev": "R0",
+            "revDate": ""
+          }
+        },
+        "bad": {
+          "titleBlock": {
+            "code": "SPVL",
+            "title": "DOOR SCHEDULE",
+            "sheet": "A-160",
+            "issued": "09 FEB 2026",
+            "revisions": []
+          },
+          "refuse": "underscores"
+        }
+      },
+      "transmittal": {
+        "caption": "Sample transmittal for Sample Pavilion",
+        "headers": [
+          "No.",
+          "Title",
+          "Drawing No.",
+          "Status",
+          "First issued",
+          "Rev",
+          "Rev date"
+        ],
+        "rows": [
+          {
+            "no": "1",
+            "title": "Site Plan",
+            "dwg": "A-110",
+            "status": "For Construction",
+            "issued": "12 Jan 2026",
+            "rev": "R0",
+            "revDate": ""
+          },
+          {
+            "no": "2",
+            "title": "Ground Floor Plan",
+            "dwg": "A-120",
+            "status": "For Construction",
+            "issued": "12 Jan 2026",
+            "rev": "R0",
+            "revDate": ""
+          },
+          {
+            "no": "4",
+            "title": "Roof Plan",
+            "dwg": "A-130",
+            "status": "For Construction",
+            "issued": "19 Jan 2026",
+            "rev": "R0",
+            "revDate": ""
+          },
+          {
+            "no": "5",
+            "title": "Elevations",
+            "dwg": "A-140",
+            "status": "For Construction",
+            "issued": "19 Jan 2026",
+            "rev": "R0",
+            "revDate": ""
+          },
+          {
+            "no": "6",
+            "title": "Section AA",
+            "dwg": "A-150",
+            "status": "For Construction",
+            "issued": "26 Jan 2026",
+            "rev": "R0",
+            "revDate": ""
+          },
+          {
+            "no": "7",
+            "title": "Annexe Plan",
+            "dwg": "ANX/A-210",
+            "status": "For Construction",
+            "issued": "26 Jan 2026",
+            "rev": "R0",
+            "revDate": ""
+          }
+        ],
+        "scrollLabel": "Sample transmittal, all seven columns. Scroll sideways to see them."
+      },
+      "approval": {
+        "heading": "Approve the transmittal update",
+        "from": "Sample Pavilion · SPVL · from Drawing Ledger to lead@example.com",
+        "rowRev": "A-120 · Ground Floor Plan · R1 · 09 Feb 2026 · For Construction, the project default",
+        "rowNew": "A-121 · First Floor Plan · R0 · first issue 02 Feb 2026 · For Construction, the project default",
+        "revokeNote": "A-120 R0 will be marked Revoked.",
+        "safe": "Opening this page changed nothing. Only the button decides.",
+        "reject": "Or reject with a reason. Nothing is published until you choose.",
+        "stamp": "Approved"
+      },
+      "sent": {
+        "heading": "Transmittal updated: Sample Pavilion",
+        "note": "Links only, no attachments.",
+        "to": [
+          "lead@example.com",
+          "client@example.com",
+          "consultant@example.com"
+        ]
+      },
+      "jobs": {
+        "title": "Done for you",
+        "items": [
+          "Type the row's seven cells",
+          "Link the drawing number to its PDF",
+          "Strike the old revision",
+          "Replace the client copy",
+          "Email the update"
+        ],
+        "skipNew": "Nothing to strike: a first issue",
+        "leftTitle": "Left for you",
+        "left": "Review and approve"
+      },
+      "steps": [
+        "The sample sheet lands in the issue folder. Its name gives the serial, drawing number, project code, revision and title.",
+        "The scan reads the title block: drawing number, project code, first issue date, revision list and title.",
+        "The name and the drawing agree, so the change is planned. When they disagree on number, project or revision, the drawing wins and the file waits for a person.",
+        "Five fields fill the new row. For a revision, the old row stays, struck through in red and marked Revoked.",
+        "The draft waits. The project lead gets an email with a signed link and sees every row before anything changes.",
+        "Approve and publish replaces the client copy, and each drawing number links to its exact PDF.",
+        "One email with links, never attachments, goes to the lead and everyone on the project's notify list.",
+        "A misnamed file is refused with a plain fix, and nothing is written. Dropping the same file twice changes nothing."
+      ],
+      "caption": "Recreated for this page on sample data: Example Studio, project Sample Pavilion, code SPVL. The real check runs every 5 minutes in office hours [reported:spec], so this demo runs faster than life. The sheet is drawn for this page; the engine reads one title block layout today.",
+      "storyboard": [
+        {
+          "label": "1 · Read",
+          "title": "The name and the title block agree",
+          "text": "Sample sheet A-120, revision R1. The scan reads the drawing number, project code, first issue date, revision list and title, and they match the file name."
+        },
+        {
+          "label": "2 · Plan",
+          "title": "R1 added, R0 kept",
+          "text": "The draft adds the R1 row under R0 and strikes R0 through in red as Revoked. First issued stays 12 Jan 2026."
+        },
+        {
+          "label": "3 · Approve and send",
+          "title": "Five jobs done, one review",
+          "text": "The lead approves. The client copy is replaced and one email with links goes to three people. The engine did five jobs and the lead did one review [reported:spec]."
+        },
+        {
+          "label": "Needs a look",
+          "title": "A misnamed file waits",
+          "text": "08_A-160_SPVL_R0_Door_Schedule.pdf uses underscores instead of spaces. It is refused with a plain fix, and nothing is written."
+        }
+      ],
+      "refs": [
+        "spec",
+        "engine"
+      ]
+    },
+    "the-drawing-decides": {
+      "layout": "sheet",
+      "nav": "The drawing decides",
+      "h2": "The drawing decides, not the file name",
+      "lede": "I took the job apart cell by cell: what each column of a transmittal means, where its value comes from, and which values only a person can decide.",
+      "line": "File names are typed by people. The title block is what was drawn.",
+      "paras": [
+        "Every value in a row already exists somewhere. The serial, drawing number, project code, revision and title are in the file name someone typed. Most of the same facts, plus the dates, are in the title block someone drew.",
+        "So the engine reads both. It takes the drawing number with any sub project prefix, the project code, the first issue date, the revision list when it is printed as text, and the title. When the name and the drawing disagree on number, project or revision, the drawing wins and the file waits for a person.",
+        "It asks a person only when there is no single right answer. If a title block draws a revision date as lines instead of text, the lead types it on the approval page. Status starts from the project's default, and the lead can change it per row.",
+        "Each check compares the whole issue folder with the transmittal and plans only the difference. A missed or doubled check cannot damage the record, and the same check run twice plans nothing."
+      ],
+      "refs": [
+        "spec",
+        "engine"
+      ],
+      "figures": [
+        {
+          "id": "fig-anatomy",
+          "layout": "aside",
+          "sheet": "F1",
+          "rev": "R0",
+          "date": "25 OCT 2026",
+          "tag": "SAMPLE DATA",
+          "badge": "Sample data",
+          "title": "Anatomy of a sample drawing name",
+          "file": "02 A-120 SPVL R1 Ground Floor Plan.pdf",
+          "parts": [
+            {
+              "text": "02",
+              "label": "Serial",
+              "role": "Places the row"
+            },
+            {
+              "text": "A-120",
+              "label": "Drawing number",
+              "role": "Must match the title block"
+            },
+            {
+              "text": "SPVL",
+              "label": "Project code",
+              "role": "Must match the project list and the title block"
+            },
+            {
+              "text": "R1",
+              "label": "Revision",
+              "role": "Must match the revision list"
+            },
+            {
+              "text": "Ground Floor Plan",
+              "label": "Title",
+              "role": "Fills the Title column unless the title block names it differently"
+            }
+          ],
+          "rule": "When the name and the drawing disagree on number, project or revision, the drawing wins and the file waits for a person.",
+          "caption": "A sample file name and the title block it must agree with. Nothing is written until they agree.",
+          "refs": [
+            "spec",
+            "engine"
+          ]
+        },
+        {
+          "id": "fig-refused",
+          "layout": "wide",
+          "sheet": "F2",
+          "rev": "R0",
+          "date": "25 OCT 2026",
+          "tag": "SAMPLE DATA",
+          "badge": "Recreated for this page",
+          "title": "Names it refuses, and the fix it sends",
+          "headers": [
+            "Sample file",
+            "Why it waits",
+            "The fix"
+          ],
+          "rows": [
+            [
+              "A-160 SPVL R0 Door Schedule.pdf",
+              "No serial, so the row cannot be placed.",
+              "Start the name with the serial, such as 08."
+            ],
+            [
+              "08 A-160 SPVL Door Schedule.pdf",
+              "No revision.",
+              "Add R0 for a first issue."
+            ],
+            [
+              "08_A-160_SPVL_R0_Door_Schedule.pdf",
+              "Underscores instead of spaces.",
+              "Rename it with spaces."
+            ],
+            [
+              "08 A-160 SPVL R0 Door Schedule (1).pdf",
+              "Looks like a duplicate copy.",
+              "Delete the copy, or give a new drawing its own name."
+            ],
+            [
+              "08 A-160 SPVL R0 Door Schedule.pdf, with A-161 in its title block",
+              "The name and the drawing disagree, and the drawing wins.",
+              "Fix the name or the title block, then drop it again."
+            ],
+            [
+              "08 A-160 SPVL R0 Door Schedule.dwg",
+              "Not a PDF.",
+              "Export the drawing to PDF."
+            ]
+          ],
+          "caption": "Each refused file gets a Needs a look notice with a plain fix. The fixes are worded for this page. Nothing is written until the name is right.",
+          "refs": [
+            "engine",
+            "spec"
+          ]
+        }
+      ]
+    },
+    "every-issue-stays": {
+      "layout": "sheet",
+      "nav": "Old rows stay",
+      "h2": "Old rows stay, struck through",
+      "lede": "A transmittal settles an argument only if it still shows what was issued before. So by default the engine adds rows, and it has no way to delete one.",
+      "paras": [
+        "A new revision keeps the old row, strikes it through in red and marks it Revoked, then adds the new row under it. A deleted file keeps its row as well, struck through and marked Removed. A project can choose one row per drawing instead, updated in place, and the first issue date still never changes.",
+        "First issued is the drawing's first issue date and never changes. Rev date comes from the title block. The upload date is never used in its place, and impossible dates, such as one before the first issue, are refused.",
+        "Each drawing number links to the PDF that row was published from, so an old row points to the old drawing, not the new one. The client copy changes only after the project lead says yes, and only if it is still the version the lead reviewed.",
+        "The engine edits the practice's own Word file in place instead of rebuilding it, so the letterhead, the styles and every row it did not touch stay exactly as they were."
+      ],
+      "refs": [
+        "spec",
+        "engine"
+      ],
+      "figures": [
+        {
+          "id": "fig-record",
+          "layout": "wide",
+          "sheet": "F3",
+          "rev": "R0",
+          "date": "25 OCT 2026",
+          "tag": "SAMPLE DATA",
+          "badge": "Sample data",
+          "title": "The sample record, nothing erased",
+          "headers": [
+            "No.",
+            "Title",
+            "Drawing No.",
+            "Status",
+            "First issued",
+            "Rev",
+            "Rev date"
+          ],
+          "rows": [
+            {
+              "no": "1",
+              "title": "Site Plan",
+              "dwg": "A-110",
+              "status": "For Construction",
+              "issued": "12 Jan 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "current"
+            },
+            {
+              "no": "2",
+              "title": "Ground Floor Plan",
+              "dwg": "A-120",
+              "status": "Revoked",
+              "issued": "12 Jan 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "revoked"
+            },
+            {
+              "no": "2",
+              "title": "Ground Floor Plan",
+              "dwg": "A-120",
+              "status": "Revoked",
+              "issued": "12 Jan 2026",
+              "rev": "R1",
+              "revDate": "09 Feb 2026",
+              "state": "revoked"
+            },
+            {
+              "no": "2",
+              "title": "Ground Floor Plan",
+              "dwg": "A-120",
+              "status": "For Construction",
+              "issued": "12 Jan 2026",
+              "rev": "R2",
+              "revDate": "23 Mar 2026",
+              "state": "current"
+            },
+            {
+              "no": "3",
+              "title": "First Floor Plan",
+              "dwg": "A-121",
+              "status": "For Construction",
+              "issued": "02 Feb 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "current"
+            },
+            {
+              "no": "4",
+              "title": "Roof Plan",
+              "dwg": "A-130",
+              "status": "Revoked",
+              "issued": "19 Jan 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "revoked"
+            },
+            {
+              "no": "4",
+              "title": "Roof Plan",
+              "dwg": "A-130",
+              "status": "For Construction",
+              "issued": "19 Jan 2026",
+              "rev": "R1",
+              "revDate": "02 Mar 2026",
+              "state": "current",
+              "note": "Typed by the lead"
+            },
+            {
+              "no": "5",
+              "title": "Elevations",
+              "dwg": "A-140",
+              "status": "For Construction",
+              "issued": "19 Jan 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "current"
+            },
+            {
+              "no": "6",
+              "title": "Section AA",
+              "dwg": "A-150",
+              "status": "Removed",
+              "issued": "26 Jan 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "removed"
+            },
+            {
+              "no": "7",
+              "title": "Annexe Plan",
+              "dwg": "ANX/A-210",
+              "status": "For Construction",
+              "issued": "26 Jan 2026",
+              "rev": "R0",
+              "revDate": "",
+              "state": "current"
+            }
+          ],
+          "legend": [
+            {
+              "mark": "revoked",
+              "text": "Red strike: Revoked, replaced by a newer revision"
+            },
+            {
+              "mark": "removed",
+              "text": "Grey strike: Removed, the file was deleted"
+            }
+          ],
+          "caption": "The sample transmittal after three revisions and one deletion: each replaced row struck through in red as Revoked, the deleted file struck through in grey as Removed, and none of the ten rows erased. The Roof Plan's R1 date was drawn as graphics, so the lead typed it.",
+          "refs": [
+            "spec",
+            "engine"
+          ]
+        }
+      ]
+    },
+    "the-turn": {
+      "nav": "Three plans struck out",
+      "h2": "Three plans I struck out",
+      "expected": "On Microsoft 365, the obvious build is a Power Automate flow around my code: a trigger, an approval and an email. Azure and Power Automate were both new to me, and three plans broke on Microsoft's own rules while I built.",
+      "ruledOut": [
+        {
+          "name": "A Power Automate flow calling my code",
+          "reason": "The free licence limits a flow to standard connectors. Calling my code over HTTP needs a connector outside that set, so the account that owns the flow needs Power Automate Premium.",
+          "source": "automatetypes",
+          "kind": "reported"
+        },
+        {
+          "name": "Microsoft's Excel API for the project list",
+          "reason": "It has no application permission, so an automation identity cannot use it.",
+          "source": "graphexcel",
+          "kind": "reported"
+        },
+        {
+          "name": "Sharing links pasted into the project list",
+          "reason": "Microsoft Graph opens a sharing link for an app only with access to every file in the organisation, which this app must never have.",
+          "source": "graphshares",
+          "kind": "reported"
+        }
+      ],
+      "cost": "A Power Automate Premium licence for as long as the flow runs, and an identity with far more reach than the job needs.",
+      "costMetric": {
+        "value": "₹1,250 a month",
+        "label": "per user, paid yearly, plus GST: Microsoft's India list price for Power Automate Premium, read 25 Oct 2026.",
+        "kind": "reported",
+        "source": "automateprice"
+      },
+      "line": "The flow only kept time, asked for a yes and sent mail. A small app could do all three itself.",
+      "built": "One small Azure Functions app with its own timer, its own approval page behind Microsoft sign in, and Microsoft Graph mail. It reads and writes the project list as a whole file, guarded by its version tag, and asks people for the address in the browser bar instead of a sharing link. There is no Power Automate licence to buy, and the app reaches only what it is granted.",
+      "refs": [
+        "notes",
+        "guide",
+        "engine",
+        "automatetypes",
+        "graphexcel",
+        "graphshares"
+      ]
+    },
+    "five-jobs": {
+      "layout": "sheet",
+      "nav": "Five jobs, one review",
+      "h2": "Five jobs become one review",
+      "lede": "An architect's part is two steps: name the PDF by the rule and drop it in the issue folder. Everything after the drop is the engine's job, except one review.",
+      "paras": [
+        "For each drawing issued, the engine does five jobs that are otherwise done by hand [reported:spec]. The project lead keeps one: review and approve, from an email, on a phone or a laptop."
+      ],
+      "jobs": {
+        "title": "What the engine does",
+        "items": [
+          "Types the row's seven cells",
+          "Links the drawing number to its PDF",
+          "Strikes the replaced revision",
+          "Replaces the client copy",
+          "Emails the update to the lead and the notify list"
+        ],
+        "leftTitle": "What stays with people",
+        "left": [
+          "Name the PDF by the rule and drop it in the issue folder.",
+          "Review and approve the change.",
+          "Type a revision date, only when the drawing draws it as graphics."
+        ]
+      },
+      "after": [
+        "The update goes to the lead and everyone on the project's notify list every time, with links to the current transmittal and folder, so it no longer depends on someone remembering to send it.",
+        "I have not measured these hours on a live installation yet. The calculator shows the arithmetic in the open, so you can put in your own numbers."
+      ],
+      "calc": {
+        "id": "calc-hours",
+        "layout": "wide",
+        "title": "Work out the hours for your practice",
+        "inputs": [
+          {
+            "id": "issues",
+            "label": "Drawings issued a month",
+            "unit": "drawings",
+            "min": 0,
+            "max": 2000,
+            "step": 1,
+            "sliderStep": 10,
+            "value": 50,
+            "kind": "example",
+            "help": "Example value. Count each new drawing and each new revision once.",
+            "error": "Enter a whole number from 0 to 2,000. The model needs a count of drawings.",
+            "source": "calcmodel"
+          },
+          {
+            "id": "minutes",
+            "label": "Minutes of transmittal work per drawing, by hand",
+            "unit": "minutes",
+            "min": 0,
+            "max": 60,
+            "step": 1,
+            "sliderStep": 1,
+            "value": 12,
+            "kind": "example",
+            "help": "Example value: my own estimate for typing the row, linking the file, striking the old revision, replacing the client copy and sending the update. Not measured.",
+            "error": "Enter a whole number of minutes from 0 to 60.",
+            "source": "calcmodel"
+          },
+          {
+            "id": "review",
+            "label": "Minutes the lead spends reviewing each drawing",
+            "unit": "minutes",
+            "min": 0,
+            "max": 60,
+            "step": 0.5,
+            "sliderStep": 0.5,
+            "value": 0,
+            "kind": "example",
+            "help": "No sourced default, so it starts at 0. Add your lead's review time; it comes off the total.",
+            "error": "Enter a number of minutes from 0 to 60, in steps of half a minute.",
+            "source": "calcmodel"
+          }
+        ],
+        "figureUnit": "a month",
+        "sentence": {
+          "example": "With these example inputs, about {month} of transmittal work a month moves to the engine, about {year} a year.",
+          "yours": "With your numbers, about {month} a month moves to the engine after the lead's review, about {year} a year.",
+          "none": "With these numbers the lead's review takes as long as the hand work, so the model shows no time saved.",
+          "empty": "With no drawings issued, there is nothing to move."
+        },
+        "lastValid": "Showing the last valid result.",
+        "mathTitle": "Show the math",
+        "math": [
+          "{issues} drawings × ({minutes} min − {review} min) = {monthMinutes} min a month",
+          "{monthMinutes} min ÷ 60 = {monthHours} h a month",
+          "{monthHours} h × 12 months = {yearHours} h a year"
+        ],
+        "leavesOutTitle": "What this leaves out",
+        "leavesOut": [
+          "Setup: about 45 minutes of your admin's time, once, for the managed service [reported:service].",
+          "Files the engine refuses: someone renames them and drops them again.",
+          "Revision dates drawn as graphics, which the lead types on the approval page.",
+          "Learning the naming rule in the first weeks."
+        ],
+        "reset": "Reset to examples",
+        "privacy": "Runs in your browser. Nothing is sent.",
+        "noJs": "Turn on JavaScript to change the inputs.",
+        "defaults": {
+          "figure": "10 h",
+          "sentence": "With these example inputs, about 10 hours of transmittal work a month moves to the engine, about 120 hours a year.",
+          "math": [
+            "50 drawings × (12 min − 0 min) = 600 min a month",
+            "600 min ÷ 60 = 10 h a month",
+            "10 h × 12 months = 120 h a year"
+          ]
+        },
+        "kind": "modelled",
+        "source": "calcmodel"
+      },
+      "refs": [
+        "spec",
+        "engine",
+        "calcmodel"
+      ]
+    },
+    "safe-to-leave-running": {
+      "layout": "sheet",
+      "nav": "Safe to leave running",
+      "h2": "Safe to leave running",
+      "lede": "Software that writes a record people rely on should reach as little as possible, and when something fails it should stop, say so and damage nothing.",
+      "sections": [
+        {
+          "id": "what-it-can-touch",
+          "h3": "What it can touch",
+          "paras": [
+            "It signs in to Microsoft Graph with a managed identity, so it stores no password or client secret for Microsoft Graph. Run as a service across organisations, the app's only credential is that identity, linked by a federated credential."
+          ],
+          "tiles": [
+            {
+              "value": "2 sites at most",
+              "label": "it can write to, each named by your admin: the site you share with clients and its own small site. Never the main office site, never the whole organisation.",
+              "kind": "reported",
+              "source": "guide"
+            },
+            {
+              "value": "1 shared mailbox",
+              "label": "it can send from. A setup step checks that another mailbox is refused.",
+              "kind": "reported",
+              "source": "guide"
+            },
+            {
+              "value": "0 passwords or client secrets",
+              "label": "stored for Microsoft Graph. It signs in with a managed identity.",
+              "kind": "reported",
+              "source": "spec",
+              "note": "Two things are stored: one key that signs approval links and seals records, and in a self hosted install, the platform's sign in secret, which expires and has a renewal step."
+            }
+          ],
+          "figure": {
+            "id": "fig-reach",
+            "layout": "aside",
+            "sheet": "F4",
+            "rev": "R0",
+            "date": "25 OCT 2026",
+            "tag": "ILLUSTRATION",
+            "badge": "Illustration, not a screenshot",
+            "title": "What it can touch",
+            "groups": [
+              {
+                "label": "SharePoint sites",
+                "squares": 12,
+                "lit": 2,
+                "litLabel": "Write on two named sites at most",
+                "note": "Never the main office site"
+              },
+              {
+                "label": "Mailboxes",
+                "squares": 8,
+                "lit": 1,
+                "litLabel": "Send from one shared mailbox"
+              },
+              {
+                "label": "Microsoft Graph sign in",
+                "text": "Managed identity. No password or client secret stored."
+              },
+              {
+                "label": "Approval page",
+                "text": "Microsoft sign in. Your organisation and the named approver only."
+              }
+            ],
+            "caption": "The squares stand for any number of sites and mailboxes. It reaches only what your admin names.",
+            "alt": "Illustration: a grid of SharePoint sites with only two marked as writable, a row of mailboxes with only one marked for sending, and notes that Microsoft Graph sign in uses a managed identity with no stored password or client secret.",
+            "refs": [
+              "guide",
+              "spec"
+            ]
+          },
+          "refs": [
+            "spec",
+            "service",
+            "guide",
+            "engine"
+          ]
+        },
+        {
+          "id": "who-can-say-yes",
+          "h3": "Who can say yes",
+          "paras": [
+            "The approval page sits behind Microsoft sign in. It accepts only an account from the practice's own organisation whose sign in name is the project's approver. The managed service also matches that name to the person's object ID, so a reused or renamed address cannot approve; a self hosted install can switch the same check on.",
+            "Links are signed and expire. Opening a link changes nothing, because a mail scanner may open it before anyone reads the email; only the button decides. The page is never cached, cannot be framed by another site and sends a strict content security policy, and its error pages show a short reference, never internals.",
+            "Drawings stay in the practice's SharePoint and pass through memory only. Logs hold project codes, file names, statuses and approver addresses, never the text of a document, and the managed service keeps them for 30 days [reported:service]."
+          ],
+          "refs": [
+            "engine",
+            "spec",
+            "service"
+          ]
+        },
+        {
+          "id": "when-something-fails",
+          "h3": "When something fails",
+          "intro": "Every write is checked against the version it read, so it fails rather than overwrite a change it has not seen. The rest is a list of things that will go wrong one day, and what happens then.",
+          "headers": [
+            "If this happens",
+            "Drawing Ledger does this"
+          ],
+          "rows": [
+            [
+              "A check runs twice, or one is missed",
+              "The next check compares the whole folder again. A second run plans nothing."
+            ],
+            [
+              "Someone edits the client copy or replaces a drawing after the lead reviewed it",
+              "Publishing stops and a fresh draft goes out. It never overwrites."
+            ],
+            [
+              "The publish lands, then the email fails",
+              "The publish stands, because it is recorded the moment the client copy is written. The email goes again at the next check."
+            ],
+            [
+              "Someone edits the record file to approve a change",
+              "Its seal breaks. The update is cancelled and reported."
+            ],
+            [
+              "Microsoft asks it to slow down",
+              "It waits as asked, up to 60 seconds, for up to 5 attempts [reported:engine]. A write that may have landed is never sent twice."
+            ],
+            [
+              "The transmittal is open in Word, or the project list in Excel",
+              "Publishing waits for the next check, and log lines wait in a queue."
+            ],
+            [
+              "One project's folder errors",
+              "The other projects still run, and the failed one retries at the next check."
+            ],
+            [
+              "A Word file would come out damaged",
+              "It is never saved. A last gate checks every Word file before it is written."
+            ],
+            [
+              "A published transmittal has to be undone",
+              "SharePoint's version history restores it, and the next draft starts from the restored version."
+            ]
+          ],
+          "after": "Checks run every 5 minutes [reported:spec]. When nothing changed, Last checked is stamped at most once an hour, so the project list gains at most one new SharePoint version an hour instead of up to 12 [modelled:engine].",
+          "refs": [
+            "engine",
+            "guide",
+            "spec"
+          ]
+        },
+        {
+          "id": "how-i-know",
+          "h3": "How I know it holds",
+          "paras": [
+            "290 automated tests run with no network, with fakes standing in for Microsoft Graph and Azure. 33 of them came from an adversarial review [measured:tests], and two review rounds fixed over 40 findings [reported:notes].",
+            "When I refactored for readability, I checked that the behaviour did not change: 176 output files compared byte for byte, all identical, with no test edited. The longest function went from 86 lines to 44 [measured:optimised].",
+            "The same engine runs on a laptop, with plain folders standing in for SharePoint and an outbox folder for mail. There, the end to end rehearsal passed: an approval with a typed date, a revision revoked, a rejection, a removed file, a bad name refused, a rerun that changed nothing, an impersonation refused and hand edits cancelled.",
+            "A test also checks the setup guides against the code, so a setting the code needs cannot go missing from a guide.",
+            "Nothing has run on a live Microsoft 365 tenant yet. Before the first installation, I listed the Microsoft behaviours the documentation leaves open, each with the check that settles it and a fallback: 19 for the managed service [reported:service] and 15 for a self hosted install [reported:guide]."
+          ],
+          "refs": [
+            "tests",
+            "notes",
+            "optimised",
+            "engine",
+            "guide",
+            "service"
+          ]
+        },
+        {
+          "id": "how-it-got-here",
+          "h3": "How it got here",
+          "intro": "From the first prototype to 290 passing tests took about two weeks [reported:notes]. Day 1 is the day the prototype passed.",
+          "milestones": [
+            {
+              "label": "Day 1",
+              "title": "Prototype",
+              "change": "A standard library engine edits a Word transmittal in place, and a second run changes no byte.",
+              "why": "Prove the file can be edited safely before building around it.",
+              "refs": [
+                "notes"
+              ]
+            },
+            {
+              "label": "Day 1",
+              "title": "Second opinion",
+              "change": "A separate review script: 58 checks passed, 16 defects logged [measured:review].",
+              "why": "Find matching and date mistakes before production, not after.",
+              "refs": [
+                "review"
+              ]
+            },
+            {
+              "label": "Day 11",
+              "title": "Title block first",
+              "change": "Rows match on the drawing number printed in the title block, not on the file name.",
+              "why": "Names drift. The title block is what was drawn.",
+              "refs": [
+                "notes"
+              ]
+            },
+            {
+              "label": "Day 12",
+              "title": "History rows",
+              "change": "Every issue stays a row, and a new revision strikes the old row in red.",
+              "why": "A record must show every issue ever made, not only the latest.",
+              "refs": [
+                "notes",
+                "spec"
+              ]
+            },
+            {
+              "label": "Day 12",
+              "title": "One small app",
+              "change": "An Azure Functions app with its own timer, approval page and mail replaces the planned flow; 189 tests [reported:notes].",
+              "why": "Each plan it replaced broke on a Microsoft rule.",
+              "refs": [
+                "notes"
+              ]
+            },
+            {
+              "label": "Day 12",
+              "title": "Review round",
+              "change": "33 findings fixed; 242 tests [reported:notes].",
+              "why": "Close every way a retry, a crash or a hand edit could publish the wrong thing.",
+              "refs": [
+                "notes"
+              ]
+            },
+            {
+              "label": "Day 15",
+              "title": "Refactor and service mode",
+              "change": "Behaviour proven identical on 176 output files [measured:optimised]. Managed service mode added, with no client secret; 290 tests [reported:notes].",
+              "why": "Someone else can keep it running, and a practice can try it without installing code.",
+              "refs": [
+                "optimised",
+                "notes",
+                "tests"
+              ]
+            }
+          ],
+          "refs": [
+            "notes",
+            "review",
+            "optimised",
+            "tests"
+          ]
+        }
+      ]
+    },
+    "switched-on": {
+      "layout": "sheet",
+      "nav": "Switched on in one sitting",
+      "h2": "Switched on in one sitting",
+      "lede": "Nothing has to be installed on anyone's computer. Setup happens in a browser, and a project starts with one row and a tick.",
+      "setup": {
+        "sum": "Four steps for the managed service. About 45 minutes of your admin's time, once, then one row per project [reported:service].",
+        "steps": [
+          {
+            "action": "Approve one app, grant write on the named sites and allow sending from one shared mailbox",
+            "who": "Your admin",
+            "time": "About 45 min, once",
+            "note": "Your admin also chooses who may sign in, then removes the tool consents used for the grant. Planned in the guide, not yet timed on a live tenant.",
+            "kind": "reported",
+            "source": "service"
+          },
+          {
+            "action": "Wait while Microsoft applies the permissions",
+            "who": "Microsoft",
+            "time": "Up to about 24 h",
+            "note": "Site grants take minutes, the mailbox scope 30 minutes to 2 hours and the per site permission up to about 24 hours.",
+            "kind": "reported",
+            "source": "guide"
+          },
+          {
+            "action": "Add one row for the project and tick Active",
+            "who": "You",
+            "note": "Paste the folder addresses from the browser bar, name the approver and pick a default status. Within one check, Status reads: Up to date: 0 rows in the transmittal.",
+            "source": "guide"
+          },
+          {
+            "action": "Name each PDF by the rule and drop it in the issue folder",
+            "who": "Your team",
+            "note": "The lead approves from an email, on a phone or a laptop.",
+            "source": "spec"
+          }
+        ],
+        "back": "untick Active and that project stops at the next check. Your admin can disable or delete the app; removing it takes about 15 minutes [reported:service], and nothing in SharePoint is deleted.",
+        "extra": "A shared mailbox and a SharePoint communication site normally need no extra Microsoft 365 licence [reported:guide]."
+      },
+      "figure": {
+        "id": "fig-project-list",
+        "layout": "wide",
+        "sheet": "F5",
+        "rev": "R0",
+        "date": "25 OCT 2026",
+        "tag": "SAMPLE DATA",
+        "badge": "Recreated for this page",
+        "title": "The project list",
+        "headers": [
+          "Project",
+          "Code",
+          "Issue folder",
+          "Approver",
+          "Notify",
+          "Default status",
+          "Mode",
+          "Active",
+          "Status",
+          "Last checked"
+        ],
+        "row": [
+          "Sample Pavilion",
+          "SPVL",
+          "Address from the browser bar",
+          "lead@example.com",
+          "client@example.com; consultant@example.com",
+          "For Construction",
+          "History",
+          "Ticked",
+          "Up to date: 0 rows in the transmittal.",
+          "09:35"
+        ],
+        "refusal": {
+          "input": "A pasted sharing link",
+          "message": "Refused: this is a sharing link. Paste the address from the browser bar instead."
+        },
+        "caption": "One row per project. Tick Active to start and untick it to stop; a project without a row is never touched. A pasted sharing link is refused at once, with the fix.",
+        "scrollLabel": "Sample project list, ten columns. Scroll sideways to see them.",
+        "refs": [
+          "spec",
+          "engine",
+          "guide"
+        ]
+      },
+      "sections": [
+        {
+          "id": "what-it-runs-on",
+          "h3": "What it runs on",
+          "paras": [
+            "One Azure Functions app on the Flex Consumption plan, Microsoft Graph and SharePoint. The core uses the Python standard library, and only the title block reader needs an extra package, for PDF text. The runtime needs three packages, each pinned to an exact version, so a deploy or a rollback gets the same versions [measured:engine].",
+            "Two hostings come from one zip: I can run it for you as a managed service, or it can be installed in your own Azure on pay as you go. Moving between them is a settings change plus your admin's grants. No data moves, because all state lives in your SharePoint."
+          ],
+          "tile": {
+            "value": "About a third",
+            "label": "of Azure's free monthly compute grant, for one practice on an example schedule. Storage and logs bill separately and are not measured yet.",
+            "kind": "modelled",
+            "source": "computemodel"
+          },
+          "mathTitle": "Show the math",
+          "math": [
+            "Example schedule: a check every 5 minutes for 11 hours = 132 checks a day",
+            "132 checks × 26 days = 3,432 checks a month",
+            "3,432 checks × 2 GB × 5 s, an estimate = 34,320 GB seconds",
+            "34,320 ÷ 100,000 GB seconds free each month ≈ 0.34, about a third"
+          ],
+          "mathNote": "The free grant is 100,000 GB seconds and 250,000 executions a month per subscription, on a paid pay as you go subscription only [reported:functionsprice].",
+          "upkeep": "Microsoft lists October 2028 as the expected end of support for Python 3.12 on Azure Functions, so the move to a newer runtime is already on my list [reported:functionspython].",
+          "refs": [
+            "spec",
+            "engine",
+            "service",
+            "computemodel",
+            "functionsprice",
+            "functionspython"
+          ]
+        },
+        {
+          "id": "not-yet",
+          "h3": "What it does not do yet",
+          "list": [
+            "It reads one title block layout and writes one transmittal layout, with one list of status words. A practice with a different layout needs a small adapter, which I have not built yet.",
+            "It reads text, not pictures. A scanned or image only PDF is not read.",
+            "It has not run on a live Microsoft 365 tenant. A rehearsal on a test tenant comes first, then the first installation.",
+            "Two checks from the first review are still open: a warning when a revision jumps, such as R2 to R10, and a check that a revision date is not earlier than the one before."
+          ],
+          "refs": [
+            "engine",
+            "spec",
+            "service",
+            "notes",
+            "review"
+          ]
+        },
+        {
+          "id": "what-i-learned",
+          "h3": "What I learned",
+          "paras": [
+            "The rules taught me more than the code did. An API with no application permission, a sharing link that opens only with access to every file, a publish that must be recorded the moment it lands: each one made the design smaller and safer. The lesson I keep is to read the permission table before drawing the architecture."
+          ],
+          "refs": [
+            "notes"
+          ]
+        }
+      ]
+    },
+    "offer": {
+      "nav": "Get this",
+      "subject": "Case study enquiry: Drawing Ledger"
+    }
+  }
+}

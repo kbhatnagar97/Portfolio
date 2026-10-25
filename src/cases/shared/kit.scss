@@ -1,0 +1,1687 @@
+// The case kit's styles: shell tokens and the ones on .case only, as one undefined property voids a shorthand.
+
+// #region Lenis, opt in through boot({ smooth: true })
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important; // the shell asks for native smooth scrolling; Lenis owns it once it runs
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped,
+html.is-locked {
+  overflow: hidden;
+}
+// #endregion
+
+// #region Tokens
+.case {
+  --read: 720px;
+  --wide: 1120px;
+  --max: 1320px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+  --gap-chapter: clamp(96px, 10vw, 128px);
+  --gap-block: clamp(32px, 4vw, 48px);
+  --pad-stage: clamp(64px, 8vw, 96px);
+  --r-1: 8px;
+  --r-2: 12px;
+  --r-3: 16px;
+  --r-pill: 999px;
+  --edge: var(--faint);
+  --warn: #ffb4a8;
+  // the story sets --accent inline from the case file; these defaults cover the overview and the pager
+  --accent: var(--text);
+  --accent-2: var(--accent);
+  --accent-3: var(--accent);
+  --stage-bg: var(--bg);
+  --dur-press: 160ms;
+  --dur-tip: 125ms;
+  --dur-state: 200ms;
+  --dur-layout: 400ms;
+  --dur-reveal: 600ms;
+  --dur-focal: 700ms;
+  --dur-count: 1200ms;
+  --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+.case input,
+.case textarea {
+  caret-color: var(--gold);
+  accent-color: var(--text);
+}
+
+.case [hidden] {
+  display: none !important; // a component class that sets display must never win over the hidden attribute
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.glyph {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+// #endregion
+
+// #region Layout: one column template with named lines, so any child sits at read, wide, max or bleed width
+.case {
+  display: grid;
+  grid-template-columns:
+    [bleed-start] minmax(var(--gutter), 1fr)
+    [max-start] minmax(0, calc((var(--max) - var(--wide)) / 2))
+    [wide-start] minmax(0, calc((var(--wide) - var(--read)) / 2))
+    [read-start] min(var(--read), 100% - 2 * var(--gutter)) [read-end]
+    minmax(0, calc((var(--wide) - var(--read)) / 2)) [wide-end]
+    minmax(0, calc((var(--max) - var(--wide)) / 2)) [max-end]
+    minmax(var(--gutter), 1fr) [bleed-end];
+  padding-bottom: var(--s-8);
+}
+
+.case > *,
+.case__story > *,
+.ch > *,
+.stage > * {
+  grid-column: read;
+  min-width: 0;
+}
+
+.case__story,
+.ch,
+.stage {
+  grid-column: bleed;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+
+@supports not (grid-template-columns: subgrid) {
+  .case__story,
+  .ch,
+  .stage {
+    grid-template-columns: inherit;
+  }
+}
+
+.case > .crumbs,
+.case > .pager,
+.case > .foot,
+.w-wide {
+  grid-column: wide;
+}
+
+.w-read {
+  grid-column: read;
+}
+
+.w-max {
+  grid-column: max;
+}
+
+.w-bleed {
+  grid-column: bleed;
+}
+
+.case > .crumbs {
+  margin-top: var(--s-5);
+}
+
+.case figure {
+  margin: var(--s-6) 0;
+}
+
+// grid items never collapse margins, so one 16px row gap spaces a chapter: 8px more under the h2 makes 24, 16px around a figure makes 32
+.ch,
+.stage {
+  row-gap: var(--s-4);
+
+  > * {
+    margin-block: 0;
+  }
+}
+
+.ch > :is(figure, .versions, .setup, .metrics, .milestones, .storyboard) {
+  margin-block: var(--s-4);
+}
+// #endregion
+
+// #region Type
+.ch > h2,
+.stage__head h2,
+.offer > h2,
+.sources > h2 {
+  max-width: 22ch;
+  margin: 0 0 var(--s-5);
+  font: 500 clamp(32px, 4.4vw, 56px) / 1.04 var(--sans);
+  letter-spacing: -0.035em;
+}
+
+.case h3 {
+  margin: var(--s-6) 0 var(--s-3);
+  font: 500 clamp(20px, 2vw, 24px) / 1.25 var(--sans);
+  letter-spacing: -0.015em;
+}
+
+// inside a chapter the row gap adds 16px, so more space still sits above a heading than below it
+.ch > h2 {
+  margin-bottom: var(--s-2);
+}
+
+.ch > h3 {
+  margin: var(--s-4) 0 0;
+}
+
+.case h4 {
+  margin: 0 0 var(--s-2);
+  font: 500 15px / 1.4 var(--sans);
+}
+
+// the shell's .lede opens the about page with a drop cap; a chapter lede is plain (the shell sets its size)
+.case .lede {
+  max-width: 64ch;
+  letter-spacing: -0.005em;
+
+  &::first-letter {
+    float: none;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+  }
+}
+
+.case .ch {
+  margin-top: var(--gap-chapter);
+}
+// #endregion
+
+// #region Provenance, purposes, status, badges
+.prov {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px 0 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font: 500 11px / 1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+  color: var(--muted);
+  text-decoration: none;
+  transition:
+    color var(--dur-tip),
+    border-color var(--dur-tip);
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--text);
+    border-radius: 50%;
+  }
+
+  &--measured::before,
+  &--yours::before {
+    background: var(--text);
+  }
+
+  &--reported::before {
+    background: linear-gradient(90deg, var(--text) 50%, transparent 50%);
+  }
+
+  &--example::before,
+  &--yours::before {
+    border-radius: 0;
+  }
+}
+
+a.prov:hover,
+a.prov:focus-visible {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+// a chip and the punctuation after it share a line
+.prov-hold {
+  white-space: nowrap;
+}
+
+.prov__n {
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  padding-left: 6px;
+  border-left: 1px solid var(--line);
+  color: var(--faint);
+}
+
+.purposes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-4) 0 0;
+}
+
+.purpose {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 13px / 1 var(--sans);
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color var(--dur-tip);
+
+  .glyph {
+    color: var(--muted);
+  }
+
+  // the visible chip is 32px; the hit area reaches 44px
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+}
+
+.purposes--small .purpose {
+  height: 28px;
+}
+
+.case :is(.prov, .purpose, .pill, .badge):focus-visible {
+  border-radius: var(--r-pill);
+}
+
+// a status often wraps, so the dot keeps to the middle of the first line
+.case-status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  max-width: none;
+  margin: var(--s-5) 0 0;
+  font: 500 14px / 1.4 var(--sans);
+  color: var(--text);
+}
+
+.case-status__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: calc((1.4em - 8px) / 2);
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+}
+
+.case-status--live .case-status__dot {
+  border-color: var(--live);
+  background: var(--live);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 11px / 1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--bg);
+}
+// #endregion
+
+// #region Hero
+.case-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: var(--s-5);
+
+  .deck {
+    margin-top: var(--s-4);
+  }
+}
+
+// each item draws its dot in the gap before it; the row clips the dot of whichever item starts a line, so a wrapped
+// row never opens with a separator
+.case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--s-5);
+  max-width: none;
+  margin: var(--s-3) 0 0;
+  overflow: hidden;
+  font: 400 12.5px / 1.6 var(--mono);
+  color: var(--muted);
+
+  > span {
+    position: relative;
+
+    &::before {
+      content: '·';
+      content: '·' / '';
+      position: absolute;
+      right: 100%;
+      width: var(--s-5);
+      text-align: center;
+    }
+  }
+}
+
+.case-link {
+  margin: var(--s-3) 0 0;
+}
+
+.ledger {
+  margin-top: 40px;
+}
+
+.case-index {
+  margin-top: var(--s-6);
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    font: 500 14px / 1 var(--sans);
+    color: var(--muted);
+    text-decoration: none;
+
+    &::before {
+      content: '';
+      flex: none;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--line-strong);
+    }
+
+    &:hover,
+    &[aria-current='true'] {
+      color: var(--text);
+    }
+
+    &[aria-current='true']::before {
+      background: var(--accent);
+    }
+  }
+}
+
+// the chapter index continues the left column, so a tall ledger never leaves it empty
+@media (width >= 1024px) {
+  .case-hero {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: auto 1fr;
+    column-gap: var(--s-8);
+  }
+
+  .case-hero .ledger {
+    grid-area: 1 / 2 / 3 / 3;
+    align-self: end;
+    margin-top: 0;
+  }
+
+  .case-index {
+    grid-area: 2 / 1;
+    align-self: start;
+    margin-top: var(--s-6);
+  }
+}
+// #endregion
+
+// #region Metrics
+.metric {
+  max-width: none;
+  margin: 0;
+}
+
+// a value that needs two lines breaks between its numbers, never before a lone unit
+.metric__value {
+  display: block;
+  font-weight: 500;
+  font-family: var(--sans);
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.metric__label {
+  font: 400 15px / 1.5 var(--sans);
+  color: var(--muted);
+}
+
+// the line box follows the label, not the body's taller strut, so a wrapped label keeps its own leading
+.metric--tile,
+.metric__line {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.metric--row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--s-4);
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+
+  &:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .metric__line {
+    max-width: none;
+    margin: 0;
+  }
+
+  .metric__value {
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .metric__label {
+    display: block;
+    max-width: 40ch;
+    margin-top: var(--s-1);
+  }
+
+  // the chip sits level with the value's first line
+  > .prov {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    margin-top: calc((1.05 * clamp(28px, 3vw, 40px) - 22px) / 2);
+  }
+}
+
+.metric__note {
+  grid-column: 1 / -1;
+  margin: var(--s-2) 0 0;
+  font: 400 13px / 1.45 var(--sans);
+  color: var(--faint);
+}
+
+.metrics {
+  display: grid;
+  gap: var(--s-5);
+  margin: var(--s-6) 0;
+}
+
+@media (width >= 900px) {
+  .metrics {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+}
+
+.metric--tile .metric__value {
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.metric--hero {
+  margin: var(--s-6) 0;
+
+  .metric__value {
+    font-size: clamp(56px, 7vw, 88px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .metric__label {
+    font-size: clamp(19px, 1.7vw, 22px);
+    line-height: 1.55;
+    color: var(--text);
+  }
+}
+
+.pair {
+  display: grid;
+  gap: var(--s-2);
+
+  figcaption {
+    margin-bottom: var(--s-1);
+    font: 400 14px / 1.5 var(--sans);
+    color: var(--muted);
+  }
+
+  > .prov {
+    justify-self: start;
+    margin-top: var(--s-1);
+  }
+
+  + .pair {
+    margin-top: var(--s-5);
+  }
+}
+
+.pair__row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  min-height: 24px;
+}
+
+.pair__k {
+  font: 500 11px / 1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pair__track {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+// the value sits at the bar's tip, never inside it, so the bar leaves room for it
+.pair__bar {
+  flex: none;
+  width: calc(var(--v) * (100% - 10ch));
+  height: 12px;
+  border-radius: 0 4px 4px 0;
+  background: var(--faint);
+  transform-origin: left center;
+}
+
+.pair__row--after .pair__bar {
+  background: var(--accent);
+}
+
+.pair__v {
+  font: 500 15px / 1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.count--on {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+// #endregion
+
+// #region Stage and storyboard
+.stage {
+  margin-top: var(--s-8);
+  padding-block: var(--pad-stage);
+  background: var(--stage-bg);
+}
+
+@media (width >= 900px) {
+  .stage {
+    margin-top: var(--s-9);
+  }
+}
+
+.stage__intro {
+  font: 400 clamp(19px, 1.7vw, 22px) / 1.55 var(--sans);
+}
+
+.stage__frame {
+  position: relative;
+  margin-top: var(--s-6);
+}
+
+.stage__readout {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: var(--r-1);
+  font: 400 13px / 1.2 var(--mono);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  background: rgba(20, 18, 16, 0.9); // --bg-raise at 90%, solid under reduced transparency below
+}
+
+.stage__steps {
+  margin-top: var(--s-6);
+
+  li + li {
+    margin-top: var(--s-4);
+  }
+}
+
+.stage__status {
+  margin: var(--s-4) 0 0;
+  font: 500 14px / 1.4 var(--sans);
+
+  &:empty {
+    margin: 0;
+  }
+}
+
+.stage__caption {
+  max-width: 64ch;
+  font: 400 14px / 1.5 var(--sans);
+  color: var(--muted);
+}
+
+.storyboard {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+
+@media (width >= 700px) {
+  .storyboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.storyboard__frame {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+}
+
+.storyboard__label {
+  margin: 0 0 var(--s-3);
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+// keyed on html.js, set before first paint: keyed on case-ready, the swap would shift the first screen when the script lands
+html:not(.js) .stage:is([data-stage='auto'], [data-stage='reader']) .stage__frame,
+html.js .stage:is([data-stage='auto'], [data-stage='reader']) .storyboard {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .stage[data-stage='auto'] .stage__frame {
+    display: none;
+  }
+
+  html.js .stage[data-stage='auto'] .storyboard {
+    display: grid;
+  }
+}
+// #endregion
+
+// #region Figures
+.fig__media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+
+  img {
+    width: 100%;
+  }
+
+  .badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+  }
+}
+
+.fig.w-bleed .fig__media {
+  border: 0;
+  border-radius: 0;
+}
+
+.case figcaption {
+  max-width: 64ch;
+  margin-top: var(--s-3);
+  font: 400 14px / 1.5 var(--sans);
+  color: var(--muted);
+}
+
+// a bleed figure's caption starts at the wide track, never at the screen edge
+.w-bleed > figcaption {
+  margin-inline: max(var(--gutter), (100% - var(--wide)) / 2);
+}
+
+.fig__credit,
+.credits {
+  font: 400 11px / 1.4 var(--mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+// #endregion
+
+
+// #region Versions and milestones
+.versions {
+  margin: var(--gap-block) 0;
+}
+
+.versions__list {
+  display: grid;
+  gap: var(--s-6);
+}
+
+.versions__item img {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+}
+
+.versions__meta {
+  margin: var(--s-3) 0 var(--s-1);
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--faint);
+}
+
+.versions__change {
+  margin: 0 0 var(--s-1);
+  font: 500 17px / 1.5 var(--sans);
+}
+
+.versions__why {
+  margin: 0 0 var(--s-1);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.versions__weight {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  font: 400 13px / 1.4 var(--mono);
+  color: var(--muted);
+}
+
+.versions__viewer,
+.versions__strip {
+  display: none;
+}
+
+.versions__shot {
+  position: relative;
+  display: grid;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+
+  img {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: opacity var(--cut, 200ms) linear;
+
+    &.is-off {
+      opacity: 0;
+    }
+  }
+}
+
+.versions__chip {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 11px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  background: var(--bg);
+}
+
+.versions__body {
+  margin-top: var(--s-4);
+}
+
+.versions__tab {
+  flex: none;
+  width: 96px;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  color: var(--muted);
+  background: none;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    border: 1px solid var(--line);
+    border-radius: var(--r-1);
+  }
+
+  span {
+    display: block;
+    margin-top: 6px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid transparent;
+    font: 400 11px / 1.3 var(--mono);
+  }
+
+  &[aria-selected='true'] {
+    color: var(--text);
+
+    img {
+      border-color: var(--text);
+    }
+
+    span {
+      border-bottom-color: var(--accent);
+    }
+  }
+}
+
+@media (width >= 700px) {
+  html.case-ready .versions__list {
+    display: none;
+  }
+
+  html.case-ready .versions__viewer {
+    display: block;
+  }
+
+  html.case-ready .versions__strip {
+    display: flex;
+    gap: var(--s-2);
+    margin-top: var(--s-4);
+    padding-bottom: var(--s-1);
+    overflow-x: auto;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+}
+
+@media (width >= 900px) {
+  .versions__tab {
+    width: 128px;
+  }
+}
+
+.milestones {
+  position: relative;
+  display: grid;
+  gap: var(--s-5);
+  margin: var(--gap-block) 0;
+  padding-left: 28px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 4px;
+    width: 1px;
+    background: var(--line-strong);
+  }
+}
+
+.milestone {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: -28px;
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--faint);
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.milestone--latest::before {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.milestone__when {
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--faint);
+}
+
+.milestone__time {
+  margin-left: 0.6em;
+}
+
+.milestone__name {
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.milestone__change {
+  font: 500 15px / 1.5 var(--sans);
+}
+
+.milestone__why {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.milestone__ref {
+  font: 400 11px / 1.4 var(--mono);
+  color: var(--faint);
+}
+// #endregion
+
+// #region Turn: an L drawn in CSS, from the top of the old way down and across to the new one
+.turn__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--s-5);
+}
+
+.turn__old,
+.turn__line {
+  padding-left: var(--s-5);
+}
+
+.turn__old {
+  h3:first-child {
+    margin-top: 0;
+  }
+
+  p {
+    margin-bottom: var(--s-3);
+  }
+}
+
+.turn__line {
+  max-width: 24ch;
+  margin: 0;
+  font: italic 400 clamp(28px, 3.4vw, 44px) / 1.15 var(--serif);
+  letter-spacing: -0.01em;
+}
+
+.turn__new {
+  padding-left: var(--s-7);
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+// every block is placed by hand: the path shares cells with them, and auto placement would push them aside
+.turn__path {
+  position: relative;
+  grid-area: 1 / 1 / 4 / 2;
+  width: 36px;
+  border-bottom: 1px solid var(--line-strong);
+  border-left: 1px solid var(--line-strong);
+  border-bottom-left-radius: 24px;
+  pointer-events: none;
+}
+
+.turn__old--expected {
+  grid-area: 1 / 1;
+}
+
+.turn__old--cost {
+  grid-area: 2 / 1;
+}
+
+.turn__line {
+  grid-area: 3 / 1;
+}
+
+.turn__new {
+  grid-area: 4 / 1;
+}
+
+.turn__marker {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  display: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  outline: 2px solid var(--bg);
+  background: var(--accent);
+}
+
+html.case-ready .turn:not([data-turn-marker='none']) .turn__marker {
+  display: block;
+}
+
+.turn__ruled {
+  margin: 0 0 var(--s-4);
+
+  li {
+    margin: var(--s-2) 0;
+    color: var(--muted);
+  }
+}
+
+.turn__name {
+  position: relative;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.turn__strike {
+  position: absolute;
+  top: 55%;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent-2);
+  transform-origin: left center;
+}
+
+@media (width >= 900px) {
+  .turn__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--s-7);
+  }
+
+  .turn__line,
+  .turn__new {
+    padding-left: 0;
+  }
+
+  // the turn line sits level with the cost, the new way below it
+  .turn__line {
+    grid-area: 2 / 2;
+  }
+
+  .turn__new {
+    grid-area: 3 / 2;
+  }
+
+  // the rule runs right along the top of row 3 to the new way's left edge, across the column gap
+  .turn__path {
+    grid-area: 1 / 1 / 3 / 2;
+    width: auto;
+    margin-right: calc(-1 * var(--s-7));
+  }
+}
+// #endregion
+
+// #region Setup steps
+.setup {
+  margin: var(--gap-block) 0;
+}
+
+// the sum reads as one sentence, so its chips flow at its end like any other paragraph's
+.setup__sum {
+  font: 500 17px / 1.5 var(--sans);
+}
+
+// the number keeps the first column and everything else the second, so nothing wraps back under the number;
+// from 700px who and how long move to the end of the action's line
+.setup__list {
+  border-top: 1px solid var(--line);
+
+  li {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 6px var(--s-3);
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+
+    > :not(.setup__n) {
+      grid-column: 2;
+    }
+  }
+}
+
+.setup__n {
+  font: 400 12px / 1 var(--mono);
+  color: var(--faint);
+}
+
+// the one lit row of the list, such as the launch, carries an accent dot before its number
+.setup__lit .setup__n {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -14px;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+}
+
+.setup__do {
+  min-width: 0;
+  font: 500 17px / 1.4 var(--sans);
+}
+
+.setup__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px var(--s-3);
+}
+
+.setup__who {
+  padding: 4px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 11px / 1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.setup__time {
+  font: 400 12px / 1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.setup__note {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+@media (width >= 700px) {
+  .setup__list li {
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+
+    // stacked, so a long time never squeezes the action, and beside the note too, so the note starts right under the action
+    > :is(.setup__meta, .setup__who) {
+      grid-row: 1 / span 2;
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    > .setup__meta {
+      flex-direction: column;
+      align-items: flex-end;
+    }
+  }
+}
+
+.setup__back {
+  margin-top: var(--s-4);
+  font-size: 15px;
+}
+
+.setup__old li {
+  margin: var(--s-1) 0;
+  font-size: 15px;
+}
+
+.setup__struck {
+  color: var(--faint);
+  text-decoration: line-through 1px var(--faint);
+}
+
+@media (width >= 900px) {
+  .setup--folded {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    column-gap: var(--s-7);
+
+    .setup__sum,
+    .setup__back {
+      grid-column: 1 / -1;
+    }
+  }
+}
+// #endregion
+
+// #region Offer, sources, pager
+.offer {
+  margin-top: var(--s-10);
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-3);
+  background: var(--bg-raise);
+}
+
+.offer__spec > div {
+  padding: var(--s-4) 0;
+  border-bottom: 1px solid var(--line);
+
+  &:first-child {
+    border-top: 1px solid var(--line);
+  }
+}
+
+.offer__spec dt {
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.offer__spec dd {
+  margin: 6px 0 0;
+  font: 400 17px / 1.6 var(--sans);
+}
+
+@media (width >= 900px) {
+  .offer__spec > div {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    column-gap: var(--s-5);
+  }
+
+  .offer__spec dd {
+    margin: 0;
+  }
+}
+
+.offer__also {
+  margin: var(--s-5) 0 0;
+}
+
+.offer__act {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) 20px;
+  margin-top: var(--s-6);
+}
+
+.offer__cta {
+  min-height: 48px;
+  padding: 0 var(--s-5);
+  font: 500 15px / 1 var(--sans);
+}
+
+.offer__addr {
+  margin: 0;
+  font: 400 15px / 1.4 var(--mono);
+  user-select: all;
+}
+
+.offer__note {
+  margin: 20px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.sources {
+  margin-top: var(--s-9);
+}
+
+.sources__key {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-5);
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  dt {
+    flex: 0 0 120px;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+}
+
+.sources__list li {
+  position: relative;
+  margin: 0 0 var(--s-2) calc(-1 * var(--s-2));
+  padding: var(--s-1) var(--s-2) var(--s-1) 40px;
+  border-radius: var(--r-1);
+  break-inside: avoid;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+
+  p {
+    margin: 0;
+  }
+
+  // a provenance chip jumps here; the fill is static, never an animation
+  &:target {
+    background: var(--surface-2);
+  }
+}
+
+.sources__n {
+  position: absolute;
+  top: var(--s-1);
+  left: var(--s-2);
+  font: 400 13px / 1.85 var(--mono);
+  color: var(--faint);
+}
+
+@media (width >= 900px) {
+  .sources__list {
+    column-width: 32ch;
+    column-gap: var(--s-7);
+  }
+}
+
+.sources__link .glyph--out {
+  display: inline-block;
+  margin-left: 2px;
+  vertical-align: -1px;
+}
+
+.credits li {
+  margin: var(--s-1) 0;
+}
+
+.pager--case {
+  margin-top: var(--s-9);
+
+  a[rel] {
+    position: relative;
+    transition:
+      border-color 300ms var(--ease),
+      transform var(--dur-press) var(--ease);
+  }
+
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 24px / 1.15 var(--sans);
+    letter-spacing: -0.02em;
+
+    &::before {
+      content: '';
+      flex: none;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--a, var(--muted));
+    }
+  }
+
+  .glyph--arrow {
+    transition: transform 300ms var(--ease);
+  }
+}
+
+// start aligned even in the right aligned next card: Chromium puts a clamped line's ellipsis past a right aligned edge,
+// where the clip hides it; a one line deck still sits on the right, as its box shrinks to the text
+.pager__deck {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: start;
+  color: var(--muted);
+}
+
+.pager .pager__all {
+  grid-column: 1 / -1;
+  justify-self: center;
+  flex-direction: row;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-2);
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+}
+// #endregion
+
+// #region Pointer feedback: hover only for a fine pointer, a press scale only when motion is welcome
+@media (hover: hover) and (pointer: fine) {
+  .purpose:hover {
+    border-color: var(--text);
+  }
+
+  .pager--case a[rel]:hover .glyph--arrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .purpose,
+  .offer__cta {
+    transition-property: color, border-color, background-color, transform;
+    transition-duration: var(--dur-press);
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .pager--case a[rel]:active {
+    transform: scale(0.98);
+  }
+}
+// #endregion
+
+// #region Forced colours, reduced transparency, print
+@media (forced-colors: active) {
+  .prov,
+  .purpose,
+  .pill,
+  .badge,
+  .case-status__dot {
+    border-color: ButtonBorder;
+  }
+
+  .prov::before {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+
+  .prov--measured::before,
+  .prov--yours::before {
+    background: CanvasText;
+  }
+
+  .prov--reported::before {
+    background: linear-gradient(90deg, CanvasText 50%, transparent 50%);
+  }
+
+  .pair__row--after .pair__bar,
+  .turn__marker,
+  .milestone--latest::before,
+  .setup__lit .setup__n::before,
+  .case-index a[aria-current='true']::before {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .stage__readout {
+    background: var(--bg-raise);
+  }
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  :root {
+    --bg: #fff;
+    --bg-raise: #fff;
+    --text: #111;
+    --muted: #444;
+    --faint: #555;
+    --line: #ccc;
+    --line-strong: #999;
+  }
+
+  // light accents vanish on paper; provenance and status survive through shapes and words
+  .case,
+  .case .case__story {
+    --accent: #111 !important;
+    --accent-2: #111 !important;
+    --accent-3: #111 !important;
+    --stage-bg: #fff !important;
+  }
+
+  .top nav,
+  .crumbs,
+  .case-index,
+  .pager,
+  .case button {
+    display: none !important;
+  }
+
+  // the shell paints the header bar dark and frosted; on paper it is the name over a rule
+  .top {
+    position: static;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .stage:is([data-stage='auto'], [data-stage='reader']) .stage__frame {
+    display: none !important;
+  }
+
+  .stage:is([data-stage='auto'], [data-stage='reader']) .storyboard {
+    display: grid !important;
+  }
+
+  .versions__list {
+    display: grid !important;
+  }
+
+  .versions__viewer,
+  .versions__strip {
+    display: none !important;
+  }
+
+  .case figure,
+  .metric--row,
+  .pair,
+  .turn,
+  .setup__list li,
+  .offer {
+    break-inside: avoid;
+  }
+
+  .case h2,
+  .case h3 {
+    break-after: avoid;
+  }
+
+  // a chip prints as "(Measured, 2)"
+  .prov {
+    padding: 0;
+    border: 0;
+
+    &::before {
+      content: '(';
+      width: auto;
+      height: auto;
+      border: 0;
+      border-radius: 0;
+      background: none;
+    }
+
+    &::after {
+      content: ')';
+    }
+  }
+
+  .prov__n {
+    padding: 0;
+    border: 0;
+
+    &::before {
+      content: ', ';
+    }
+  }
+
+  .sources a[href^='http']::after,
+  .credits a[href^='http']::after {
+    content: ' (' attr(href) ')';
+  }
+}
+// #endregion
+
+// #region Reduced motion: site.scss's clamp, but no transitions at all except the state fades marked data-rm-fade
+@media (prefers-reduced-motion: reduce) {
+  .case *,
+  .case *::before,
+  .case *::after {
+    animation-duration: 0.01ms !important; // honour the OS setting over every decorative loop
+    animation-iteration-count: 1 !important;
+    // a 0.01ms clamp would give every element an "all" transition, and a just shown button could not take focus for a frame
+    transition-property: none !important;
+  }
+
+  .case [data-rm-fade] {
+    transition-property: opacity !important;
+    transition-duration: 150ms !important;
+  }
+}
+// #endregion

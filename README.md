@@ -29,6 +29,28 @@ Any element with `data-shape="<index>"` becomes a waypoint for the scene. The pa
 
 Keep loops under 10 seconds and about 1 MB: `ffmpeg -i in.mov -vf scale=960:-2 -c:v libx264 -crf 26 -preset slow -movflags +faststart -an out.mp4`.
 
+## Case studies
+
+`/case-studies/` and one page per case, written as static HTML at build time, so every page reads the same without JavaScript. A case is one content file and one small folder of its own code; the hero, the turn, setup steps, sources, the offer, the pager and the JSON-LD come from a shared kit.
+
+| Path | What it does |
+| --- | --- |
+| `src/content/cases/<slug>.json` | One case: copy, impact numbers and their sources, and the case's own blocks. The repo is public, so sources describe evidence in public terms, never local paths or private names. |
+| `src/cases/registry.ts` | The cases in display order. Each pager shows a case's two neighbours in this order. |
+| `src/cases/build/` | Build time only: content checks (`content.ts`), HTML partials (`parts.ts`), the page shell, JSON-LD, sitemap and llms lines, and the Vite plugin. |
+| `src/cases/shared/` | The browser kit every case page loads; `boot()` wires the shared parts by their markup. The calculator, compare and video styles are opt in with `@use` from a case's stylesheet. |
+| `src/cases/<slug>/` | `page.ts` renders the story at build time, `main.ts` is the page's script and loads any heavy stage module a screen early, `case.scss` holds the case's own styles. |
+| `public/case-studies/<slug>/media/` | The 1280x800 poster (JPG for sharing, a WebP twin for cards) and the page's figures, stripped of metadata. |
+
+The content checks also refuse the names a case must never show. Those names stay out of the repo: the build reads them from `.agent/private-names.json`, which git ignores, as a JSON list of names of one to three words or `privateHash` numbers from `content.ts`. A build without that file, such as Vercel's, skips that one check and says so.
+
+### Adding a case study
+
+1. Add `src/content/cases/<slug>.json` with `"draft": true` and register it in `src/cases/registry.ts`. A production build refuses drafts.
+2. Create `src/cases/<slug>/` with `page.ts`, `main.ts` and `case.scss`, built from the partials in `src/cases/build/parts.ts`.
+3. Preview only that case: `CASE_PREVIEW=<slug> npx vite build --outDir <a folder outside dist> --emptyOutDir`, then serve the folder.
+4. Fix every content error the build names, set `"draft": false`, then run `npm run build` and `node scripts/seo/check.mjs dist`.
+
 ## Development
 
 ```bash

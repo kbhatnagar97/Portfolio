@@ -1,0 +1,349 @@
+// Case studies on the home, in the home's own tokens and section head; every card opens its case page.
+
+// #region Section
+.cases {
+  // on phones the shape shows in the screen's top third, so the waypoints keep to the band's lower two thirds, clear of the type around it
+  &__stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 60vh;
+    height: 60svh;
+    padding-top: 20vh;
+    padding-top: 20svh;
+  }
+
+  &__lead {
+    max-width: 56ch;
+    margin-top: 28px;
+    font-size: clamp(16px, 1.3vw, 19px);
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  // from 900px the scene draws the shape in the right half of the screen, so the head's type keeps to the left half
+  @media (width >= 900px) {
+    .section-head {
+      position: relative;
+
+      h2 {
+        max-width: 50%;
+      }
+    }
+
+    &__lead {
+      max-width: 50%;
+    }
+
+    // over the head and a quarter lower, so the shape holds while the heading reads and forms only after Work's last row
+    &__stage {
+      position: absolute;
+      inset: 25% 0 -25%;
+      height: auto;
+      padding-top: 0;
+    }
+  }
+
+  // under reduced motion the scene holds one still shape, so the band would only be a gap
+  @media (prefers-reduced-motion: reduce) {
+    &__stage {
+      height: 0;
+      padding-top: 0;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(16px, 2vw, 24px);
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  // the li carries data-fade, so it never transitions opacity or transform; the card inside takes the press
+  &__item {
+    display: grid;
+    // poster, the story's five lines and proofs share seven rows with the cards beside them, so titles and numbers line up
+    grid-row: span 7;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+
+  // the flagship has its row to itself, so its story stays one block between poster and proofs
+  &__item--flagship {
+    grid-row: span 3;
+  }
+
+  &__more {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: clamp(32px, 4vw, 48px) var(--gutter) clamp(64px, 12vh, 140px);
+  }
+
+  @media (width >= 700px) {
+    &__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__item--flagship {
+      grid-column: 1 / -1;
+    }
+  }
+
+  // four across only where a card keeps about 270px for its deck and proof
+  @media (width >= 1280px) {
+    &__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+}
+// #endregion
+
+// #region Card
+.ccard {
+  position: relative;
+  display: grid;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--bg-raise);
+  transition:
+    border-color 0.3s var(--ease),
+    transform 0.16s var(--ease);
+
+  &__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--surface-2);
+
+    // the picture only chooses the file; the image fills the frame as if it stood alone
+    picture {
+      display: contents;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    padding: 18px 8px 0;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+
+    // level with the first line when a long industry wraps
+    &::before {
+      content: '';
+      flex: none;
+      width: 6px;
+      height: 6px;
+      margin-top: 6.5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+  }
+
+  &__title {
+    margin-top: 10px;
+    font-size: clamp(22px, 2vw, 28px);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+
+    a {
+      text-decoration: none;
+
+      // stretched over the card, so the whole card is the target while the link's name stays the title
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+      }
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      &:focus-visible::after {
+        outline: 2px solid var(--gold);
+        outline-offset: 3px;
+      }
+    }
+  }
+
+  // the kind of work, in the case's own few words
+  &__kicker {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  &__deck {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--muted);
+    // no single word left alone on the last line at any card width
+    text-wrap: pretty;
+  }
+
+  &__status {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    // a ring, filled only for a status that reads Live; it never pulses, and it keeps to the first line
+    &::before {
+      content: '';
+      flex: none;
+      width: 8px;
+      height: 8px;
+      margin-top: 6px;
+      border: 1px solid var(--muted);
+      border-radius: 50%;
+    }
+
+    &--live::before {
+      border-color: var(--live);
+      background: var(--live);
+    }
+  }
+
+  &__proofs {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 18px 8px 6px;
+
+    li {
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+  }
+
+  &__value {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  // the kind ids are the provenance words, so uppercase prints them as the case pages do
+  &__kind {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--faint);
+  }
+
+  // the honest reading of a number travels with it, as in each case's ledger
+  &__note {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--faint);
+  }
+}
+
+// beside other cards the story's lines are rows of the card, so a meta that wraps never drops its title below its neighbours'
+.ccard:not(.ccard--flagship) {
+  .ccard__body {
+    display: contents;
+
+    > * {
+      padding-inline: 8px;
+    }
+  }
+
+  // it takes the body's top padding, and sits on its title when a neighbour's meta runs to two lines
+  .ccard__meta {
+    align-self: end;
+    padding-top: 18px;
+  }
+}
+
+// the home's accent wash marks the flagship without a badge
+.ccard--flagship {
+  background:
+    radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
+    var(--bg-raise);
+
+  .ccard__title {
+    font-size: clamp(30px, 3vw, 44px);
+  }
+
+  .ccard__deck {
+    font-size: 17px;
+  }
+
+  .ccard__value {
+    font-size: 32px;
+  }
+
+  // poster left, story right, and the three proofs in one row under both
+  @media (width >= 900px) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: 24px;
+
+    // a stretched grid item would drop its 16:10 ratio and crop the poster
+    .ccard__media {
+      align-self: start;
+    }
+
+    .ccard__body {
+      padding: 8px 8px 0 0;
+    }
+
+    .ccard__proofs {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 24px;
+      padding-top: 24px;
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ccard:hover {
+    border-color: var(--line-strong);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ccard:active {
+    transform: scale(0.98);
+  }
+}
+// #endregion

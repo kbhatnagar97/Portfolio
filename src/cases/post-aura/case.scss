@@ -1,0 +1,1452 @@
+// post-aura: the edit. One accent (playhead cyan), two supports (clip slate, cyan wash), cuts of --cut, a linear
+// playhead. Stacked is the default; html.js plus $pinned pins it.
+@use 'sass:math';
+@use '../shared/calculator';
+@use '../shared/video';
+
+// keep in step with PINNED in stage.ts; keyed on html.js, set before first paint, so the first screen never shifts
+$pinned: '(min-width: 900px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)';
+
+// #region Tokens
+.case--post-aura {
+  --accent-2: #1f2c35; // clip slate: the timeline's clips; --text on it 12.07:1
+  --accent-3: #16262b; // cyan wash: the clip under the playhead; --text on it 13.18:1
+  --stage-bg: var(--bg);
+  --cut: 120ms;
+  // the timeline's measures, compacted under 760px of height while pinned
+  --tracks-label: 104px;
+  --tracks-ruler: 28px;
+  --tracks-row: 40px;
+  --tracks-clip: 28px;
+  --tracks-gap: 8px;
+  --tracks-io: 12px;
+  --edit-pad: var(--s-5);
+}
+// #endregion
+
+// #region Slate and framed chapter openings
+.case--post-aura .slate {
+  display: inline-block;
+  justify-self: start;
+  max-width: 100%;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  background: rgba(11, 10, 9, 0.86); // --bg at 86%, solid under reduced transparency below
+}
+
+// any frame partial can open a chapter: the wrapper carries the slate on the frame's top left corner
+.framed {
+  position: relative;
+  margin-block: var(--s-4);
+
+  > figure {
+    margin: 0;
+  }
+
+  > .slate {
+    margin-bottom: var(--s-2);
+  }
+
+  // a playing video needs its whole frame
+  &:has(.vid__media > video) > .slate {
+    display: none;
+  }
+}
+
+// on narrow frames the slate would cover the video's own labels, so it sits on the frame only from 560px
+@media (width >= 560px) {
+  .framed > .slate {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+    margin: 0;
+  }
+}
+
+// the turn has no picture to sit on, so its slate leads the grid at the wide track's edge
+.case--post-aura .turn > .slate {
+  grid-column: wide;
+}
+
+.fact {
+  display: inline;
+  font: 500 14px / 1.6 var(--sans);
+  color: var(--text);
+
+  .prov {
+    margin-left: 2px;
+  }
+}
+// #endregion
+
+// #region Stage layout: stacked by default, the overview first, then the lane and the end card
+.stage--post-aura {
+  .edit-track {
+    grid-column: bleed;
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: var(--s-7);
+    margin-top: var(--s-6);
+  }
+
+  .edit,
+  .lane-col {
+    grid-column: read;
+    min-width: 0;
+  }
+
+  // phones read the timeline as an overview; the viewer and its caption belong to wide screens
+  .edit__screen,
+  .edit__now,
+  .lane__line {
+    display: none;
+  }
+}
+
+@supports not (grid-template-columns: subgrid) {
+  .stage--post-aura .edit-track {
+    grid-template-columns: inherit;
+  }
+}
+
+@media (width >= 900px) {
+  .stage--post-aura .edit__screen {
+    display: block;
+  }
+}
+// #endregion
+
+// #region The edit: viewer, caption, readout, timeline
+// one column that never grows with its content: a long readout or caption truncates instead of widening the edit
+.edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--s-3);
+}
+
+// the viewer and its caption share one width, so the caption always starts under the picture's edge
+.edit__monitor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-3);
+}
+
+// one fixed cell, so a frame's size never depends on which frames are on screen
+.edit__viewer {
+  position: relative;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+  container-type: size;
+}
+
+// every frame is a 16:9 picture centred in the viewer, letterboxed on the viewer's surface when the viewer is wider
+.frame {
+  position: relative;
+  grid-area: 1 / 1;
+  place-self: center;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  width: min(100%, 100cqh * 16 / 9);
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  container-type: size; // a panel scales with its frame: the viewer turns wider than 16:9 on short laptop screens
+
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  > .badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+  }
+
+  &.is-on {
+    z-index: 2;
+  }
+
+  &.is-prev {
+    z-index: 1;
+  }
+
+  // the next frames load and decode under the current one, so a cut never waits on the network
+  &.is-next {
+    opacity: 0;
+  }
+}
+
+.edit__caption {
+  max-width: none;
+  height: 1.4em;
+  margin: 0;
+  overflow: hidden;
+  font: 400 13px / 1.4 var(--sans);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+
+.edit__timeline {
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+  container: timeline / inline-size;
+
+  // a timecode display: dark inset, the caret in the accent; one line, cut with an ellipsis if it must be
+  > .stage__readout {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin-bottom: 10px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: var(--bg);
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-right: var(--s-2);
+      vertical-align: -0.15em;
+      background: var(--accent);
+    }
+  }
+}
+
+// the longest readout, the production test's, names the model that answered, so it fits whole at the pin's narrowest
+@container timeline (width < 560px) {
+  .edit__timeline > .stage__readout {
+    font-size: 10.5px;
+    letter-spacing: 0;
+  }
+}
+
+.tracks {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--tracks-label) minmax(0, 1fr);
+  column-gap: var(--s-2);
+  row-gap: var(--tracks-gap);
+  container: tracks / inline-size;
+}
+
+.tracks__row {
+  display: contents;
+}
+
+.tracks__name {
+  display: grid;
+  align-content: center;
+  max-width: none;
+  margin: 0;
+  font: 500 11px / 1.25 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tracks__total {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--faint);
+  transition: opacity var(--cut) linear;
+}
+
+.tracks__slots {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  align-items: center;
+  min-width: 0;
+  min-height: var(--tracks-row);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+// the ruler is a measuring tool, so it carries ticks: one at every slot edge, the last one closing OUT
+.tracks__row--ruler .tracks__slots {
+  grid-template-rows: 1fr 1fr;
+  min-height: var(--tracks-ruler);
+  border-radius: 0;
+  background:
+    linear-gradient(var(--line-strong), var(--line-strong)) right bottom / 1px 6px no-repeat,
+    repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px calc(100% / 16)) left bottom / 100% 6px no-repeat;
+}
+
+.tracks__day {
+  grid-row: 1;
+  align-self: start;
+  min-width: 0;
+  font: 400 11px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--faint);
+}
+
+// four days sit in four neighbouring slots; on a narrow ruler they would collide, so only the first stays
+// and the IN and OUT row carries the dates
+@container tracks (width < 520px) {
+  .tracks__day:not(:first-child) {
+    display: none;
+  }
+}
+
+.tracks__clip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: var(--tracks-clip);
+  margin-inline: 1px;
+  padding: 0 6px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--accent-2);
+  transition: opacity var(--cut) linear;
+
+  > span {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    font: 500 11px / 1 var(--mono);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+
+  // the clip under the playhead: the cyan wash and a 2px cyan edge, both by opacity
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    transition: opacity var(--cut) linear;
+  }
+
+  &::before {
+    inset: 0;
+    background: var(--accent-3);
+  }
+
+  &::after {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: var(--accent);
+  }
+
+  &.is-current::before,
+  &.is-current::after {
+    opacity: 1;
+  }
+
+  // the work not made yet
+  &.is-ahead {
+    opacity: 0.35;
+  }
+}
+
+.tracks__clip--marker {
+  grid-row: 2;
+  height: 14px;
+  padding: 0 4px;
+
+  > span {
+    font-size: 9px;
+  }
+}
+
+.tracks__io {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  height: var(--tracks-io);
+  max-width: none;
+  margin: 0;
+  font: 400 11px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+// laid over the slots out of the grid flow, ruler to last track; the playhead sits at OUT until the stage script moves it
+.tracks__area {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: calc(var(--tracks-io) + var(--tracks-gap));
+  left: calc(var(--tracks-label) + var(--s-2));
+  pointer-events: none;
+  container-type: inline-size;
+}
+
+.tracks__playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: var(--accent);
+  transform: translateX(100cqw);
+
+  svg {
+    position: absolute;
+    top: -3px;
+    left: -4px;
+    fill: var(--accent);
+  }
+}
+
+// live: labels light with the clip under the playhead, totals wait for OUT
+.edit.is-live {
+  .tracks__name {
+    color: var(--muted);
+  }
+
+  .tracks__row.is-lit .tracks__name {
+    color: var(--text);
+  }
+
+  &:not(.is-out) .tracks__total {
+    opacity: 0;
+  }
+
+  &.is-out .tracks__name {
+    color: var(--text);
+  }
+}
+// #endregion
+
+// #region Viewer panels: recreated screens that scale with the viewer
+.panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 4cqh;
+  padding: 5cqh 4.5cqw;
+  overflow: hidden;
+  font: 400 clamp(9px, 2cqw, 18px) / 1.45 var(--sans);
+  color: var(--text);
+
+  p {
+    max-width: none;
+    margin: 0;
+  }
+}
+
+.panel__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em 1em;
+  padding-bottom: 2.5cqh;
+  border-bottom: 1px solid var(--line);
+
+  .badge {
+    margin-left: auto;
+  }
+}
+
+.panel__title {
+  font-weight: 500;
+  font-size: 1.45em;
+  letter-spacing: -0.015em;
+}
+
+.panel__tag,
+.panel__label,
+.panel__when {
+  font: 500 0.82em / 1.3 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+// a screen's content sits in the middle of what the title bar leaves, as on a monitor
+.panel__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center; // content taller than the space runs off the bottom, never up over the title
+  gap: 2.4cqh;
+  min-height: 0;
+}
+
+.panel__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 1.2em;
+  font-weight: 500;
+  font-size: 2.2em;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.panel__list {
+  display: grid;
+  gap: 0.35em;
+  color: var(--muted);
+
+  li {
+    position: relative;
+    padding-left: 1.1em;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0.62em;
+      left: 0.1em;
+      width: 0.34em;
+      height: 0.34em;
+      border-radius: 50%;
+      background: var(--faint);
+    }
+  }
+}
+
+.panel__list--rules li {
+  color: var(--text);
+}
+
+.panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+
+  li {
+    padding: 0.3em 0.75em;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    font-size: 0.92em;
+    white-space: nowrap;
+  }
+}
+
+.panel__note {
+  font-size: 0.92em;
+  color: var(--muted);
+}
+
+.panel__verdict {
+  display: grid;
+  gap: 0.3em;
+  margin-top: auto;
+  padding-top: 2cqh;
+  border-top: 1px solid var(--line);
+  font-weight: 500;
+  font-size: 1.7em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+
+  span {
+    font: 500 0.48em / 1.3 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+}
+
+// the wireframe: ten sections as blocks, review notes beside them
+.brief {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 4cqw;
+  min-height: 0;
+}
+
+.brief__page {
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 0.6cqh;
+  padding: 1.6cqh;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    min-height: 0;
+    padding: 0 0.6em;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font: 400 0.78em / 1 var(--mono);
+    color: var(--muted);
+    background: var(--surface);
+
+    // placeholder lines, the way a wireframe draws content
+    &::after {
+      content: '';
+      flex: 1;
+      height: 0.3em;
+      border-radius: 2px;
+      background: var(--surface-2);
+    }
+  }
+
+  .is-flagged {
+    border-color: var(--text);
+    color: var(--text);
+  }
+}
+
+.brief__notes {
+  display: grid;
+  align-content: start;
+  gap: 2.2cqh;
+}
+
+.brief__lead {
+  font-weight: 500;
+  font-size: 1.25em;
+  line-height: 1.25;
+}
+
+.brief__flags {
+  display: grid;
+  gap: 1.4cqh;
+
+  li {
+    padding: 0.7em 0.8em;
+    border: 1px solid var(--line);
+    border-left: 1px solid var(--text);
+    border-radius: 4px;
+    background: var(--surface);
+  }
+}
+
+.brief__at {
+  display: block;
+  margin-bottom: 0.2em;
+  font: 500 0.78em / 1.2 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+// every row present in every version: a full matrix is the point
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.62em 0.5em;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+
+  thead th {
+    font: 500 0.82em / 1 var(--mono);
+    letter-spacing: 0.08em;
+    color: var(--faint);
+  }
+
+  tbody th {
+    font-weight: 400;
+    text-align: left;
+    color: var(--muted);
+  }
+}
+
+// a filled cell: that row is in the HTML that version's server sends
+.matrix td::after {
+  content: '';
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 2px;
+  background: var(--text);
+}
+
+// thirteen frames ordered dark to one bright peak and back: a drawing of the rule, not a measurement
+.arc {
+  display: grid;
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+  gap: 0.6cqw;
+  height: 16cqh;
+
+  span {
+    border-radius: 3px;
+    background: var(--text);
+
+    @for $i from 1 through 13 {
+      &:nth-child(#{$i}) {
+        opacity: 0.08 + 0.72 * (1 - math.div(math.abs($i - 7), 6));
+      }
+    }
+  }
+}
+
+.flow {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 2.4cqw;
+  align-items: stretch;
+
+  li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.4em;
+    padding: 1em;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--surface);
+
+    + li::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: calc(-2.4cqw - 1px);
+      width: 2.4cqw;
+      height: 1px;
+      background: var(--line-strong);
+    }
+  }
+}
+
+.flow__k {
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.flow__v {
+  font-size: 0.9em;
+  color: var(--muted);
+}
+
+// seven steps run in two rows, the last one handing fixes back into the files
+.flow--loop {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  li:nth-child(5)::before {
+    display: none;
+  }
+}
+
+// a spreadsheet's gridlines: seven fields, a header row and three rows of values
+.sheet {
+  flex: none;
+  height: 13cqh;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background:
+    linear-gradient(var(--surface-2), var(--surface-2)) top / 100% 25% no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 calc(100% / 7 - 1px), var(--line-strong) calc(100% / 7 - 1px) calc(100% / 7)),
+    repeating-linear-gradient(transparent 0 calc(25% - 1px), var(--line-strong) calc(25% - 1px) 25%),
+    var(--surface);
+}
+
+.report {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--line);
+
+  li {
+    display: grid;
+    gap: 0.3em;
+    padding: 1.1em 1.2em;
+    background: var(--bg-raise);
+  }
+}
+
+.report__k {
+  font: 500 0.8em / 1.2 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.report__v {
+  font-weight: 500;
+  font-size: 3.1em;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.report__note {
+  font-size: 0.9em;
+  color: var(--muted);
+}
+// #endregion
+
+// #region The lane: beats, clip cards, the end card
+.lane {
+  margin: 0;
+}
+
+.beat__head {
+  display: grid;
+  align-content: start;
+  gap: var(--s-3);
+  padding: var(--s-5) 0 var(--s-5) 20px;
+  border-top: 1px solid var(--line-strong);
+
+  h3 {
+    margin: var(--s-1) 0 0;
+  }
+
+  p:last-child {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+.clip {
+  position: relative;
+  isolation: isolate;
+  padding: 20px 0 20px 20px;
+  border-top: 1px solid var(--line);
+
+  > * {
+    max-width: none;
+    margin: 0;
+  }
+
+  > .clip__why,
+  > .clip__note {
+    margin-top: 6px;
+  }
+
+  > .clip__facts,
+  > .clip__link {
+    margin-top: var(--s-3);
+  }
+
+  > .clip__fig {
+    margin-top: var(--s-4);
+  }
+
+  // the clip crossing the reading line: a 2px cyan edge and the cyan wash, both by opacity
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity var(--cut) linear;
+  }
+
+  &::before {
+    width: 2px;
+    background: var(--accent);
+  }
+
+  &::after {
+    right: 0;
+    z-index: -1;
+    background: var(--accent-3);
+  }
+
+  &.is-current::before {
+    opacity: 1;
+  }
+}
+
+.clip__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font: 400 12px / 1.4 var(--mono);
+  color: var(--faint);
+}
+
+// the track's name after the date
+.clip__meta > span {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.case--post-aura .clip__title {
+  margin: 6px 0 var(--s-2);
+  font: 500 17px / 1.35 var(--sans);
+  letter-spacing: -0.01em;
+}
+
+.clip__line,
+.clip__change,
+.clip__why,
+.clip__note {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.clip__change {
+  color: var(--text);
+}
+
+.clip__note {
+  color: var(--text);
+}
+
+.clip__facts {
+  display: grid;
+  gap: 6px;
+}
+
+.clip__link {
+  font: 400 12.5px / 1.4 var(--mono);
+}
+
+.clip__fig figcaption {
+  margin-top: var(--s-2);
+}
+
+.clip__media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+
+  img {
+    width: 100%;
+  }
+
+  .badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+  }
+}
+
+.stage__end {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-6) 0 0 20px;
+  border-top: 1px solid var(--line-strong);
+
+  .metric--hero {
+    margin: 0;
+  }
+}
+
+.stage__totals li {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.stage__site {
+  max-width: none;
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+// #endregion
+
+// #region Pinned: the edit sticks on the left, the lane scrolls past the reading line on the right
+@media #{$pinned} {
+  html.js .stage--post-aura {
+    .edit-track {
+      grid-column: max;
+      grid-template-columns: minmax(0, 1fr) clamp(320px, 30vw, 420px);
+      column-gap: 40px;
+    }
+
+    .edit {
+      grid-column: 1;
+      position: sticky;
+      top: 64px;
+      align-self: start;
+      grid-template-rows: minmax(0, 1fr) auto;
+      height: calc(100vh - 64px);
+      height: calc(100svh - 64px);
+      padding-block: var(--edit-pad);
+    }
+
+    // the monitor takes what the timeline leaves; each frame keeps 16:9 inside it, as a program monitor does
+    .edit__screen,
+    .edit__monitor {
+      display: grid;
+      min-height: 0;
+    }
+
+    .edit__monitor {
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .edit__viewer {
+      height: 100%;
+      min-height: 0;
+      aspect-ratio: auto;
+    }
+
+    .lane-col {
+      grid-column: 2;
+      padding-bottom: 30svh;
+    }
+
+    // the first card starts at the reading line when the pin begins
+    .lane {
+      padding-top: 40svh;
+    }
+
+    .beat__head {
+      min-height: 22svh;
+    }
+
+    .clip {
+      min-height: 18svh;
+    }
+
+    // the viewer shows the captures here; their captions and credits stay in the cards
+    .clip__media {
+      display: none;
+    }
+  }
+
+  // the timeline gives up height before the viewer does
+  @media (height < 960px) {
+    html.js .case--post-aura {
+      --tracks-ruler: 24px;
+      --tracks-row: 32px;
+      --tracks-clip: 24px;
+      --tracks-gap: 6px;
+    }
+  }
+
+  @media (height < 760px) {
+    html.js .case--post-aura {
+      --edit-pad: var(--s-4);
+      --tracks-ruler: 22px;
+      --tracks-row: 26px;
+      --tracks-clip: 20px;
+      --tracks-gap: 4px;
+    }
+  }
+}
+// #endregion
+
+// #region Following: on phones the lane passes a line at 40% of the screen, with a sticky readout
+html.case-ready .stage--post-aura.is-following {
+  // one fixed height for one or two lines, so a longer readout never moves the lane under it
+  .edit__now {
+    position: sticky;
+    top: var(--head, 64px);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    max-width: none;
+    margin: 0 0 var(--s-3);
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-1);
+    font: 400 13px / 1.3 var(--mono);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    background: var(--bg-raise);
+  }
+
+  .lane__line {
+    position: sticky;
+    top: 40vh;
+    top: 40svh;
+    z-index: 2;
+    display: block;
+    height: 0;
+    pointer-events: none;
+
+    // a tick in the cards' 20px left rail: a line across the lane would read as struck through text
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 0;
+      border-block: 4px solid transparent;
+      border-left: 8px solid var(--accent);
+    }
+  }
+
+  .clip.is-current::after {
+    opacity: 1;
+  }
+}
+
+// the overview on phones: labels over their totals, sixteen bare slots, the playhead at OUT
+@media (width < 900px) {
+  .case--post-aura {
+    --tracks-label: 84px;
+    --tracks-ruler: 24px;
+    --tracks-row: 28px;
+    --tracks-clip: 18px;
+    --tracks-gap: 6px;
+  }
+
+  .stage--post-aura .tracks__name {
+    font-size: 10px;
+  }
+}
+
+// a one slot clip under about 35px cannot hold its label; the search layer runs long enough to keep its own
+@container tracks (width < 560px) {
+  .tracks__clip:not([data-to]) > span {
+    display: none;
+  }
+}
+// #endregion
+
+// #region Chapters: the findings table, the folder path figure, the tiles note, the calculator's figure
+.findings__media,
+.pathfig__media {
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-raise);
+}
+
+.findings__title {
+  max-width: none;
+  margin: var(--s-4) 0;
+  font: 500 clamp(18px, 1.7vw, 21px) / 1.3 var(--sans);
+  letter-spacing: -0.01em;
+}
+
+.findings__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.55;
+
+  th {
+    padding: 0 var(--s-5) 10px 0;
+    font: 500 11px / 1.4 var(--mono);
+    letter-spacing: 0.12em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  td {
+    width: 50%;
+    padding: 14px var(--s-5) 14px 0;
+    border-top: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--muted);
+
+    + td {
+      color: var(--text);
+    }
+  }
+}
+
+@media (width < 700px) {
+  .findings__table {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    tr,
+    td {
+      display: block;
+    }
+
+    tr {
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    td {
+      width: auto;
+      padding: 0;
+      border: 0;
+
+      + td {
+        margin-top: 6px;
+      }
+
+      &::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 2px;
+        font: 500 11px / 1.4 var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+    }
+  }
+}
+
+.pathfig {
+  position: relative;
+}
+
+.pathfig__media {
+  display: grid;
+  gap: 20px;
+}
+
+.pathfig__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  max-width: none;
+  margin: 0;
+}
+
+// styled by class, not by the row, so a flying copy keeps its look outside the path
+.path__seg {
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font: 400 clamp(12.5px, 1.3vw, 14px) / 1.3 var(--mono);
+  white-space: nowrap;
+  color: var(--text);
+  background: var(--bg-raise);
+}
+
+.path__seg--file {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.path__sep {
+  font: 400 13px / 1 var(--mono);
+  color: var(--faint);
+}
+
+.path__clone {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  pointer-events: none;
+}
+
+.path__frames {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s-2);
+
+  img {
+    width: 100%;
+    border-radius: 4px;
+  }
+}
+
+.path__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: 0;
+}
+
+@media (width >= 900px) {
+  .path__fields {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.path__field {
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+
+  dt {
+    font: 500 11px / 1.3 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  dd {
+    margin: 6px 0 0;
+  }
+}
+
+.path__value {
+  display: block;
+  font: 500 16px / 1.3 var(--sans);
+  letter-spacing: -0.01em;
+}
+
+// no activity was picked: an empty answer, not a tag
+.path__value--none {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+// the words carry the source; the mark repeats it: a ring for the path, a cyan dot for the frames
+.path__from {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--s-2);
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--muted);
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--text);
+    border-radius: 50%;
+  }
+}
+
+.path__field--frames .path__from::before {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.path__kw-label {
+  max-width: none;
+  margin: 0 0 -8px;
+  font: 500 11px / 1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.path__kw {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    font: 400 12.5px / 1.2 var(--mono);
+
+    &::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+  }
+}
+
+.ch > .tiles-note {
+  grid-column: wide;
+  margin-top: calc(-1 * var(--s-2));
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+// the page's one hero figure is the stage's 12 days, so the calculator's figure takes the ledger size
+.case--post-aura .calc__figure {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+// #endregion
+
+// #region Forced colours, reduced transparency, print
+@media (forced-colors: active) {
+  .tracks__playhead,
+  .tracks__playhead svg,
+  .tracks__clip::after,
+  .clip::before,
+  .lane__line::before {
+    forced-color-adjust: none;
+    background: Highlight;
+    fill: Highlight;
+  }
+
+  .tracks__clip,
+  .path__seg,
+  .path__field {
+    border-color: ButtonBorder;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .case--post-aura .slate {
+    background: var(--bg);
+  }
+}
+
+@media print {
+  .stage--post-aura {
+    .edit__screen,
+    .edit__caption,
+    .edit__now,
+    .lane__line {
+      display: none !important; // print shows the overview, the lane with its thumbnails and the end card
+    }
+
+    .clip__media {
+      display: block !important; // as above
+    }
+  }
+
+  .beat__head,
+  .clip,
+  .stage__end,
+  .findings,
+  .pathfig {
+    break-inside: avoid;
+  }
+}
+// #endregion

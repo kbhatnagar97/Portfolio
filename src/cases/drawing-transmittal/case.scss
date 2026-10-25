@@ -1,0 +1,1772 @@
+// drawing-transmittal: a highlighter lime on a drawing sheet, revision red only for revisions, and motion that scans quickly
+@use '../shared/calculator';
+@use '../shared/disclosure';
+
+// #region Tokens: palette, and the tempo stage.ts reads
+.case--drawing-transmittal {
+  --accent-2: #ff6a5a; // revision red: revoked strikes and the revision cloud
+  --accent-3: #0f1418; // the sheet
+  --stage-bg: var(--accent-3);
+  --move: 240ms;
+  --scan: 600ms;
+  --land: 160ms;
+
+  // the accent is set inline on the story, so a token mixed from it must be declared there too
+  .case__story {
+    --wash: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+}
+// #endregion
+
+// #region The small mono labels a drawing carries: panel names, legends, column heads, caption fields
+.dt-label,
+.dt-pick__legend,
+.dt-jobs__h {
+  margin: 0;
+  font: 500 12px / 1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.dt-job__k,
+.dt-reach__k,
+.dt-refusal__in,
+.dt-cap,
+.dt-stack th,
+.dt-stack td::before,
+.dt-list th {
+  font: 500 11px / 1.2 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+// #endregion
+
+// #region The drawing sheet rhythm: notes on the left edge of the wide track from 1100px, drawings to the right
+.dt-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--s-4);
+
+  > * {
+    margin: 0;
+  }
+
+  > .dt-fig {
+    margin-block: var(--s-4);
+  }
+}
+
+.dt-sections > h3 {
+  margin-top: var(--s-6);
+}
+
+@media (width >= 1100px) {
+  .case--drawing-transmittal .ch > :not(.w-wide, .w-max, .w-bleed, .dt-split) {
+    grid-column: wide;
+    justify-self: start;
+    width: min(100%, var(--read));
+  }
+
+  .case--drawing-transmittal .stage > :is(.stage__head, .stage__steps, .stage__caption) {
+    grid-column: max;
+    justify-self: start;
+    width: min(100%, var(--read));
+  }
+
+  // the last row is flexible, so a tall drawing grows it instead of pulling the paragraphs apart
+  .dt-split {
+    grid-column: wide;
+    grid-template-rows: repeat(var(--rows), auto) 1fr;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--s-7);
+    align-items: start;
+
+    > * {
+      grid-column: 1;
+    }
+
+    > .dt-fig--aside {
+      position: sticky;
+      top: 96px;
+      grid-row: 1 / -1;
+      grid-column: 2;
+      margin: 0;
+    }
+  }
+}
+
+.dt-line {
+  margin: var(--s-2) 0;
+  font: italic 400 clamp(26px, 3vw, 36px) / 1.2 var(--serif);
+  letter-spacing: -0.01em;
+}
+// #endregion
+
+// #region Stage: the sheet with its drafting grid, edge to edge; the frame is the drawing's border
+.stage--drawing-transmittal {
+  --grid-major: color-mix(in srgb, var(--text) 8%, transparent);
+  --grid-minor: color-mix(in srgb, var(--text) 4%, transparent);
+  background:
+    linear-gradient(var(--grid-major) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(var(--grid-minor) 1px, transparent 1px) 0 0 / 8px 8px,
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px) 0 0 / 8px 8px,
+    var(--stage-bg);
+}
+
+// the plan's shared drawing; it is never shown by itself
+.dt-defs {
+  position: absolute;
+  overflow: hidden;
+}
+
+.dt {
+  position: relative;
+  display: grid;
+  gap: var(--s-5);
+  padding: var(--s-4);
+  border: 1px solid var(--line-strong);
+}
+
+.dt-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.dt-fly {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.dt-clone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font: 500 13px / 1 var(--mono);
+  white-space: nowrap;
+  color: var(--text);
+  transform-origin: 0 0;
+}
+
+// a demo that could not load gives way to its storyboard (main.ts marks the stage)
+html.js .stage.is-static .stage__frame {
+  display: none;
+}
+
+html.js .stage.is-static .storyboard {
+  display: grid;
+}
+// #endregion
+
+// #region Controls: badges, the sample picker, the two buttons and the status line
+.dt-pick {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dt-pick__legend {
+  margin-bottom: var(--s-3);
+  padding: 0;
+}
+
+.dt-pick__opts {
+  display: grid;
+  gap: var(--s-2);
+}
+
+// visually hidden, still focusable: the label is the card and carries the focus ring
+.dt-pick__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.dt-pick__opt {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-height: 56px;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-1);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color var(--dur-tip);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  &::before {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--edge);
+  }
+
+  &::after {
+    left: 18px;
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.dt-pick__radio:checked + .dt-pick__opt {
+  border-color: var(--text);
+
+  &::after {
+    background: var(--text);
+  }
+}
+
+.dt-pick__radio:focus-visible + .dt-pick__opt {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.dt-pick__l {
+  font: 500 15px / 1.3 var(--sans);
+}
+
+.dt-pick__f {
+  overflow-wrap: anywhere;
+  font: 400 12px / 1.45 var(--mono);
+  color: var(--muted);
+}
+
+.dt-pick__h {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--faint);
+}
+
+.dt-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-4);
+  margin-top: var(--s-4);
+}
+
+.case--drawing-transmittal :is(.dt-drop, .dt-reset, .dt-ap__go) {
+  font: 500 15px / 1 var(--sans);
+  cursor: pointer;
+}
+
+.dt-drop,
+.dt-ap__go {
+  min-height: 48px;
+  padding: 0 var(--s-5);
+}
+
+.dt-reset {
+  min-height: 44px;
+  padding: 0 20px;
+  background: none;
+}
+
+// a button that waits for the run keeps its own colours under the pointer, so hover never suggests it will act
+.dt [aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+
+  &.pill:hover {
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+
+  &.pill--solid:hover {
+    border-color: var(--text);
+    color: var(--bg);
+    background: var(--text);
+  }
+}
+
+// the longest line (the refused file) wraps to three lines on a phone, so the panels below never move
+.dt-status {
+  flex: 1 1 280px;
+  min-height: calc(3 * 1.4em);
+  margin: 0;
+  color: var(--text);
+}
+// #endregion
+
+// #region Desk: the issue folder, the approval page and the sent email take turns in one cell
+.dt-panels {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.dt-desk {
+  display: grid;
+}
+
+// inactive layers are inert (set in the markup and by the stage script), so only opacity changes here
+.dt-layer {
+  display: flex;
+  grid-area: 1 / 1;
+  flex-direction: column;
+  gap: var(--s-2);
+  min-width: 0;
+  opacity: 0;
+  transition: opacity 130ms linear;
+
+  // the new layer waits for the old one to leave, so two labels never overlap mid switch
+  &.is-on {
+    opacity: 1;
+    transition: opacity var(--dur-state) var(--ease) 130ms;
+  }
+}
+
+.dt-name {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font: 400 13px / 1.9 var(--mono);
+  color: var(--text);
+}
+
+.dt-name__part,
+.dt-name__us {
+  position: relative;
+}
+
+.dt-name__u {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.dt-name__us .dt-name__u {
+  background: var(--warn);
+}
+
+// raised over the end of its part and out of the line (beating .dt-tick's inline box), so the ticks never widen the name
+.dt-name__part .dt-name__tick {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  opacity: 0;
+}
+
+.dt-name.is-read :is(.dt-name__u, .dt-name__tick),
+.dt-name.is-refused .dt-name__u {
+  opacity: 1;
+  transform: none;
+}
+
+.dt-tick {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    width: 4px;
+    height: 8px;
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+}
+
+.dt-paper {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 528 / 376;
+}
+
+.dt-sheet {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dt-look {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--warn);
+  border-radius: var(--r-pill);
+  font: 500 12px / 1 var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  opacity: 0;
+}
+
+.dt-warn {
+  fill: none;
+  stroke: var(--warn);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+// #endregion
+
+// #region The sheet: drawing lines in text tokens; lime only for the scan and the fields it reads, red only for the revision cloud
+.dt-sheet,
+.dt-defs {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  text {
+    font-family: var(--mono);
+    stroke: none;
+  }
+}
+
+.sh-b,
+.sh-tb,
+.sh-tr {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.sh-tr {
+  stroke-width: 0.5;
+}
+
+.sh-g {
+  stroke: var(--muted);
+  stroke-width: 0.5;
+  stroke-dasharray: 6 3;
+  opacity: 0.3;
+}
+
+.sh-bub {
+  stroke: var(--muted);
+  stroke-width: 0.75;
+}
+
+.sh-bt {
+  font-size: 8px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+
+.sh-w {
+  stroke: var(--text);
+  stroke-width: 2;
+  opacity: 0.8;
+}
+
+.sh-p,
+.sh-note {
+  stroke: var(--text);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+
+.sh-note {
+  stroke-width: 2;
+  opacity: 0.18;
+}
+
+.sh-col {
+  fill: var(--text);
+  opacity: 0.8;
+}
+
+.sh-n {
+  stroke: var(--muted);
+  stroke-width: 0.75;
+
+  path {
+    fill: var(--muted);
+  }
+}
+
+.sh-l {
+  font-size: 6px;
+  letter-spacing: 0.04em;
+  fill: var(--faint);
+}
+
+.sh-v {
+  font-size: 8px;
+  fill: var(--text);
+}
+
+.sh-v--firm {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.sh-cloud {
+  stroke: var(--accent-2);
+  stroke-width: 1.5;
+  opacity: 0;
+
+  &.is-on {
+    opacity: 1;
+  }
+}
+
+.sh-wash,
+.sh-band {
+  fill: var(--wash);
+}
+
+.sh-wash {
+  opacity: 0;
+}
+
+.sh-bar {
+  fill: var(--accent);
+}
+
+.sh-scan {
+  opacity: 0;
+}
+
+.sh-box {
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+// #endregion
+
+// #region Approval page and email cards
+.dt-ap,
+.dt-mail {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--s-2);
+  padding: 20px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+
+  p {
+    max-width: none;
+    margin: 0;
+  }
+}
+
+.dt-ap__h,
+.dt-mail__h {
+  padding-right: 120px;
+  font: 500 17px / 1.3 var(--sans);
+}
+
+.dt-ap__from,
+.dt-mail__note {
+  font: 400 12px / 1.5 var(--mono);
+  color: var(--muted);
+}
+
+.dt-ap__row {
+  font: 500 15px / 1.45 var(--sans);
+}
+
+.dt-ap__revoke {
+  font-size: 14px;
+  line-height: 1.45;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    margin-right: 8px;
+    vertical-align: middle;
+    background: var(--accent-2);
+  }
+}
+
+.dt-ap__go {
+  margin: var(--s-2) 0;
+}
+
+.dt-ap__safe,
+.dt-ap__reject {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.dt-ap__stamp {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 2px solid var(--accent);
+  font: 500 12px / 1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+  opacity: 0;
+}
+
+.dt-mail__to {
+  display: grid;
+  gap: 6px;
+  margin-top: var(--s-2);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font: 400 14px / 1.4 var(--mono);
+  }
+}
+
+.dt-mail__tick {
+  opacity: 0;
+}
+// #endregion
+
+// #region Record: the sample transmittal as a table, and as cards on a phone
+.dt-record {
+  display: grid;
+  align-content: start;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.dt-record__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
+}
+
+.dt-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+// seven columns of 40, 152, 96, 128, 96, 40 and 96 at the stage's 648px; F3 keeps the proportions at its own width
+.dt-table {
+  width: 648px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font: 400 13px / 1.2 var(--sans);
+  background: var(--bg);
+
+  th {
+    height: 40px;
+    padding: 0 8px;
+    border-bottom: 1px solid var(--line-strong);
+    font: 500 10px / 1.2 var(--mono);
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  th:nth-child(1),
+  th:nth-child(6) {
+    width: 6.17%;
+  }
+
+  th:nth-child(2) {
+    width: 23.46%;
+  }
+
+  th:nth-child(3),
+  th:nth-child(5),
+  th:nth-child(7) {
+    width: 14.81%;
+  }
+
+  th:nth-child(4) {
+    width: 19.75%;
+  }
+
+  td {
+    height: 40px;
+    padding: 0 8px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  td.dt-c--no {
+    position: relative;
+    overflow: visible;
+  }
+}
+
+.dt-table--story {
+  width: 100%;
+  min-width: 600px;
+}
+
+// rows are added, never removed: the live table keeps blank ruled lines for the rows a drop can add
+.dt-scroll--live {
+  min-height: 361px;
+  background: linear-gradient(var(--line) 1px, transparent 1px) 0 39px / 648px 40px repeat-y;
+}
+
+.dt-c--dwg,
+.dt-c--rev {
+  font: 400 13px / 1.2 var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.dt-c--no {
+  position: relative;
+}
+
+.dt-dwg {
+  position: relative;
+  text-decoration: underline 1px var(--faint);
+  text-underline-offset: 3px;
+
+  &.is-linking {
+    text-decoration-color: transparent;
+  }
+}
+
+.dt-dwg__u {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 1px;
+  background: var(--faint);
+  transform-origin: left center;
+}
+
+// a still table strikes and washes its rows with cell backgrounds, which meet across the row at any width
+.dt-row {
+  --cell: transparent;
+  --strike: transparent;
+
+  &.is-new {
+    --cell: var(--wash);
+  }
+
+  &.is-revoked,
+  &.is-removed {
+    --strike: var(--accent-2);
+    color: var(--faint);
+  }
+
+  &.is-removed {
+    --strike: var(--faint);
+  }
+
+  td {
+    background:
+      linear-gradient(transparent calc(50% - 1px), var(--strike) 0 calc(50% + 1px), transparent 0),
+      linear-gradient(var(--cell), var(--cell)),
+      var(--bg);
+  }
+}
+
+// the live table's moving marks start in the first cell and run its fixed width
+.dt-row__wash,
+.dt-row__strike {
+  position: absolute;
+  left: 0;
+  width: 648px;
+  pointer-events: none;
+}
+
+// above the cells, as a highlighter is, so a cell fading in never shows through it for a frame
+.dt-row__wash {
+  z-index: 1;
+  inset-block: 0;
+  background: var(--wash);
+}
+
+.dt-row__strike {
+  z-index: 1;
+  top: calc(50% - 1px);
+  height: 2px;
+  background: var(--accent-2);
+  transform-origin: left center;
+}
+
+// R0 above R1 in a one line window; the stage script rolls it up by one line
+.dt-roll {
+  display: inline-block;
+  height: 1.2em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.dt-roll__in {
+  display: grid;
+  line-height: 1.2;
+}
+
+.dt-tag {
+  margin-left: 4px;
+  padding: 2px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font: 500 10px / 1 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dt-register {
+  display: none;
+}
+// #endregion
+
+// #region Jobs: what the engine did for this drawing, and the one review left
+.dt-jobs__h {
+  margin-bottom: var(--s-3);
+}
+
+.dt-jobs__list {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.dt-job {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  gap: 4px var(--s-2);
+  min-height: 44px;
+  padding: 8px 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  font: 500 14px / 1.3 var(--sans);
+  background: var(--bg);
+}
+
+.dt-job__wash {
+  position: absolute;
+  inset: 0;
+  background: var(--wash);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.dt-job__tick,
+.dt-job__t,
+.dt-job__k {
+  position: relative;
+}
+
+.dt-job__tick {
+  opacity: 0;
+}
+
+.dt-job__t {
+  grid-column: 2;
+}
+
+.dt-job__t--skip {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.dt-job--left {
+  border-color: var(--line-strong);
+
+  .dt-job__tick,
+  .dt-job__t {
+    grid-row: 2;
+  }
+}
+
+.dt-job__k {
+  grid-row: 1;
+  grid-column: 1 / -1;
+}
+// #endregion
+
+// #region Storyboard, steps and the title block caption row
+.stage--drawing-transmittal {
+  .storyboard {
+    align-items: start;
+  }
+
+  .storyboard__frame {
+    display: grid;
+    align-content: start;
+    gap: var(--s-3);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: var(--bg);
+
+    > :not(.dt-cap, .dt-scroll, .dt-sb__sheet) {
+      margin: 0 20px;
+    }
+
+    > .storyboard__label {
+      margin-top: 16px;
+    }
+  }
+
+  .stage__steps {
+    counter-reset: note;
+
+    li {
+      position: relative;
+      padding-left: 40px;
+      break-inside: avoid;
+      counter-increment: note;
+
+      &::before {
+        content: counter(note, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        font: 500 12px / 2.3 var(--mono);
+        color: var(--faint);
+      }
+    }
+  }
+}
+
+.dt-sb__t {
+  font: 500 17px / 1.35 var(--sans);
+}
+
+.dt-sb__text {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.dt-sb__sheet {
+  display: grid;
+  gap: var(--s-2);
+  padding: 0 20px;
+}
+
+.dt-sb__done {
+  display: grid;
+  gap: var(--s-3);
+
+  .dt-ap__stamp,
+  .dt-mail__tick,
+  .dt-job__tick {
+    opacity: 1;
+  }
+
+  .dt-job__wash {
+    transform: none;
+  }
+
+  // the frame is half the stage's width, so its six jobs sit in two columns at every size
+  .dt-jobs__list {
+    grid-template-rows: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+}
+
+.dt-sb__bad {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: var(--s-3);
+
+  .dt-look {
+    position: static;
+    opacity: 1;
+  }
+}
+
+.dt-cap {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: none;
+  margin: 0;
+  border-top: 1px solid var(--line-strong);
+
+  span {
+    padding: 10px 12px;
+  }
+
+  span + span {
+    border-left: 1px solid var(--line-strong);
+  }
+}
+// #endregion
+
+// #region Figures: boxed like drawing sheets
+.dt-fig__sheet {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--accent-3);
+
+  > :not(.dt-fig__head, .dt-cap, .dt-scroll) {
+    margin: 20px;
+  }
+
+  > .dt-scroll {
+    margin: 20px 0;
+  }
+
+  // a table's 100% width ignores its margins, so the 20px inset on each side comes off it, or the sheet would clip its last column
+  > .dt-stack {
+    width: calc(100% - 40px);
+  }
+}
+
+.dt-fig__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dt-fig__t {
+  margin: 0;
+  font: 500 15px / 1.35 var(--sans);
+}
+
+// F1: the name in five numbered parts and the title block fields that must agree
+.dt-anat__file {
+  font: 400 14px / 2.2 var(--mono);
+}
+
+.dt-anat__seg,
+.dt-anat__end {
+  white-space: nowrap;
+}
+
+.dt-anat__seg {
+  position: relative;
+  padding-bottom: 2px;
+  border-bottom: 2px solid var(--accent);
+}
+
+.dt-anat__seg .dt-anat__n {
+  position: relative;
+  top: -0.7em;
+  margin-left: 2px;
+}
+
+.dt-anat__n {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  font: 500 10px / 1 var(--mono);
+  vertical-align: middle;
+  color: var(--muted);
+}
+
+.dt-anat__parts {
+  display: grid;
+  border-top: 1px solid var(--line);
+
+  li {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    column-gap: var(--s-2);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+.dt-anat__x {
+  font: 500 14px / 1.4 var(--mono);
+}
+
+.dt-anat__k {
+  grid-column: 2;
+  font: 500 14px / 1.4 var(--sans);
+}
+
+.dt-anat__r {
+  grid-column: 2;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.dt-anat__x,
+.dt-anat__k {
+  display: inline;
+}
+
+.dt-anat__tb {
+  display: grid;
+  margin: 0;
+  border: 1px solid var(--line-strong);
+
+  div {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+
+  div:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    padding: 8px;
+    border-right: 1px solid var(--line);
+    font: 500 10px / 1.2 var(--mono);
+    letter-spacing: 0.06em;
+    color: var(--faint);
+  }
+
+  dd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    margin: 0;
+    padding: 8px;
+    font: 400 13px / 1.2 var(--mono);
+  }
+}
+
+.dt-anat__rule {
+  padding-left: 12px;
+  border-left: 2px solid var(--accent);
+  font: 500 15px / 1.5 var(--sans);
+}
+
+// F2 and the failure table: a table on wide screens, stacked pairs on a phone
+.dt-stack {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.5;
+
+  th {
+    padding: 0 12px 10px 0;
+    border-bottom: 1px solid var(--line-strong);
+    text-align: left;
+  }
+
+  td {
+    padding: 12px 12px 12px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  td:first-child {
+    font-weight: 500;
+  }
+}
+
+.dt-file {
+  overflow-wrap: anywhere;
+  font: 400 13px / 1.5 var(--mono);
+}
+
+// F3: the record on its sheet colour, opaque, so the sticky columns hide what scrolls beneath them on a phone;
+// a still record may wrap, so a note like "Typed by the lead" sits under its date instead of being cut
+.dt-table--record {
+  width: 100%;
+  min-width: 648px;
+  background: var(--accent-3);
+
+  th {
+    background: var(--accent-3);
+  }
+
+  td {
+    white-space: normal;
+  }
+
+  .dt-row td {
+    background:
+      linear-gradient(transparent calc(50% - 1px), var(--strike) 0 calc(50% + 1px), transparent 0),
+      var(--accent-3);
+  }
+}
+
+.dt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-5);
+}
+
+.dt-legend__i {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 14px;
+  color: var(--muted);
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 20px;
+    height: 2px;
+    background: var(--accent-2);
+  }
+
+  &--removed::before {
+    background: var(--faint);
+  }
+}
+
+// F4: everything it could reach, and the little it is allowed to
+.dt-reach {
+  display: grid;
+  gap: var(--s-5);
+
+  p {
+    max-width: none;
+    margin: 0;
+  }
+}
+
+.dt-reach__g {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.dt-reach__g--text {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.dt-reach__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 24px);
+  gap: 8px;
+}
+
+.dt-reach__sq {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line-strong);
+
+  &.is-lit {
+    border-color: var(--accent);
+    background: var(--wash);
+  }
+}
+
+.dt-reach__v {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.dt-reach__key {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--accent);
+  background: var(--wash);
+}
+
+.dt-reach__note {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+// F5: the project list, one row per project
+.dt-list {
+  min-width: 1080px;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.4;
+
+  th,
+  td {
+    padding: 10px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--bg);
+  }
+}
+
+.dt-list__active {
+  white-space: nowrap;
+}
+
+.dt-box {
+  position: relative;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  border: 1px solid var(--text);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--text);
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+}
+
+.dt-refusal {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--warn);
+  border-radius: var(--r-1);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+// #endregion
+
+// #region Chapter blocks
+.dt-duties {
+  display: grid;
+  gap: var(--s-5);
+  margin-block: var(--s-4);
+
+  h3 {
+    margin: 0 0 var(--s-3);
+  }
+}
+
+.dt-duties__list li {
+  position: relative;
+  padding: 12px 0 12px 32px;
+  border-bottom: 1px solid var(--line);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 4px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--text);
+  }
+}
+
+// the engine's five come ticked, as the demo left them
+.dt-duties__list--engine li::before {
+  top: 15px;
+  left: 8px;
+  width: 4px;
+  height: 9px;
+  border-width: 0 1.5px 1.5px 0;
+  border-color: var(--accent);
+  transform: rotate(45deg);
+}
+
+// three limits read as a short ledger, one per row, so each label keeps a readable measure
+.case--drawing-transmittal .dt-tiles {
+  grid-auto-flow: row;
+  gap: 0;
+  margin: var(--s-2) 0 0;
+
+  > * {
+    padding: var(--s-4) 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+.dt-tile .metric__note {
+  margin-top: var(--s-2);
+}
+
+.dt-fails {
+  margin-block: var(--s-4);
+}
+
+.dt-runs {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.dt-math {
+  border-top: 1px solid var(--line);
+  @include disclosure.chevron;
+
+  summary {
+    min-height: 44px;
+    font: 500 15px / 1 var(--sans);
+  }
+}
+
+.dt-math__lines {
+  font: 400 13px / 1.7 var(--mono);
+}
+
+.dt-math__note {
+  margin: var(--s-3) 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.dt-limits li {
+  position: relative;
+  margin: var(--s-2) 0;
+  padding-left: 24px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0.75em;
+    left: 2px;
+    width: 10px;
+    height: 1px;
+    background: var(--faint);
+  }
+}
+// #endregion
+
+// #region Phones, under 700px: stacked, the register in place of the table
+@media (width < 700px) {
+  // two line cards, the hint beside its label, so the desk and its Approve button sit higher on the screen
+  .dt-pick__opt {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 8px;
+    min-height: 56px;
+    padding-block: 8px;
+  }
+
+  .dt-pick__f {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    font-size: 11.5px;
+  }
+
+  .dt-pick__h::before {
+    content: '· ' / '';
+  }
+
+  // a tighter rhythm, so the run from the Drop button to the new register row fits one phone screen
+  .dt {
+    gap: var(--s-4);
+  }
+
+  .dt-acts {
+    row-gap: var(--s-2);
+  }
+
+  .dt-panels {
+    grid-template-areas: 'desk' 'head' 'register' 'jobs' 'table';
+    gap: var(--s-2);
+  }
+
+  .dt-record {
+    display: contents;
+  }
+
+  // the desk is as tall as the sheet, so the first register rows share the screen with the title block
+  .dt-desk {
+    position: relative;
+    grid-area: desk;
+  }
+
+  // the taller approval page lies over the record's head while it waits, above the register's strike and wash marks
+  .dt-layer:not([data-layer='sheet']) {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 2;
+  }
+
+  .dt-record__head {
+    grid-area: head;
+  }
+
+  // room for every row a drop can add, ruled like the table so the space reads as blank rows
+  .dt-register {
+    display: grid;
+    grid-area: register;
+    align-content: start;
+    min-height: calc(8 * 57px);
+    padding: 0 12px;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 56px / 100% 57px,
+      var(--bg);
+  }
+
+  // the tighter rhythm ends at the register; the jobs and the full table keep 24px apart
+  .dt-panels > .dt-jobs {
+    grid-area: jobs;
+    margin-top: var(--s-4);
+  }
+
+  .dt-record > .dt-scroll {
+    grid-area: table;
+    margin-top: var(--s-4);
+  }
+
+  .dt-card {
+    position: relative;
+    display: grid;
+    align-content: center;
+    min-height: 57px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+
+    p {
+      max-width: none;
+      margin: 0;
+    }
+
+    .dt-row__wash,
+    .dt-row__strike {
+      width: 100%;
+    }
+  }
+
+  .dt-card__a {
+    font: 400 13px / 1.5 var(--mono);
+  }
+
+  .dt-card__b {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .dt-card.is-revoked p {
+    color: var(--faint);
+  }
+
+  .dt-card.is-new {
+    background: linear-gradient(var(--wash), var(--wash)), var(--bg);
+  }
+
+  .dt-stack {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    tr,
+    td {
+      display: block;
+    }
+
+    tr {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      padding: 2px 0;
+      border: 0;
+    }
+
+    td:not(:first-child)::before {
+      content: attr(data-label) / '';
+      display: block;
+      margin-top: 6px;
+    }
+  }
+
+  .dt-table--record {
+    :is(th, td):nth-child(1) {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+    }
+
+    :is(th, td):nth-child(3) {
+      position: sticky;
+      left: 40px;
+      z-index: 2;
+    }
+  }
+}
+// #endregion
+
+// #region Tablets and up
+@media (width >= 700px) {
+  .dt {
+    padding: var(--s-6);
+  }
+
+  .dt-status {
+    min-height: calc(2 * 1.4em);
+  }
+
+  .dt-desk {
+    max-width: 720px;
+  }
+
+  .dt-jobs__list {
+    grid-template-rows: repeat(3, auto);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: column;
+  }
+}
+
+// stacked, the desk shows the sheet's lower part (south wall, revision table, title block), so the record shares the screen
+@media (700px <= width < 1240px) {
+  .dt-paper {
+    flex: 1 1 auto;
+    aspect-ratio: 528 / 200;
+
+    .dt-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
+@media (width >= 1100px) {
+  // the second frame holds the seven column table, so it takes the wider column
+  .stage--drawing-transmittal .storyboard {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  // three cards in a row only once the longest file name fits on one line
+  .dt-pick__opts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 900px) {
+  .dt-duties {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--s-7);
+  }
+
+  .stage--drawing-transmittal .stage__steps {
+    columns: 2;
+    column-gap: var(--s-7);
+  }
+}
+
+// side by side from 1240px, so the sheet and the record are in view together; the full sheet at 1:1 needs 1440px
+@media (width >= 1240px) {
+  .dt-panels {
+    grid-template-columns: minmax(0, 528px) 648px;
+    column-gap: 40px;
+    justify-content: space-between;
+  }
+
+  .dt-desk {
+    max-width: none;
+  }
+
+  .dt-panels > .dt-jobs {
+    grid-column: 1 / -1;
+  }
+
+  .dt-jobs__list {
+    grid-template-rows: none;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+}
+
+// a narrow desk (a phone, or side by side before the full sheet fits at 1440px) shows the title block, the part the
+// scan reads, at a readable size, anchored bottom right; the paper fills the desk's height, showing the drawing above
+@media (width < 700px), (1240px <= width < 1440px) {
+  .dt-paper {
+    flex: 1 1 auto;
+    min-height: 232px;
+    aspect-ratio: auto;
+
+    .dt-sheet {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      transform: scale(1.886);
+      transform-origin: 100% 100%;
+    }
+  }
+}
+
+@media (width >= 1440px) {
+  .dt {
+    padding: var(--s-7);
+  }
+
+  .dt-panels {
+    column-gap: var(--s-7);
+  }
+}
+// #endregion
+
+// #region Forced colours and print
+@media (forced-colors: active) {
+  .dt-row__strike,
+  .dt-name__u,
+  .sh-bar,
+  .dt-job__wash {
+    forced-color-adjust: none;
+    background: CanvasText;
+    fill: CanvasText;
+  }
+}
+
+// on paper the storyboard is one column, so the draft table fits its frame
+@media print {
+  .stage--drawing-transmittal {
+    background: none;
+
+    .storyboard {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+  }
+
+  .dt-scroll {
+    overflow: visible;
+  }
+
+  .dt-list {
+    min-width: 0;
+  }
+}
+// #endregion

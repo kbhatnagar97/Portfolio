@@ -494,7 +494,8 @@ dd {
     color: var(--gold);
   }
 
-  @media (width < 900px) {
+  // seven links fit beside the name and the mail button only from 1120px, so narrower screens use the menu sheet
+  @media (width < 1120px) {
     grid-template-columns: 1fr auto;
 
     &__links,
@@ -504,6 +505,13 @@ dd {
 
     &__menu {
       display: block;
+    }
+  }
+
+  // the links keep their index numbers only from 1280px; narrower pills need that room
+  @media (width < 1280px) {
+    &__links .nav__num {
+      display: none;
     }
   }
 }

@@ -1,0 +1,218 @@
+// Opt in: the case with the compare adds @use '../shared/compare'; to its case.scss, so other pages never load these rules.
+
+// #region Compare: counter translation, so the wipe is three transforms and no clip-path repaint
+.cmp__frame {
+  position: relative;
+  overflow: clip;
+  aspect-ratio: var(--cmp-ratio, 16 / 10);
+  touch-action: pan-y;
+  user-select: none;
+  background: var(--bg-raise);
+}
+
+.cmp__after,
+.cmp__clip,
+.cmp__inner,
+.cmp__handle {
+  position: absolute;
+  inset: 0;
+}
+
+.cmp__clip {
+  overflow: clip;
+  transform: translateX(calc(var(--start) * 1% - 100%));
+}
+
+.cmp__inner {
+  transform: translateX(calc(100% - var(--start) * 1%));
+}
+
+.cmp picture,
+.cmp img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cmp img {
+  object-fit: cover;
+  object-position: top;
+}
+
+.cmp__label {
+  position: absolute;
+  z-index: 1;
+  top: var(--s-3);
+  padding: 4px 8px;
+  border-radius: var(--r-pill);
+  font: 500 11px / 1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--bg);
+  transition: opacity 120ms linear;
+
+  &.is-near {
+    opacity: 0;
+  }
+}
+
+.cmp__label--before {
+  left: var(--s-3);
+}
+
+.cmp__label--after {
+  right: var(--s-3);
+}
+
+.cmp__range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cmp__handle {
+  pointer-events: none;
+  transform: translateX(calc(var(--start) * 1%));
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    width: 2px;
+    background: var(--text);
+  }
+}
+
+.cmp__grip {
+  position: absolute;
+  top: 50%;
+  left: -22px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--bg);
+
+  .glyph {
+    width: 20px;
+  }
+}
+
+// the range is invisible, so its focus ring moves to the grip
+.cmp__range:focus-visible ~ .cmp__handle .cmp__grip {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.cmp__wait {
+  position: absolute;
+  top: calc(50% + 30px);
+  left: 0;
+  display: none;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font: 500 12px / 1 var(--mono);
+  color: var(--text);
+}
+
+html.case-ready .cmp:not(.cmp--ready) .cmp__wait {
+  display: block;
+}
+
+// a phone frame has no room for dated labels beside the handle; the caption still carries both dates
+@media (max-width: 699px) {
+  .cmp__frame {
+    aspect-ratio: var(--cmp-ratio-phone, var(--cmp-ratio, 16 / 10));
+  }
+
+  .cmp__when {
+    display: none;
+  }
+}
+
+// both captures stacked, Before above After, each under its label
+@mixin stacked {
+  .cmp__frame {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    aspect-ratio: auto;
+    overflow: visible;
+    background: none;
+  }
+
+  .cmp__after,
+  .cmp__clip,
+  .cmp__inner,
+  .cmp__label {
+    position: static;
+    transform: none;
+  }
+
+  .cmp__label {
+    align-self: flex-start;
+  }
+
+  .cmp__label--before {
+    order: 1;
+  }
+
+  .cmp__clip {
+    order: 2;
+  }
+
+  .cmp__label--after {
+    order: 3;
+  }
+
+  .cmp__after {
+    order: 4;
+  }
+
+  .cmp img {
+    height: auto;
+  }
+
+  .cmp__range,
+  .cmp__handle {
+    display: none;
+  }
+}
+
+// keyed on html.js like the stage, so the frame is set before first paint and never shifts the first screen
+html:not(.js) {
+  @include stacked;
+}
+
+@media print {
+  @include stacked;
+
+  // the script writes the wipe as inline transforms, which only an important rule outranks
+  .cmp__clip,
+  .cmp__inner {
+    transform: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .cmp__grip {
+    border-color: ButtonBorder;
+  }
+
+  .cmp__handle::before {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+}
+// #endregion

@@ -7,6 +7,7 @@ import Nav from './sections/Nav';
 import Hero from './sections/Hero';
 import Skills from './sections/Skills';
 import Work from './sections/Work';
+import CaseStudies from './sections/CaseStudies';
 import Automations from './sections/Automations';
 import Journey from './sections/Journey';
 import Process from './sections/Process';
@@ -89,6 +90,7 @@ const Site = () => {
         <Hero />
         <Skills onOpen={open} />
         <Work onOpen={open} />
+        <CaseStudies />
         <Automations onOpen={open} />
         <Journey />
         <Process />

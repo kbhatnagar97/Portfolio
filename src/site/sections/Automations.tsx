@@ -118,7 +118,7 @@ const AutomationIndex = ({ onOpen }: { onOpen: (id: string) => void }) => (
 const Automations = ({ onOpen }: { onOpen: (id: string) => void }) => (
   <section id='automations' className='autos' aria-labelledby='autos-title'>
     <header className='section-head' data-shape={SHAPE.field}>
-      <p className='section-head__index'>03 / My personal automations</p>
+      <p className='section-head__index'>04 / My personal automations</p>
       <h2 id='autos-title' data-split>
         Small robots that run my day while I build.
       </h2>

@@ -1,0 +1,1171 @@
+{
+  "slug": "flipp-tripp",
+  "draft": false,
+  "flagship": false,
+  "title": "Flipp Tripp",
+  "kicker": "Research, design contest and build",
+  "client": "Flipp Tripp",
+  "anonymised": false,
+  "role": "Directed research, design and build",
+  "year": "2026",
+  "published": "2026-10-25",
+  "accent": "#f4efe6",
+  "industry": "Brand film production",
+  "purposes": [
+    "opens-reach",
+    "reduces-risk"
+  ],
+  "status": "Pre launch: review build waiting on the owner's confirmations; a requested new look has not started",
+  "seoTitle": "Flipp Tripp: a split flap website case study",
+  "description": "How I built a brand film studio's first website: a split flap board of verified facts, a launch gate on unconfirmed claims, and 42 of 42 checks passing.",
+  "deck": "The studio had no showreel to lead with, so its first website leads with a split flap board of verified facts.",
+  "summary": [
+    "Flipp Tripp, a brand film studio, had no website, no published email, phone number or address, and no showreel or film masters to design from. Its name also sits beside travel businesses.",
+    "I ran agent workflows for fact checked research and a design contest of three concepts, then built a site whose proof is its design: a split flap board of verified facts that settles once and waits. An adversarial review tested it the same day.",
+    "The launch build is gated. An indexable build fails while any owner confirmation is missing, people stay hidden until they consent, and the home page sets 0 cookies. 42 of 42 acceptance checks pass on the review build, and reach opens at launch."
+  ],
+  "impact": [
+    {
+      "value": "42 of 42",
+      "label": "acceptance checks pass on the review build, reading the served pages with JavaScript off, 25 Oct 2026.",
+      "kind": "measured",
+      "source": "checks"
+    },
+    {
+      "value": "0 cookies",
+      "label": "set when the home page loads, with 0 stored items and 0 third party requests.",
+      "kind": "measured",
+      "source": "privacy"
+    },
+    {
+      "value": "1.04 s",
+      "label": "for the home page's split flap board to settle once, then 0 flaps in the next 6.06 s with no input.",
+      "kind": "measured",
+      "source": "motion",
+      "note": "One unthrottled lab session at 1440 by 900."
+    },
+    {
+      "value": "33 of 44",
+      "label": "review findings held up under a second, adversarial check, and all 33 were fixed the same day.",
+      "kind": "measured",
+      "source": "review"
+    }
+  ],
+  "poster": {
+    "src": "/case-studies/flipp-tripp/media/poster.jpg",
+    "webp": "/case-studies/flipp-tripp/media/poster.webp",
+    "alt": "A split flap board drawn for this page, at rest: STORIES FIRST on the top row and PRODUCTION NEXT on the second, ink letters on black tiles.",
+    "width": 1280,
+    "height": 800
+  },
+  "stack": [
+    "Next.js 16.3 App Router",
+    "React 19.2",
+    "TypeScript",
+    "Tailwind CSS v4",
+    "motion 12, for one hinge only",
+    "CSS scroll driven animations",
+    "next/font with Inter optical sizes",
+    "next/og share images at build time",
+    "Vercel",
+    "pnpm",
+    "Node built ins for the acceptance script",
+    "Resend HTTP API, offline until launch",
+    "Vimeo and YouTube privacy modes behind click to load players",
+    "Claude agent workflows for research, the contest, the build and the review"
+  ],
+  "links": [
+    {
+      "label": "Review build",
+      "href": "https://flipp-tripp.vercel.app"
+    }
+  ],
+  "offer": {
+    "who": "Founder led studios and small brands that need a first website but have little public proof yet, and open questions about rights, consent or who runs the business.",
+    "gets": "A brief researched from public records and standards, a design chosen from competing concepts, a site built to written speed and accessibility targets with one signature interaction, search basics with structured data and share images, privacy and terms text built only from confirmed facts, a launch gate, and one command that reruns the acceptance checks.",
+    "needs": "Your confirmations: who runs the business, an inbox and a domain, and a grievance contact. Written permission from each client you want to show, consent from anyone on screen, and your master files: logo, films and stills.",
+    "setup": "On this project, research, design, build and review all happened on one day, 12 Oct 2026. Launch then waits only on your confirmations; switching on is configuration and a rerun of the checks."
+  },
+  "credits": [
+    {
+      "text": "Screens of the Flipp Tripp review build, captured 25 Oct 2026 and shown with the owner's OK."
+    }
+  ],
+  "sources": [
+    {
+      "id": "checks",
+      "text": "Acceptance run of the project's own check script against the review build, reading the served pages with JavaScript off, 25 Oct 2026. All 42 checks passed: routes 4, SEO 9, structure and links 6, copy 17, served without JavaScript 3, privacy and leaks 3. Among them: the sitemap lists exactly the 7 published pages, the structured data carries the 6 types the script expects, and share images render for Home and the 4 case pages."
+    },
+    {
+      "id": "privacy",
+      "text": "Home page load in headless Chromium 153 at 1440 by 900, unthrottled, with every request to another host aborted and counted; cookies and storage read 7 s after load. Run on 25 Oct 2026 IST (24 Oct 2026, 22:15 UTC). Result: 0 cookies, 0 local storage keys, 0 session storage keys and 0 third party requests attempted."
+    },
+    {
+      "id": "motion",
+      "text": "Same session. A MutationObserver timed every flap layer added inside the home board, whose 26 tiles each add two layers per flip. On load: 188 layers, so 94 flips, the first at 1,324.8 ms and the last at 2,255.9 ms after navigation start, still 1.04 s after the first flap; then 0 layers in the next 6.06 s with no input. One click with no pointer movement: 38 layers, the first new flap at 46.1 ms and the last at 512.3 ms, still at 622 ms. Still time is the last layer plus one 110 ms step. With reduced motion emulated: 0 layers on load and on press, and the row text swapped at once. One unthrottled lab session, not field data."
+    },
+    {
+      "id": "review",
+      "text": "The project's adversarial review, 12 Oct 2026. Five lenses (bugs, accessibility, visual craft, performance and SEO, claims) proposed 44 findings; a second pass checked each one, mostly by reproducing it in a browser, and confirmed 33, rejecting 11 as behaviour the spec intended. Confirmed by severity: 3 blocker, 7 major, 23 minor. All 33 were fixed that day, as the project's optimisation record notes. The four findings described on this page are bugs 1 and 7 and accessibility 1 and 3. Counted on 25 Oct 2026."
+    },
+    {
+      "id": "engine",
+      "text": "The client's flap engine, board component and tile styles, read 25 Oct 2026. The engine: 128 lines by wc, 110 ms a tile step, a pool of 37 glyphs (A to Z, 0 to 9 and &), one time ordered queue on one requestAnimationFrame loop that stops when the queue is empty. The board: the settle runs 2 to 4 random glyphs a tile, 35 ms apart by column and 120 ms by row, and a blank tile runs one random glyph; a press flips changed tiles only, through one random glyph and then the target, 35 ms apart by column. The styles: the fold and landing layers, each half a step long, with a shade on the moving leaf."
+    },
+    {
+      "id": "spec",
+      "text": "The project's build spec, written from the design contest on 12 Oct 2026: the shade rising from 0 to 0.45 as a leaf folds (line 304); every board still within 1.2 s and a press within 0.65 s (lines 169 and 306); the offline enquiry mode and the steps for switching on (928 to 955); legal text gated by confirmation (957 to 979); and SEO, with 6 structured data types, 5 share images and a sitemap of 7 pages (1053 to 1121). The copy pass that removed five unverified marketing lines is in lines 765 to 770. Read 25 Oct 2026."
+    },
+    {
+      "id": "brief",
+      "text": "The project's research brief, 12 Oct 2026: five research tracks and three follow up passes with fact check verdicts (line 3); the brand's public footprint (57 to 58 and 158); 15 standards and legal sources (108 to 124), among them WCAG 2.2 success criterion 2.2.2, which asks for a pause control when automatic motion lasts more than 5 s, and Copyright Act section 17(b); 11 items never to state as fact (126 to 137); the rule that no content item is published without the owner's confirmation of rights (178); 16 firm content items and 11 possible ones (180 to 215); the cookie plan, no banner at launch and a fresh check before 13 May 2027 (118 and 569 to 573); 16 owner questions and 16 risks (662 to 702). Read 25 Oct 2026."
+    },
+    {
+      "id": "brain",
+      "text": "The project's own notes, read 25 Oct 2026: the decisions log (a research workflow of 17 agents with every track fact checked; the design contest; the owner's request of 23 Oct 2026), the progress log for 12 Oct 2026 (built on the Post Aura scaffold, five builder agents in parallel, 42 of 42 checks green locally and on the review build, review fixes deployed) and the mistakes and lessons log."
+    },
+    {
+      "id": "gates",
+      "text": "The client's source code, read 25 Oct 2026: the launch gate in the root layout; the confirmation flags and the list of what is missing in the legal settings, with email delivery live only when the operator and three settings exist; 4 people stored with consent set to false, and the credit filter that runs on the server, in the work registry; 2 held cases in a file that nothing imports; and the site settings, where only a real domain makes a build indexable."
+    },
+    {
+      "id": "contest",
+      "text": "The design contest results, 12 Oct 2026: three concepts scored by design, brand and engineering judge agents. Departures 8, 8.1 and 8.5; The Keynote Cut 7, 7 and 7; The Flip Side 6.5, 6.5 and 5.5. Across the three verdicts, 49 must fix items and 37 grafts, some overlapping. The design judge's note on the first build: its hero cycled forever behind a pause button, at about nine flips a second per tile across 26 tiles. Read 25 Oct 2026."
+    },
+    {
+      "id": "repo",
+      "text": "The client repository, read 25 Oct 2026: its package file (four runtime dependencies, Next.js, React, React DOM and motion, and one check command that builds the site and runs the acceptance script); the acceptance script's header (its rule, line 20); the optimisation record (20 static routes in the production build, checks green before and after); and the git reflog, where commits 9bb04ab, 0031073 and 2458c5a landed at 09:36, 10:29 and 11:57 IST on 12 Oct 2026."
+    }
+  ],
+  "gaps": [
+    "Launch date, traffic, search and enquiry numbers not yet available.",
+    "No money figure available.",
+    "No baseline for time saved.",
+    "PageSpeed and field INP results not yet recorded.",
+    "Layout shift after the font fallback fix not measured again.",
+    "No PEAT flash analysis recorded yet.",
+    "VoiceOver passes not yet recorded.",
+    "Hours worked not recorded.",
+    "No client quote yet.",
+    "Scope of the requested new look not yet known.",
+    "Role breakdown of the 17 research agents not recorded.",
+    "Changes in the intermediate commit 8532dcc not recorded.",
+    "Timings come from one desktop lab session; no phone or field timing yet.",
+    "Scoring scale of the design contest not stated."
+  ],
+  "blocks": {
+    "order": [
+      "stage",
+      "starting-point",
+      "the-turn",
+      "cannot-say-too-much",
+      "found-at-launch",
+      "judged-and-rebuilt",
+      "going-live"
+    ],
+    "stage": {
+      "id": "stage",
+      "nav": "How one flap turns",
+      "heading": "How one flap turns",
+      "intro": "Every tile on the studio's board is modelled on a physical flap. Step through one change by hand, then type your own words onto a board that keeps the same timing. I wrote this board fresh for this page; it is not the client's code.",
+      "tempo": {
+        "leafMs": 55,
+        "stepMs": 110,
+        "columnMs": 35,
+        "rowMs": 120,
+        "settleRandomMin": 2,
+        "settleRandomMax": 4,
+        "pressRandom": 1,
+        "shade": 0.45,
+        "foldEase": "linear",
+        "landEase": "--ease",
+        "glyphs": "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&",
+        "source": "engine"
+      },
+      "cut": {
+        "heading": "Step through one flip",
+        "badge": "Illustration, not a screenshot",
+        "example": {
+          "from": "F",
+          "via": "7",
+          "to": "T",
+          "text": "Example flip: F to T, through one random glyph, 7.",
+          "prov": [
+            {
+              "kind": "example",
+              "source": "engine"
+            }
+          ]
+        },
+        "labels": {
+          "topLeaf": "Top leaf",
+          "bottomLeaf": "Bottom leaf",
+          "fold": "Fold",
+          "shade": "Shade",
+          "pool": "Pool of 37 glyphs",
+          "from": "From",
+          "random": "Random",
+          "to": "To",
+          "side": "Side view",
+          "viewer": "You"
+        },
+        "slider": {
+          "label": "Step through one flip",
+          "min": 0,
+          "max": 220,
+          "step": 5,
+          "page": 55,
+          "value": 30,
+          "help": {
+            "text": "Each step is 110 ms: the old leaf folds for 55 ms, then the new one lands for 55 ms. This example takes two steps, F to 7, then 7 to T.",
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "engine"
+              }
+            ]
+          },
+          "noJs": "Turn on JavaScript to step through the flip."
+        },
+        "play": {
+          "label": "Play it 10 times slower",
+          "pause": "Pause",
+          "badge": "Demo speed",
+          "factor": 10
+        },
+        "loadError": "The controls did not load. The steps below describe the flip in full.",
+        "readout": {
+          "template": "STEP {step} OF 2 · {ms} OF 110 MS · {phase}",
+          "slow": "10 TIMES SLOWER",
+          "phases": {
+            "rest": "AT REST",
+            "fold": "TOP LEAF FALLING",
+            "edge": "EDGE ON",
+            "land": "BOTTOM LEAF LANDING",
+            "landed": "LANDED"
+          }
+        },
+        "valueText": {
+          "rest": "0 milliseconds: F at rest.",
+          "fold": "{t} milliseconds, step {step} of 2: the old top leaf is falling.",
+          "edge": "{t} milliseconds, step {step} of 2: both leaves edge on, {next} above, {prev} below.",
+          "land": "{t} milliseconds, step {step} of 2: the new bottom leaf is landing.",
+          "landed": "{t} milliseconds: {glyph} has landed."
+        },
+        "steps": [
+          {
+            "text": "At rest a tile shows two halves of one glyph. When it changes, the top half behind the old leaf already holds the next glyph.",
+            "from": 0,
+            "to": 0,
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "engine"
+              }
+            ]
+          },
+          {
+            "text": "The old top leaf folds down about its bottom edge, darkening as it turns. At 55 ms it stands edge on and disappears.",
+            "from": 5,
+            "to": 55,
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "engine"
+              },
+              {
+                "kind": "reported",
+                "source": "spec"
+              }
+            ]
+          },
+          {
+            "text": "The new bottom leaf unfolds from edge on and lands over the old bottom half as its shade lifts. One step takes 110 ms.",
+            "from": 60,
+            "to": 110,
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "engine"
+              }
+            ]
+          },
+          {
+            "text": "A press runs each changed tile through one random glyph from a pool of 37, then the new letter: two steps. The first settle runs two to four random glyphs before each letter.",
+            "from": 115,
+            "to": 220,
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "engine"
+              }
+            ]
+          }
+        ],
+        "storyboard": {
+          "caption": "One flip in four moments, drawn for this page.",
+          "prov": [
+            {
+              "kind": "example",
+              "source": "engine"
+            }
+          ],
+          "frames": [
+            {
+              "t": 0,
+              "label": "0 ms",
+              "text": "F at rest.",
+              "topHalf": "F",
+              "bottomHalf": "F",
+              "fold": null,
+              "land": null
+            },
+            {
+              "t": 30,
+              "label": "30 ms",
+              "text": "The old top leaf falls under its shade.",
+              "topHalf": "7",
+              "bottomHalf": "F",
+              "fold": {
+                "glyph": "F",
+                "deg": -49,
+                "shade": 0.25
+              },
+              "land": null
+            },
+            {
+              "t": 55,
+              "label": "55 ms",
+              "text": "Edge on: the top half shows 7, the bottom half still shows F.",
+              "topHalf": "7",
+              "bottomHalf": "F",
+              "fold": null,
+              "land": null
+            },
+            {
+              "t": 110,
+              "label": "110 ms",
+              "text": "7 has landed. A second step, 110 ms more, lands T.",
+              "topHalf": "7",
+              "bottomHalf": "7",
+              "fold": null,
+              "land": null
+            }
+          ]
+        }
+      },
+      "board": {
+        "heading": "Type a word",
+        "rows": 2,
+        "columns": 12,
+        "columnsPhone": 8,
+        "phoneBelow": 700,
+        "label": "Type a word for the board",
+        "value": "Stories first",
+        "help": "A to Z, 0 to 9 and &, on two rows of 12. Rows break at a space. The example is the studio's own line.",
+        "helpPhone": "A to Z, 0 to 9 and &, on two rows of 8. Rows break at a space. The example is the studio's own line.",
+        "button": "Flip the board",
+        "errors": {
+          "empty": "Type at least one letter, digit or & so the board has something to show.",
+          "glyphs": "The board only carries A to Z, 0 to 9 and &. Take out {chars} and flip again.",
+          "rows": "That needs a third row. Keep it to two rows of {cols}, breaking at a space."
+        },
+        "announce": "The board reads: {text}.",
+        "same": "The board already reads: {text}.",
+        "narrowed": "The board is narrower now, so it shows the example again.",
+        "readout": "YOUR FLIP, TIMED IN THIS BROWSER · FIRST FLAP {first} MS · STILL {still} MS",
+        "caption": {
+          "text": "Only changed tiles flip, 35 ms apart by column, with one random glyph before each letter. Under reduced motion the words swap at once, as they do on the studio's board.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "engine"
+            },
+            {
+              "kind": "measured",
+              "source": "motion"
+            }
+          ]
+        },
+        "noJs": "Turn on JavaScript to type on the board."
+      },
+      "measured": {
+        "heading": "Measured on the review build",
+        "intro": {
+          "text": "I timed the studio's board on its review build, in headless Chromium on 25 Oct 2026, unthrottled at 1440 by 900, with every request to another host blocked and counted.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "motion"
+            }
+          ]
+        },
+        "press": {
+          "title": "One press",
+          "unit": "ms",
+          "max": 700,
+          "tick": 100,
+          "marks": [
+            {
+              "at": 0,
+              "label": "Press",
+              "value": "0 ms"
+            },
+            {
+              "at": 46,
+              "label": "First new flap",
+              "value": "46 ms"
+            },
+            {
+              "at": 512,
+              "label": "Last new flap",
+              "value": "512 ms"
+            },
+            {
+              "at": 622,
+              "label": "Still",
+              "value": "622 ms"
+            }
+          ],
+          "kind": "measured",
+          "source": "motion",
+          "cap": {
+            "at": 650,
+            "label": "Spec cap",
+            "value": "650 ms",
+            "kind": "reported",
+            "source": "spec"
+          },
+          "caption": {
+            "text": "A press flips only the tiles that change: 38 flap layers, then nothing. The board is still at 622 ms, inside the spec's 650 ms cap.",
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "motion"
+              },
+              {
+                "kind": "reported",
+                "source": "spec"
+              }
+            ]
+          }
+        },
+        "load": {
+          "title": "First load",
+          "unit": "s",
+          "max": 7.1,
+          "tick": 1,
+          "bands": [
+            {
+              "from": 0,
+              "to": 1.04,
+              "label": "Settling",
+              "value": "1.04 s"
+            },
+            {
+              "from": 1.04,
+              "to": 7.1,
+              "label": "Still, with no input",
+              "value": "6.06 s"
+            }
+          ],
+          "kind": "measured",
+          "source": "motion",
+          "threshold": {
+            "at": 5,
+            "label": "WCAG 2.2.2 threshold",
+            "value": "5 s",
+            "kind": "reported",
+            "source": "brief"
+          },
+          "caption": {
+            "text": "The home board makes 94 flips across its 26 tiles and is still 1.04 s after its first flap. No tile flipped in the next 6.06 s. WCAG 2.2.2 asks for a pause control only when automatic motion lasts more than 5 s, so the board needs none.",
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "motion"
+              },
+              {
+                "kind": "reported",
+                "source": "brief"
+              }
+            ]
+          }
+        },
+        "privacy": {
+          "tiles": [
+            {
+              "value": "0 cookies",
+              "label": "set by the home page load.",
+              "kind": "measured",
+              "source": "privacy"
+            },
+            {
+              "value": "0 stored items",
+              "label": "in local or session storage.",
+              "kind": "measured",
+              "source": "privacy"
+            },
+            {
+              "value": "0 third party requests",
+              "label": "with every other host blocked and counted.",
+              "kind": "measured",
+              "source": "privacy"
+            }
+          ],
+          "caption": {
+            "text": "Films load only on a press: nothing is requested from Vimeo, YouTube, Instagram or Google before one.",
+            "prov": [
+              {
+                "kind": "measured",
+                "source": "checks"
+              }
+            ]
+          }
+        },
+        "frames": {
+          "img": {
+            "src": "/case-studies/flipp-tripp/media/press-frames-720.webp",
+            "alt": "Seven stacked frames of the second row of the studio's board: it reads CAMPAIGNS, then tiles from the left pass through random glyphs, some mid fold under a shade, and the last frame reads EVENT CONTENT.",
+            "width": 720,
+            "height": 575
+          },
+          "srcset": "/case-studies/flipp-tripp/media/press-frames-720.webp 720w, /case-studies/flipp-tripp/media/press-frames-1440.webp 1440w",
+          "caption": "One press on the review build, frame by frame, then the landed row. Only the tiles that change flip, from left to right.",
+          "credit": "Capture: Flipp Tripp review build, 25 Oct 2026, shown with the owner's OK"
+        }
+      }
+    },
+    "starting-point": {
+      "id": "starting-point",
+      "nav": "Nothing to point at",
+      "label": "12 OCT 2026",
+      "heading": "Nothing to point at",
+      "lede": {
+        "text": "The studio had no website. None of its public channels gave an email address, a phone number or a postal address, and its only active channel was Instagram."
+      },
+      "parts": [
+        {
+          "type": "p",
+          "text": "There was no showreel, no logo master, no colour file and no set of film masters. The only logo was a small social media avatar. Searching the name returned mostly namesakes, including travel businesses that hold similar trademarks."
+        },
+        {
+          "type": "p",
+          "text": "At the start I launched a research workflow of 17 agents, alongside the first build: five tracks and three follow up passes, each with fact check verdicts. The brief states as fact only what the fact check agents verified or two registries agreed on.",
+          "prov": [
+            {
+              "kind": "reported",
+              "source": "brain"
+            },
+            {
+              "kind": "measured",
+              "source": "brief"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "text": "It mapped the legal ground early. Under Indian copyright law, a film made for payment belongs first to the client who commissioned it unless they agree otherwise, so every commissioned film needed its client's written permission. The business behind the brand was checked against public registries, and no legal page names an operator until the owner confirms who runs it.",
+          "prov": [
+            {
+              "kind": "reported",
+              "source": "brief"
+            },
+            {
+              "kind": "measured",
+              "source": "checks"
+            }
+          ]
+        },
+        {
+          "type": "p",
+          "text": "It also found that Apple's SF Pro licence forbids use on websites, so the site sets Inter with optical sizes, at type values read from apple.com's own stylesheets."
+        },
+        {
+          "type": "board",
+          "caption": "What the research brief put on the table, 12 Oct 2026.",
+          "rows": [
+            {
+              "value": "15",
+              "label": "standards and legal sources checked, from web vitals and WCAG 2.2 to Indian privacy rules and copyright.",
+              "kind": "measured",
+              "source": "brief"
+            },
+            {
+              "value": "11",
+              "label": "items on a list of what never to state as fact.",
+              "kind": "measured",
+              "source": "brief"
+            },
+            {
+              "value": "16 and 16",
+              "label": "questions for the owner, ranked by impact, and risks, each with a mitigation.",
+              "kind": "measured",
+              "source": "brief"
+            }
+          ]
+        }
+      ]
+    },
+    "the-turn": {
+      "id": "the-turn",
+      "nav": "The missing showreel",
+      "label": "12 OCT 2026",
+      "heading": "The showreel that did not exist",
+      "turn": {
+        "expected": "Lead with the films: a showreel at the top, then the work.",
+        "cost": "There was no showreel, no film master and no logo file to design from, and every commissioned film needed its client's written permission before it could appear. A site built around footage would have waited on all of it.",
+        "costMetric": {
+          "value": "16 firm items",
+          "label": "with a published credit, each waiting on the owner's confirmation of rights, plus 11 possible items.",
+          "kind": "measured",
+          "source": "brief"
+        },
+        "line": "With nothing to play, the verified facts became the picture.",
+        "built": "A studio information board. Its verified films, dates and credits sit on split flap boards that settle once and then wait. When the owner supplies a film master, it drops into its row without a redesign.",
+        "marker": {
+          "steps": 12,
+          "durationMs": 1100
+        }
+      }
+    },
+    "cannot-say-too-much": {
+      "id": "cannot-say-too-much",
+      "nav": "Cannot say too much",
+      "label": "EVERY BUILD",
+      "heading": "A site that cannot say too much",
+      "lede": {
+        "text": "A launch build may state only what has been confirmed, and the code enforces it."
+      },
+      "parts": [
+        {
+          "type": "h3",
+          "text": "The launch gate"
+        },
+        {
+          "type": "p",
+          "text": "Only a real domain makes a build indexable. If an indexable build starts while any owner confirmation is missing, it fails with an error that lists each one, including the operator, the grievance officer, live email delivery, every client's written permission and the launch date. Review builds stay out of search."
+        },
+        {
+          "type": "code",
+          "text": "Launch gate: operator not confirmed; grievance officer not named; enquiry email delivery not live; no permission from a client; launch date for Privacy and Terms not set.",
+          "badge": "Recreated for this page",
+          "caption": "The gate's error message, recreated with names removed and the list shortened."
+        },
+        {
+          "type": "h3",
+          "text": "Legal text from confirmed facts"
+        },
+        {
+          "type": "p",
+          "text": "Privacy and Terms are generated from configuration. The operator, the grievance officer, the courts and the liability clauses render only once confirmed, and a draft note says so until then. Confirming a fact switches its sentence on across every page in the next build."
+        },
+        {
+          "type": "h3",
+          "text": "Names behind consent"
+        },
+        {
+          "type": "p",
+          "text": "People are stored with a consent flag, and credits are filtered on the server, so an unconsented name never reaches a page or a browser bundle. Held cases live in a file that nothing imports, and their addresses return 404. The checks scan every served byte and every bundle for leaks.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "checks"
+            }
+          ]
+        },
+        {
+          "type": "tiles",
+          "items": [
+            {
+              "value": "4 people",
+              "label": "stored in the code, shown on no page until they consent.",
+              "kind": "measured",
+              "source": "gates"
+            },
+            {
+              "value": "2 held cases",
+              "label": "kept in a file that nothing imports.",
+              "kind": "measured",
+              "source": "gates"
+            }
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "An honest offline form"
+        },
+        {
+          "type": "p",
+          "text": "Until the operator, the inbox and email delivery are confirmed, Send is disabled and a note points visitors to Instagram. If the server is reached anyway, it stores nothing and answers with the same note. In offline mode, success is never faked."
+        },
+        {
+          "type": "h3",
+          "text": "Privacy without a banner"
+        },
+        {
+          "type": "p",
+          "text": "Films load only on a press, through Vimeo's do not track mode and YouTube's privacy enhanced domain. Fonts are self hosted, no cookie is set and nothing is stored, so the research brief plans no consent banner at launch, with a fresh check due before India's new data protection duties start on 13 May 2027. The Privacy Policy describes what the build does, and the stage above shows the measurement.",
+          "prov": [
+            {
+              "kind": "reported",
+              "source": "brief"
+            },
+            {
+              "kind": "measured",
+              "source": "privacy"
+            }
+          ]
+        }
+      ]
+    },
+    "found-at-launch": {
+      "id": "found-at-launch",
+      "nav": "Found at launch",
+      "label": "AT LAUNCH",
+      "heading": "Ready to be found at launch",
+      "lede": {
+        "text": "None of this reaches search yet. Review builds are noindex, and reach opens only when the site launches on a real domain."
+      },
+      "parts": [
+        {
+          "type": "p",
+          "text": "At launch the studio gets its first front door: an enquiry route, and a title, a description and a canonical address on every published page."
+        },
+        {
+          "type": "figure",
+          "img": {
+            "src": "/case-studies/flipp-tripp/media/home-1120.webp",
+            "alt": "The review build's home page: a split flap board reading FLIPP TRIPP over BRAND FILMS with a Press to flip hint, the heading “Stories first. Production next.”, a line about the studio's films and two buttons, See the work and Start a project.",
+            "width": 1120,
+            "height": 700
+          },
+          "srcset": "/case-studies/flipp-tripp/media/home-1120.webp 1120w, /case-studies/flipp-tripp/media/home-2240.webp 2240w",
+          "caption": "The home page on the review build, after its board settled. The heading is the studio's own line.",
+          "credit": "Capture: Flipp Tripp review build, 25 Oct 2026, shown with the owner's OK"
+        },
+        {
+          "type": "p",
+          "text": "Search engines and AI assistants get the same facts as structured data: the organisation, the site, its pages, each case, one film and the breadcrumbs, and never Person, Review or AggregateRating. An llms.txt file says plainly that the studio is not a travel agency."
+        },
+        {
+          "type": "p",
+          "text": "The name sits beside travel businesses, so the site speaks in film words. The winning concept gave up its name, Departures, and became The Board. The 404 page reads “This frame didn’t make the cut.” A check fails on any travel word outside a short allowlist.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "checks"
+            }
+          ]
+        },
+        {
+          "type": "tiles",
+          "items": [
+            {
+              "value": "7 pages",
+              "label": "in the sitemap: Home, four case pages, Privacy and Terms.",
+              "kind": "measured",
+              "source": "checks"
+            },
+            {
+              "value": "6 types",
+              "label": "of structured data across the site.",
+              "kind": "measured",
+              "source": "checks"
+            },
+            {
+              "value": "5 share images",
+              "label": "generated at build time, for Home and each case.",
+              "kind": "measured",
+              "source": "checks"
+            }
+          ]
+        }
+      ]
+    },
+    "judged-and-rebuilt": {
+      "id": "judged-and-rebuilt",
+      "nav": "Judged and rebuilt",
+      "label": "12 TO 25 OCT",
+      "heading": "Built, judged and rebuilt in one day",
+      "lede": {
+        "text": "The first board was wrong, and the process caught it."
+      },
+      "parts": [
+        {
+          "type": "p",
+          "text": "I started building alongside the research, on the scaffold of Post Aura, another site I was working on at the same time. That first hero cycled forever behind a pause button. In the design contest, the design judge agent flagged it as ambient motion and a flash risk, at about nine flips a second per tile across 26 tiles.",
+          "prov": [
+            {
+              "kind": "reported",
+              "source": "contest"
+            }
+          ],
+          "links": [
+            {
+              "text": "Post Aura",
+              "href": "/case-studies/post-aura/"
+            }
+          ]
+        },
+        {
+          "type": "milestones",
+          "items": [
+            {
+              "label": "v0 foundation",
+              "date": "12 Oct 2026",
+              "time": "09:36 IST",
+              "change": "Tokens, content, a first flap board, and a hero that cycled forever behind a pause button.",
+              "why": "Building started alongside the research, on the Post Aura scaffold.",
+              "ref": "git 9bb04ab",
+              "prov": [
+                {
+                  "kind": "measured",
+                  "source": "repo"
+                }
+              ]
+            },
+            {
+              "label": "Design contest",
+              "date": "12 Oct 2026",
+              "change": "Three concepts, three judge agents. Departures won with 8.0, 8.1 and 8.5 and was renamed The Board.",
+              "why": "The judges flagged the endless cycle, per tile React state and timers, and travel labels.",
+              "prov": [
+                {
+                  "kind": "reported",
+                  "source": "contest"
+                }
+              ]
+            },
+            {
+              "label": "v1 spec build",
+              "date": "12 Oct 2026",
+              "time": "10:29 IST",
+              "change": "Rebuilt to the spec by five builder agents on separate files: the one clock flap engine, gated legal pages and the acceptance script. First deploy, with 42 of 42 checks green.",
+              "why": "Ship the winning concept with every must fix item.",
+              "ref": "git 0031073",
+              "prov": [
+                {
+                  "kind": "measured",
+                  "source": "repo"
+                },
+                {
+                  "kind": "reported",
+                  "source": "brain"
+                }
+              ]
+            },
+            {
+              "label": "Copy pass",
+              "date": "12 Oct 2026",
+              "change": "Removed five unverified marketing lines and every unverified place and runtime.",
+              "why": "Only verified facts ship, and the checks fail if a removed line returns.",
+              "prov": [
+                {
+                  "kind": "reported",
+                  "source": "spec"
+                },
+                {
+                  "kind": "measured",
+                  "source": "checks"
+                }
+              ]
+            },
+            {
+              "label": "v1.1 review fixes",
+              "date": "12 Oct 2026",
+              "time": "11:57 IST",
+              "change": "44 findings proposed, 33 confirmed and fixed: 3 blocker, 7 major, 23 minor.",
+              "why": "Make the build match the spec in real browsers, at real zoom levels and with every input method.",
+              "ref": "git 2458c5a",
+              "prov": [
+                {
+                  "kind": "measured",
+                  "source": "review"
+                },
+                {
+                  "kind": "measured",
+                  "source": "repo"
+                }
+              ]
+            },
+            {
+              "label": "New look requested",
+              "date": "23 Oct 2026",
+              "change": "The owner asked for a new look, based on a portfolio he liked.",
+              "why": "Owner preference. Not started.",
+              "prov": [
+                {
+                  "kind": "reported",
+                  "source": "brain"
+                }
+              ]
+            },
+            {
+              "label": "Verified again",
+              "date": "25 Oct 2026",
+              "change": "42 of 42 checks passed against the review build again, and the home board's motion and the home page's privacy were measured in headless Chromium.",
+              "why": "Fresh, dated evidence for this page.",
+              "prov": [
+                {
+                  "kind": "measured",
+                  "source": "checks"
+                },
+                {
+                  "kind": "measured",
+                  "source": "motion"
+                },
+                {
+                  "kind": "measured",
+                  "source": "privacy"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "The contest"
+        },
+        {
+          "type": "p",
+          "text": "Three concepts went to three judge agents, one lens each: design, brand and engineering. Between them the judges wrote 49 must fix items, some overlapping, and 37 grafts. The spec took every must fix item and a selection of the grafts: the press that turns STORIES FIRST into YOUR STORY FIRST came from The Keynote Cut, the Show all credits view from The Flip Side.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "contest"
+            }
+          ]
+        },
+        {
+          "type": "scores",
+          "columns": [
+            "Concept",
+            "Design",
+            "Brand",
+            "Engineering"
+          ],
+          "rows": [
+            {
+              "name": "Departures",
+              "scores": [
+                "8.0",
+                "8.1",
+                "8.5"
+              ],
+              "note": "Won, renamed The Board"
+            },
+            {
+              "name": "The Keynote Cut",
+              "scores": [
+                "7",
+                "7",
+                "7"
+              ]
+            },
+            {
+              "name": "The Flip Side",
+              "scores": [
+                "6.5",
+                "6.5",
+                "5.5"
+              ]
+            }
+          ],
+          "caption": "Scores from three judge agents, 12 Oct 2026.",
+          "kind": "reported",
+          "source": "contest"
+        },
+        {
+          "type": "p",
+          "text": "The spec build answered them. One shared animation clock replaced per tile React state and timers, every board settles once and then waits, and the travel labels gave way to film words."
+        },
+        {
+          "type": "h3",
+          "text": "The review"
+        },
+        {
+          "type": "p",
+          "text": "Five review lenses proposed 44 findings. A second pass then checked each one, mostly by reproducing it in a browser: 33 held up, and 11 were rejected as behaviour the spec intended. All 33 were fixed the same day: 3 blockers, 7 major and 23 minor. Four of them taught me how the parts work.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "review"
+            }
+          ]
+        },
+        {
+          "type": "findings",
+          "items": [
+            {
+              "severity": "Major",
+              "what": "Only the first flap of each tile animated.",
+              "cause": "Each step's cleanup came due at the same instant as the next step, so it erased that step's layers.",
+              "fix": "A cleanup now checks that it still owns its layer.",
+              "kind": "measured",
+              "source": "review"
+            },
+            {
+              "severity": "Minor",
+              "what": "The one animation loop multiplied: 2,483 frame requests over 96 frames, up to 50 in a single frame, across three presses.",
+              "cause": "The loop cleared its own flag before running jobs, so any job that scheduled work started a second loop.",
+              "fix": "The flag stays set while jobs run, and a failing job cannot stall the clock.",
+              "kind": "measured",
+              "source": "review"
+            },
+            {
+              "severity": "Blocker",
+              "what": "Board labels stayed blank on phones.",
+              "cause": "Their settle waited for 25% of the board to be visible. Opened in full, the board grew to 4,005 px, and an 844 px screen can show at most 21% of it.",
+              "fix": "The settle now starts from the board's top edge.",
+              "kind": "measured",
+              "source": "review"
+            },
+            {
+              "severity": "Major",
+              "what": "In page links scrolled but left keyboard focus behind.",
+              "cause": "The new scroll handler in Next.js 16.3 leaves focus where it was, by design.",
+              "fix": "Same page links became plain anchors, so the next Tab starts where the page scrolled to.",
+              "kind": "measured",
+              "source": "review"
+            }
+          ]
+        }
+      ]
+    },
+    "going-live": {
+      "id": "going-live",
+      "nav": "Going live",
+      "label": "NEXT",
+      "heading": "Going live is configuration",
+      "lede": {
+        "text": "The build needs only the owner's confirmations to launch; the requested new look has not started."
+      },
+      "parts": [
+        {
+          "type": "setup",
+          "sum": {
+            "text": "5 steps. Three for the owner, two for me.",
+            "kind": "reported",
+            "source": "spec"
+          },
+          "steps": [
+            {
+              "action": "Confirm what the gate lists, among them the operating entity, a grievance contact, each client's written permission and the launch date.",
+              "who": "Owner"
+            },
+            {
+              "action": "Name the inbox for enquiries and agree to an email delivery provider, which needs the site's domain verified.",
+              "who": "Owner"
+            },
+            {
+              "action": "Add three empty email settings to the project and its host.",
+              "who": "Me"
+            },
+            {
+              "action": "Paste the values in. Nobody echoes them back.",
+              "who": "Owner"
+            },
+            {
+              "action": "Set the site's domain, switch the confirmed flags on, rebuild, and run the 42 checks against it.",
+              "who": "Me"
+            }
+          ],
+          "back": "each confirmation is one setting. Set it back and its sentence leaves every page at the next build, and without the operator or any email setting, the form returns to offline mode.",
+          "prov": [
+            {
+              "kind": "reported",
+              "source": "spec"
+            },
+            {
+              "kind": "measured",
+              "source": "gates"
+            }
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "The contract"
+        },
+        {
+          "type": "p",
+          "text": "One command builds the site, serves it and runs 42 checks against the served pages with JavaScript off, and the same script runs against any address. Its rule sits at the top of the file: change it when the spec changes, never to make a failure pass.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "repo"
+            }
+          ]
+        },
+        {
+          "type": "hero"
+        },
+        {
+          "type": "checks",
+          "rows": [
+            {
+              "group": "Routes",
+              "passed": 4,
+              "total": 4
+            },
+            {
+              "group": "SEO",
+              "passed": 9,
+              "total": 9
+            },
+            {
+              "group": "Structure and links",
+              "passed": 6,
+              "total": 6
+            },
+            {
+              "group": "Copy",
+              "passed": 17,
+              "total": 17
+            },
+            {
+              "group": "Served without JavaScript",
+              "passed": 3,
+              "total": 3
+            },
+            {
+              "group": "Privacy and leaks",
+              "passed": 3,
+              "total": 3
+            }
+          ],
+          "status": "PASS",
+          "caption": "The 42 checks by group, run against the review build on 25 Oct 2026.",
+          "kind": "measured",
+          "source": "checks"
+        },
+        {
+          "type": "h3",
+          "text": "Small on purpose"
+        },
+        {
+          "type": "p",
+          "text": "The flap engine is 128 lines of TypeScript. The site runs on four runtime dependencies and builds to 20 static routes.",
+          "prov": [
+            {
+              "kind": "measured",
+              "source": "engine"
+            },
+            {
+              "kind": "measured",
+              "source": "repo"
+            }
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "What I learned"
+        },
+        {
+          "type": "p",
+          "text": "Tracing the board frame by frame taught me that a timer can outlive the step that set it. The focus bug taught me to read a framework's defaults before trusting them. And with thin public proof, trust has to come from exact credits and rules that refuse a guess, never from scale."
+        }
+      ]
+    }
+  }
+}
