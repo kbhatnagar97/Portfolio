@@ -12,6 +12,22 @@
     ]
   },
   {
+    "TITLE": "Long Term Service Honors",
+    "SUBTITLE": "HashedIn by Deloitte",
+    "DESCRIPTION": "3 and 5 years of service, April 2026",
+    "IMAGES": [
+      "/images/Linkedin/Work/Service-Honor-5-Years-27-04-26.jpeg",
+      "/images/Linkedin/Work/Service-Honor-3-Years-27-04-26.jpeg"
+    ]
+  },
+  {
+    "ICON": "📋",
+    "TITLE": "Loyalty Certificate",
+    "SUBTITLE": "HashedIn by Deloitte",
+    "DESCRIPTION": "Consistent dedication and commitment",
+    "IMAGES": ["/images/Linkedin/Work/LoyaltyCertificate.jpeg"]
+  },
+  {
     "ICON": "🌟",
     "TITLE": "Excellence Award",
     "SUBTITLE": "HashedIn by Deloitte",
@@ -34,12 +50,5 @@
     "SUBTITLE": "DeepLearning.AI",
     "DESCRIPTION": "Advanced AI/ML knowledge",
     "IMAGES": ["/images/Linkedin/Certifications/Neural-Networks-and-Deep-learning-Certificate.jpeg"]
-  },
-  {
-    "ICON": "📋",
-    "TITLE": "Loyalty Certificate",
-    "SUBTITLE": "HashedIn by Deloitte",
-    "DESCRIPTION": "Consistent dedication and commitment",
-    "IMAGES": ["/images/Linkedin/Work/LoyaltyCertificate.jpeg"]
   }
 ]

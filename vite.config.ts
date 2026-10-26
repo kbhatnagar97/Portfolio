@@ -271,8 +271,10 @@ const aboutPlay = (): TPlayData => {
   const [vit, school] = P.education
   const awards: TTile[] = [
     ...Array.from({ length: 4 }, (): TTile => ({ t: 'Spot', k: 'medal', tone: 'gold', r: 22 })),
-    { t: 'Excellence', k: 'medal', tone: 'gold', r: 30 },
+    { t: '5 years', k: 'medal', tone: 'gold', r: 26 },
+    { t: '3 years', k: 'medal', tone: 'gold', r: 24 },
     { t: 'Loyalty', k: 'medal', tone: 'muted', r: 24 },
+    { t: 'Excellence', k: 'medal', tone: 'gold', r: 30 },
     tile('Six Sigma', 'live'),
     tile('Deep Learning', 'text'),
   ]
