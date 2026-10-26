@@ -42,13 +42,7 @@ const CaseCard = ({ card: c }: { card: ICaseCard }) => (
 
 const CaseStudies = () => (
   <section id='case-studies' className='cases' aria-labelledby='cases-title'>
-    <header className='section-head'>
-      {/* the stack's stage: the calm field returns on both sides of it, so the shape forms, holds and settles where no type sits */}
-      <div className='cases__stage' aria-hidden='true'>
-        <span data-shape={SHAPE.field} />
-        <span data-shape={SHAPE.stack} />
-        <span data-shape={SHAPE.field} />
-      </div>
+    <header className='section-head' data-shape={SHAPE.field}>
       <p className='section-head__index'>{home.index}</p>
       <h2 id='cases-title' data-split>
         {home.title}
